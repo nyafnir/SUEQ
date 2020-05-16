@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace SUEQ_API
 {
@@ -17,25 +17,19 @@ namespace SUEQ_API
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
-                    config
-                        .AddJsonFile(
-                            "appsettings.json",
-                            optional: false, // Файл является обязательным
-                            reloadOnChange: true // При сохранении изменений файл перезагружается
-                        )
-                        .AddJsonFile(
-                            $"appsettings.{env.EnvironmentName}.json",
-                            optional: true,
-                            reloadOnChange: true
-                        );
+                    config.AddJsonFile("appsettings.json");
                     config.AddEnvironmentVariables();
-
+                    // Возможность задавать значения из командной строки
+                    if (args != null)
+                    {
+                        config.AddCommandLine(args);
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    var AppSettings = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                    webBuilder.UseUrls(AppSettings["urls"]);
                 });
-
-
     }
 }

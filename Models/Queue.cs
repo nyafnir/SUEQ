@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SUEQ_API.Models
+﻿namespace SUEQ_API.Models
 {
     public class Queue
     {
-        public int Id { get; set; }
+        public int QueueId { get; set; }
         public string Name { get; set; }
-        public string QRCode { get; set; } // TODO: это должно быть UQ и BLOB?
+        public string Description { get; set; }
+        public bool Status { get; set; }
+        public string QRCode { get; set; }
 
-        // Foreign Keys
-        public int OwnerId { get; set; }
-        public User Owner { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 }

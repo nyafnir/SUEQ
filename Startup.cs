@@ -1,15 +1,19 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-// Переменная настроек для appsettings
-using Microsoft.Extensions.Configuration;
 // Подключение базы данных
 using Microsoft.EntityFrameworkCore;
 using SUEQ_API.Models;
-// StringBuilder
-using System;
+// Настройки и переменная настроек для appsettings
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+// Логгирование
+using Microsoft.Extensions.Logging;
+// JWT аутентификация
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace SUEQ_API
 {
@@ -21,20 +25,26 @@ namespace SUEQ_API
             Configuration = configuration;
         }
 
+        private int https_port;
+        private bool ssl;
+
         public void ConfigureServices(IServiceCollection services)
         {
+            // Получение параметров httpS
+            https_port = Convert.ToInt32(Configuration["https_port"]);
+            ssl = https_port != 0;
             // Настройка передаваемого заголовка STS
             services.AddHsts(options =>
             {
                 options.Preload = true; // Загружается заранее
                 options.IncludeSubDomains = true; // Включает поддомены
-                options.MaxAge = TimeSpan.FromDays(30); // Пусть срок жизни 30 дней, если нужно отключить установить срок 0
+                options.MaxAge = TimeSpan.FromDays(30); // Пусть срок жизни 30 дней
             });
-            // Настройка перенаправления на httpS
+            // Настройка переадресации
             services.AddHttpsRedirection(options =>
             {
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect; // Статус принимаемый по умолчанию
-                options.HttpsPort = 44344; // Порт по умолчанию 443, для отладки пусть используем 44344
+                options.HttpsPort = https_port; // Диапазон существующих портов вписывается в int32
             });
             // Регистрируем наш контекст базы данных в зависимостях
             services.AddDbContext<SUEQContext>(options => {
@@ -46,12 +56,39 @@ namespace SUEQ_API
                     $"password={Configuration["DataBase:Password"]};"
                 );
             });
+            // Включаем JWT
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = ssl;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            // Проверяем издателя
+                            ValidateIssuer = true,
+                            // Указываем где он
+                            ValidIssuer = TokenOptions.ISSUER, // Configuration["ISSUER"] ?
+
+                            // Проверяем потребителя
+                            ValidateAudience = true,
+                            // Указываем где он
+                            ValidAudience = TokenOptions.AUDIENCE,
+                            // Проверяем срок жизни
+                            ValidateLifetime = true,
+
+                            // Вытягиваем и указываем преобразованный ключ
+                            IssuerSigningKey = TokenOptions.GetSymmetricSecurityKey(),
+                            // Проверяем ключ
+                            ValidateIssuerSigningKey = true,
+                        };
+                    });
             // Инициализируем контроллеры
             services.AddControllers();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            logger.LogInformation("SSL: {0}", ssl);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -60,13 +97,15 @@ namespace SUEQ_API
             {
                 // Отсылаем заголовок Strict-Transport-Security, чтобы избежать обращения к незащищенному http
                 // Это стандартная необходимая защита
-                app.UseHsts();
+                if (ssl) app.UseHsts();
             }
+
             // Перенаправление на httpS
-            app.UseHttpsRedirection();
+            if (ssl) app.UseHttpsRedirection();
 
             app.UseRouting();
-            // Включение авторизации
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -76,6 +115,7 @@ namespace SUEQ_API
                 // Ответ при переходе в корневой узел
                 endpoints.MapGet("/", async context =>
                 {
+                    logger.LogInformation("Processing request {0}", context.Request.Path);
                     var sb = new System.Text.StringBuilder()
                         .Append("<center><h1>Интерфейс работает и принимает запросы!</center></h1>");
                     context.Response.ContentType = "text/html;charset=utf-8";
