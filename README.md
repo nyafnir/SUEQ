@@ -75,7 +75,7 @@ http://localhost:5433/api/users/info `GET`
     "email": "local@host.com",
     "passwordHash": null,
     "passwordSalt": null,
-    "firstName": "Василий",
+    "firstName": "Иван",
     "surName": "Иванов",
     "lastName": "Иванович",
     "queues": null
