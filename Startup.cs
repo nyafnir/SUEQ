@@ -66,17 +66,18 @@ namespace SUEQ_API
                             // Проверяем издателя
                             ValidateIssuer = true,
                             // Указываем где он
-                            ValidIssuer = TokenOptions.ISSUER, // Configuration["ISSUER"] ?
+                            ValidIssuer = Configuration["Token:Issuer"],
 
                             // Проверяем потребителя
                             ValidateAudience = true,
                             // Указываем где он
-                            ValidAudience = TokenOptions.AUDIENCE,
+                            ValidAudience = Configuration["Token:Audience"],
                             // Проверяем срок жизни
                             ValidateLifetime = true,
 
                             // Вытягиваем и указываем преобразованный ключ
-                            IssuerSigningKey = TokenOptions.GetSymmetricSecurityKey(),
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])),
                             // Проверяем ключ
                             ValidateIssuerSigningKey = true,
                         };

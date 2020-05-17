@@ -1,0 +1,37 @@
+{
+  "Name": "Server Universal Electronic Queue",
+  "urls": "http://localhost:5433",
+
+  "https_port": "0",
+  "Email": {
+    "SMTP": "smtp.localhost.com",
+    "Port": "0",
+    "Username": "root",
+    "Password": "toor"
+  },
+
+  "Token": {
+    "Issuer": "SUEQ-API",
+    "Audience": "UEQ-Client",
+    "Key": "supersecretkey",
+    "Lifetime": "1440"
+  },
+
+  "DataBase": {
+    "Host": "127.0.0.1",
+    "Name": "SUEQ",
+    "Password": "toor",
+    "Port": "3306",
+    "User": "root"
+  },
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+
+  "AllowedHosts": "*"
+}

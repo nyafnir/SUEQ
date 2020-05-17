@@ -7,7 +7,7 @@ namespace SUEQ_API.Models
         public int UserId { get; set; }
 
         public string Email { get; set; }
-        // public bool Confirm { get; set; }
+        //public bool EmailConfirmed { get; set; }
 
         public string PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }

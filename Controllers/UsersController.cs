@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SUEQ_API.Models;
+using Microsoft.Extensions.Configuration;
 // Хэширование пароля
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
@@ -13,7 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 // Проверка почты
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace SUEQ_API.Controllers
 {
@@ -23,16 +23,11 @@ namespace SUEQ_API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly SUEQContext _context;
-
-        public UsersController(SUEQContext context)
+        private readonly IConfiguration Configuration;
+        public UsersController(SUEQContext context, IConfiguration configuration)
         {
             _context = context;
-        }
-
-        [Route("me")]
-        public IActionResult Test()
-        {
-            return Ok($"Вы: {HttpContext.User.Identity.Name}. ID: {HttpContext.User.FindFirst("UserId").Value}");
+            Configuration = configuration;
         }
 
         private byte[] GetSalt()
@@ -81,32 +76,37 @@ namespace SUEQ_API.Controllers
             {
                 return BadRequest(new LoginResult { Validation = false, Error = "User not found." });
             }
-            
-            string PasswordHash = ToHash(login.Password, findUser.PasswordSalt);
 
+            string PasswordHash = ToHash(login.Password, findUser.PasswordSalt);
             if (findUser.PasswordHash != PasswordHash)
             {
                 return BadRequest(new LoginResult { Validation = false, Error = "Password are invalid." });
             }
 
+            /*if (!findUser.EmailConfirmed)
+            {
+                return BadRequest(new LoginResult { Validation = false, Error = "Email not confirmed." });
+            }*/
+
             var now = DateTime.UtcNow;
-            // identity not init. claim other
+            
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, $"{findUser.SurName} {findUser.FirstName} {findUser.LastName}"),
                 new Claim(JwtRegisteredClaimNames.Email, login.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, findUser.UserId.ToString()),
                 new Claim("UserId", findUser.UserId.ToString())
             };
 
             // Создаем JWT
             var jwt = new JwtSecurityToken(
-                issuer: TokenOptions.ISSUER,
-                audience: TokenOptions.AUDIENCE,
+                issuer: Configuration["Token:Issuer"],
+                audience: Configuration["Token:Audience"],
                 notBefore: now,
                 claims: claims,
-                expires: now.Add(TimeSpan.FromMinutes(TokenOptions.LIFETIME)),
-                signingCredentials: new SigningCredentials(TokenOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
+                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Configuration["Token:Lifetime"]))),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
+                    System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])), 
+                    SecurityAlgorithms.HmacSha256)
             );
 
             return Ok(new LoginResult { Validation = true, Token = new JwtSecurityTokenHandler().WriteToken(jwt) });
@@ -216,14 +216,21 @@ namespace SUEQ_API.Controllers
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
-                
-            return Ok($"Account created. ID: {newUser.UserId}");
+            /*            
+            newUser.EmailConfirmed = true;
+            string code = manager.GenerateEmailConfirmationToken(newUser.UserId) ;
+            string callbackUrl = IdentityHelper.GetUserConfirmationRedirectUrl(code, newUser.UserId, Request);
+            manager.SendEmail(newUser.UserId, "Confirm your account", 
+                "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">HERE</a>.");
+            */
+            return Ok("Account created. Confirm email.");
         }
 
-        [HttpGet("info/{email}")]
-        public async Task<ActionResult<User>> GetUser(string email)
+        [HttpGet("info")]
+        public async Task<ActionResult<User>> GetUser()
         {
-            var user = await _context.Users.SingleOrDefaultAsync(user => user.Email == email);
+            int id = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+            var user = await _context.Users.FindAsync(id);
 
             if (user == null)
             {
@@ -236,9 +243,10 @@ namespace SUEQ_API.Controllers
             return user;
         }
 
-        [HttpPut("update/{id}")] // TODO: нет проверки, что это клиент обновляет себя самого! ДОЛГО ВЫПОЛНЯЕТСЯ
-        public async Task<IActionResult> UpdateUser(int id, RegistrationModel newUser)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser(RegistrationModel newUser)
         {
+            int id = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
             var findUser = await _context.Users.FindAsync(id);
             if (findUser == null)
             {
@@ -284,12 +292,13 @@ namespace SUEQ_API.Controllers
             _context.Entry(findUser).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok("Updated.");
+            return Ok("Account updated.");
         }
         
-        [HttpDelete("delete/{id}")] // TODO: нет проверки что это клиент удаляет себя самого! передать пароль и сверить?
-        public async Task<ActionResult> DeleteUser(int id)
+        [HttpDelete("delete")]
+        public async Task<ActionResult> DeleteUser()
         {
+            int id = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
