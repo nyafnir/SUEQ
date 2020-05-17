@@ -183,4 +183,15 @@ http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`
 Получаем: `"Client out queue."`  
 
 ### Получение информации о пользователях в очереди
-???
+http://localhost:5433/api/positions/44 `GET`  
+Получаем: 
+```json
+[{
+	"UserId": 7,
+	"Place": 2
+},
+{
+	"UserId": 2,
+	"Place": 1
+}]
+```
