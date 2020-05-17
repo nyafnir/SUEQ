@@ -130,6 +130,7 @@ http://localhost:5433/api/queues/create `POST`
 	"QRCode": "unknow"
 }
 ```  
+Данный QR-код должен перенаправлять в наше приложение неся в себе QueueId
   
 ### Изменить название, описание или статус очереди  
 http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`  
@@ -180,3 +181,6 @@ http://localhost:5433/api/positions/44 `PUT`
 ### Удалить стоящего в очереди (владелец)  
 http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`  
 Получаем: `"Client out queue."`  
+
+### Получение информации о пользователях в очереди
+???
