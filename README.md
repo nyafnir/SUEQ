@@ -46,7 +46,7 @@ FLUSH PRIVILEGES;
   "SurName": "Иванов",
   "LastName": "Иванович"
 }  
-```
+```  
 Получаем: `"Account created."`  
   
 ### Авторизация  
@@ -56,7 +56,7 @@ FLUSH PRIVILEGES;
 	"email": "local@host.com",
 	"password": "superpassword999"
 }
-```
+```  
 Получаем:  
 ```json
 {
@@ -89,7 +89,7 @@ http://localhost:5433/api/users/update `PUT`
 {
   "FirstName":"Пётр"
 }
-```
+```  
 Получаем: `"Account updated."`  
   
 ### Удаление пользователем своего аккаунта  
@@ -106,7 +106,7 @@ http://localhost:5433/api/queues/create `POST`
 	"Description": "Кафе открыто с 11:20 до 20:05",
 	"Status": true
 }
-```
+```  
 Получаем:  
 ```json
 {
@@ -122,21 +122,21 @@ http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`
 	"Description": "Мастерская работает с 13:00 до 00:00",
 	"Status": false
 }
-```
+```  
 Получаем: `"Queue updated."`  
   
 ###  Удалить очередь 
-http://localhost:5433/api/queues/delete/44 `DELETE`
+http://localhost:5433/api/queues/delete/44 `DELETE`  
 Получаем: `"Queue deleted."`  
   
 ## Positions
 
 ### Встать в очередь  
-http://localhost:5433/api/positions/44 `POST`
+http://localhost:5433/api/positions/44 `POST`  
 Получаем: `"In queue."`  
   
 ### Выйти из очереди  
-http://localhost:5433/api/positions/44 `DELETE`
+http://localhost:5433/api/positions/44 `DELETE`  
 Получаем: `"Out queue."`  
   
 ### Изменить позицию стоящего в очереди (владелец)  
@@ -147,6 +147,8 @@ http://localhost:5433/api/positions/44 `PUT`
 	"Place": 1
 }
 ```  
+Получаем: `"Client in queue on 1 place."`  
   
 ### Удалить стоящего в очереди (владелец)  
-http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`
+http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`  
+Получаем: `"Client out queue."`  
