@@ -35,6 +35,7 @@ FLUSH PRIVILEGES;
 # Логика
 
 ## Users
+
 0. Регистрация, отсылаем http://localhost:5433/api/users/registration `POST`
 ```json
 {
@@ -45,7 +46,8 @@ FLUSH PRIVILEGES;
   "LastName": "Иванович"
 }  
 ```
-Получаем: `"Account created."`
+Получаем: `"Account created."`  
+  
 1. Авторизация, отсылаем http://localhost:5433/api/users/login `GET`  
 ```json
 {
@@ -62,6 +64,7 @@ FLUSH PRIVILEGES;
 }
 ```
 Все следующие обращения выполняются с этим токеном по `Auth: Bearer Token`!  
+  
 2. Получение информации о себе http://localhost:5433/api/users/info `GET`
 ```json
 {
@@ -74,7 +77,8 @@ FLUSH PRIVILEGES;
     "lastName": "Иванович",
     "queues": null
 }
-```
+```  
+  
 3. Обновление информации о себе http://localhost:5433/api/users/update `PUT`  
 Как при регистрации, но указываем обновляемые поля - почта, пароль, ФИО
 ```json
@@ -83,41 +87,49 @@ FLUSH PRIVILEGES;
 }
 ```
 Получаем: `"Account updated."`  
+  
 4. Удаление пользователем своего аккаунта http://localhost:5433/api/users/delete `DELETE`
 Получаем: `"Account deleted."`  
-
+  
 ## Queues
+
 5. Создать очередь http://localhost:5433/api/queues/create `POST`  
 ```json
 {
 	"Name": "Рыжий заяц",
-	"Description": "Кафе открыто с 11:20 до 20:05"
-    "Status": true
+	"Description": "Кафе открыто с 11:20 до 20:05",
+  "Status": true
 }
 ```
-Получаем: `"qrcode"`  
+Получаем: `{ QRCode: "unknow" }`  
+  
 6. Изменить название, описание или статус http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`  
 ```json
 {
 	"Name": "Биба и Боба",
-	"Description": "Мастерская работает с 13:00 до 00:00"
-    "Status": false
+	"Description": "Мастерская работает с 13:00 до 00:00",
+  "Status": false
 }
 ```
 Получаем: `"Queue updated."`  
+  
 7. Удалить очередь http://localhost:5433/api/queues/delete/44 `DELETE`
 Получаем: `"Queue deleted."`  
-
+  
 ## Positions
+
 8. Встать в очередь http://localhost:5433/api/positions/44 `POST`
-Получаем: `"In queue."` 
+Получаем: `"In queue."`  
+  
 9. Выйти из очереди http://localhost:5433/api/positions/44 `DELETE`
-Получаем: `"Out queue."` 
+Получаем: `"Out queue."`  
+  
 10. Изменить позицию стоящего в очереди (владелец) http://localhost:5433/api/positions/44 `PUT`
 ```json
 {
 	"UserId": 7,
 	"Place": 1
 }
-```
+```  
+  
 11. Удалить стоящего в очереди (владелец) http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`
