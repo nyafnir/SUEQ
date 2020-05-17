@@ -142,6 +142,17 @@ http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`
 ```  
 Получаем: `"Queue updated."`  
   
+### Получить информацию об очереди  
+http://localhost:5433/api/queues/info/44 {QueueId=44} `GET`  
+Получаем: 
+```json
+{
+	"Name": "Биба и Боба",
+	"Description": "Мастерская работает с 13:00 до 00:00",
+	"Status": false
+}
+```  
+  
 ###  Удалить очередь 
 http://localhost:5433/api/queues/delete/44 `DELETE`  
 Получаем: `"Queue deleted."`  
