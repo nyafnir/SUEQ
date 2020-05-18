@@ -69,25 +69,19 @@ namespace SUEQ_API.Controllers
 
         [AllowAnonymous]
         [HttpGet("login")]
-        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginModel login)
+        public async Task<ActionResult<LoginResult>> Login(LoginModel login)
         {
             var findUser = await _context.Users.SingleOrDefaultAsync(user => user.Email == login.Email);
             if (findUser == null)
-            {
                 return BadRequest(new LoginResult { Validation = false, Error = "User not found." });
-            }
 
             string PasswordHash = ToHash(login.Password, findUser.PasswordSalt);
             if (findUser.PasswordHash != PasswordHash)
-            {
                 return BadRequest(new LoginResult { Validation = false, Error = "Password are invalid." });
-            }
 
             /*if (!findUser.EmailConfirmed)
-            {
                 return BadRequest(new LoginResult { Validation = false, Error = "Email not confirmed." });
-            }*/
-
+            */
             var now = DateTime.UtcNow;
             
             var claims = new[] {
@@ -112,7 +106,7 @@ namespace SUEQ_API.Controllers
             return Ok(new LoginResult { Validation = true, Token = new JwtSecurityTokenHandler().WriteToken(jwt) });
         }
 
-        public class RegistrationModel
+        public class UserModel
         {
             public string Email { get; set; }
             public string Password { get; set; }
@@ -121,96 +115,71 @@ namespace SUEQ_API.Controllers
             public string LastName { get; set; }
         }
 
-        public bool CheckSizeFIO(string first = null, string sur = null, string last = null)
+        private bool ValidationSizeFIO(string first = null, string sur = null, string last = null)
         {
             if (last == null && sur == null && first == null)
-            {
                 return true;
-            }
 
             if (first != null)
-            {
                 if (first.Length < 2)
-                {
                     return false;
-                }
-            }
 
             if (sur != null)
-            {
                 if (sur.Length < 3)
-                {
                     return false;
-                }
-            }
 
             if (last != null)
-            {
                 if (last.Length < 3)
-                {
                     return false;
-                }
-            }
 
             return true;
         }
 
-        public bool CheckEmail(string email)
+        private bool ValidationEmail(string email)
         {
             if (new EmailAddressAttribute().IsValid(email))
-            {
                 return true;
-            }
             else
-            {
                 return false;
-            }
         }
 
-        public bool CheckPassword(string password)
+        private bool ValidationPassword(string password)
         {
             if (password.Length >= 3)
-            {
                 return true;
-            }
             else
-            {
                 return false;
-            }
         }
 
         [AllowAnonymous]
         [HttpPost("registration")]
-        public async Task<ActionResult> Registration([FromBody] RegistrationModel registration)
+        public async Task<ActionResult> CreateUser(UserModel registration)
         {
             var findEmail = await _context.Users.SingleOrDefaultAsync(user => user.Email == registration.Email);
             if (findEmail != null)
-            {
                 return BadRequest("Email already exists.");
-            }
 
             var newUser = new User();
-            if (!CheckEmail(registration.Email))
-            {
+
+            if (!ValidationEmail(registration.Email))
                 return BadRequest("Incorrect email!");
-            }
             newUser.Email = registration.Email;
+
             if (
                 registration.FirstName == null ||
                 registration.SurName == null || 
                 registration.LastName == null ||
-                !CheckSizeFIO(registration.FirstName, registration.SurName, registration.LastName)
+                !ValidationSizeFIO(registration.FirstName, registration.SurName, registration.LastName)
             )
-            {
                 return BadRequest("Bad size fields FIO!");
-            }
+
             newUser.FirstName = registration.FirstName;
             newUser.SurName = registration.SurName;
             newUser.LastName = registration.LastName;
-            if (!CheckPassword(registration.Password))
-            {
+
+            if (!ValidationPassword(registration.Password))
                 return BadRequest("Small password! Min size: 3 symbols");
-            }
+
             newUser.PasswordSalt = GetSalt();
             newUser.PasswordHash = ToHash(registration.Password, newUser.PasswordSalt);
 
@@ -233,9 +202,7 @@ namespace SUEQ_API.Controllers
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
             user.PasswordHash = null;
             user.PasswordSalt = null;
@@ -244,50 +211,39 @@ namespace SUEQ_API.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateUser(RegistrationModel newUser)
+        public async Task<IActionResult> UpdateUser(UserModel updateUser)
         {
             int id = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
             var findUser = await _context.Users.FindAsync(id);
             if (findUser == null)
-            {
                 return BadRequest("User ID not found");
-            }
 
-            if (newUser.Email != null && newUser.Email != findUser.Email)
+            if (updateUser.Email != null && updateUser.Email != findUser.Email)
             {
-                if (!CheckEmail(newUser.Email))
-                {
+                if (!ValidationEmail(updateUser.Email))
                     return BadRequest("Email are invalid!");
-                }
-                findUser.Email = newUser.Email;
+
+                findUser.Email = updateUser.Email;
             }
 
-            if (newUser.Password != null)
+            if (updateUser.Password != null)
             {
-                if (!CheckPassword(newUser.Password))
-                {
+                if (!ValidationPassword(updateUser.Password))
                     return BadRequest("Very small password!");
-                }
+
                 findUser.PasswordSalt = GetSalt();
-                findUser.PasswordHash = ToHash(newUser.Password, findUser.PasswordSalt);
+                findUser.PasswordHash = ToHash(updateUser.Password, findUser.PasswordSalt);
             }
 
-            if (!CheckSizeFIO(newUser.FirstName, newUser.SurName, newUser.LastName))
-            {
+            if (!ValidationSizeFIO(updateUser.FirstName, updateUser.SurName, updateUser.LastName))
                 return BadRequest("Bad size fields FIO!");
-            }
-            if (newUser.FirstName != null)
-            { 
-                findUser.FirstName = newUser.FirstName; 
-            }
-            if (newUser.SurName != null)
-            {
-                findUser.SurName = newUser.SurName;
-            }
-            if (newUser.LastName != null)
-            {
-                findUser.LastName = newUser.LastName;
-            }
+
+            if (updateUser.FirstName != null)
+                findUser.FirstName = updateUser.FirstName;
+            if (updateUser.SurName != null)
+                findUser.SurName = updateUser.SurName;
+            if (updateUser.LastName != null)
+                findUser.LastName = updateUser.LastName;
 
             _context.Entry(findUser).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -301,9 +257,7 @@ namespace SUEQ_API.Controllers
             int id = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
             var user = await _context.Users.FindAsync(id);
             if (user == null)
-            {
                 return NotFound();
-            }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();

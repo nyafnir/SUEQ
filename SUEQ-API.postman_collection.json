@@ -1,0 +1,394 @@
+{
+	"info": {
+		"_postman_id": "414c3149-ef8b-4634-a20c-e40aaa49462e",
+		"name": "Тесты",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Анонимная авторизация",
+			"item": [
+				{
+					"name": "Регистрация",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Email\":\"local@host.com\",\r\n  \"Password\":\"superpassword999\",\r\n  \"FirstName\":\"Иван\",\r\n  \"SurName\":\"Иванов\",\r\n  \"LastName\":\"Иванович\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/users/registration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Авторизация",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "email",
+								"value": "A",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "password",
+								"value": "ABC",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"local@host.com\",\n\t\"password\":\"superpassword999\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Управление аккаунтом",
+			"item": [
+				{
+					"name": "Получение инфы о юзере",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JLQsNGB0LjQu9C40Lkg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJlYzA0ZGYwYS02YzIwLTRlMmItOTdhMS0xODIzOTE1NWRmZDEiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5NzMyMzM1LCJleHAiOjE1ODk4MTg3MzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.HpmfJIt_i50luqoOJ7d1rcLdFcIKkYq8p-JrxeoLtw0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/users/info",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление инфы о юзере",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JLQsNGB0LjQu9C40Lkg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJlYzA0ZGYwYS02YzIwLTRlMmItOTdhMS0xODIzOTE1NWRmZDEiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5NzMyMzM1LCJleHAiOjE1ODk4MTg3MzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.HpmfJIt_i50luqoOJ7d1rcLdFcIKkYq8p-JrxeoLtw0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"FirstName\":\"Пётр\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/users/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление аккаунта",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JjQstCw0L0g0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJlNmYzNTBlZi02OTY4LTQzMWItYWI0Yy0wZDI0YzUyZmExNGYiLCJVc2VySWQiOiI0IiwibmJmIjoxNTg5NzE3MjQ4LCJleHAiOjE1OTIzMDkyNDgsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.KDEk_scmJ64HPqw4BaJpG622LXevCPdLQP0C-5oAdIQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/users/delete/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"delete",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0J_RkdGC0YAg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyZTI1OTNmYy1iZmVlLTQ1YjAtYjNjYi05YmI5NGQ1M2QzMGMiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5ODE0Njc1LCJleHAiOjE1ODk5MDEwNzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.0qfQGuRCUMxaxgB4tTHo8AjKh0ej7lQxDwilWnGTDWc",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "abf35a46-9b40-4e5c-a7a4-460633cde245",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a369c3f-ba14-47a5-b25c-e07c71194def",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Очереди",
+			"item": [
+				{
+					"name": "Создание очереди",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Name\":\"Кафе Рыжий Заяц\",\n\t\"Description\":\"Кафе работает с 10 до 18!\",\n\t\"Status\":false,\n\t\"UserId\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/queues",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"queues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение очереди",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1f78c89-2dd2-4544-8ee3-59a87ca4360e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/queues/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"queues",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0J_RkdGC0YAg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyZTI1OTNmYy1iZmVlLTQ1YjAtYjNjYi05YmI5NGQ1M2QzMGMiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5ODE0Njc1LCJleHAiOjE1ODk5MDEwNzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.0qfQGuRCUMxaxgB4tTHo8AjKh0ej7lQxDwilWnGTDWc",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6d5e5d13-2fdd-4997-9f5f-9e2d5dd9ebcb",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "eefae38e-b619-4ae3-89a5-a5419547a38d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Позиции",
+			"item": [],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0J_RkdGC0YAg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyZTI1OTNmYy1iZmVlLTQ1YjAtYjNjYi05YmI5NGQ1M2QzMGMiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5ODE0Njc1LCJleHAiOjE1ODk5MDEwNzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.0qfQGuRCUMxaxgB4tTHo8AjKh0ej7lQxDwilWnGTDWc",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "54d4db6d-32b1-4b5f-9577-e0d2890c873b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "548c43f1-6b15-45dd-83ec-98cde813218f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
