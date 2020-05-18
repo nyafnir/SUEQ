@@ -1,5 +1,20 @@
-# SUEQ-API
-Сервер универсальной электронной очереди (Server Universal Electronic Queue) - WEB API: архитектура REST, используемая база данных: MYSQL, авторизация по токену JWT, формат запросов JSON, доступен SSL (HTTPS), работает с подтверждениями через почту
+# Server Universal Electronic Queue
+Сервер универсальной электронной очереди - WEB API, архитектура: REST, используемая база данных: MYSQL, авторизация по токену: JWT, формат запросов: JSON, доступен SSL (HTTPS), работает с подтверждениями через почту
+
+Содержание
+============
+
+<!--ts-->
+   * [Проделанная работа](./README.md#План)
+   * [Подготовка базы данных](./README.md#База-данных)
+   * [Логика API с примерами](./README.md#Логика)
+	   * [Пользователи](./README.md#Users)
+	   * [Очереди](./README.md#Queues)
+	   * [Позиции в очередях](./README.md#Positions)
+<!--te-->
+
+План
+============
 
 - [x] 1. Создан проект WEB-API с ASP.NET (3.1) и настроен вывод при подключении к корню через браузер
 - [x] 2. Создана папка `Models` и созданы сущности (таблицы) по схеме
@@ -17,12 +32,14 @@
 - [x] 15. Реализована работа с токеном `JWT`, передаётся как `Bearer` при запросах
 - [x] 16. Проработана регистрация и авторизация, протестирована работа токена
 - [x] 17. Реализован контроллер управления пользователем (получение, обновление информации и удаление аккаунта)
-- [ ] 18. Реализован контроллер управления очередями
+- [x] 18. Реализован контроллер управления очередями
 - [ ] 19. Реализован контроллер управления позициями
 - [ ] 20. Добавлено подтверждение регистрации и смена пароля по почте
 - [ ] 21. Доработка `HTTPS` (п.8)
+- [ ] 22. `Deep Linking` и QR-код
 
-# База данных
+База данных
+============
 
 Создание базы данных и предоставление доступа:  
 ```mysql
@@ -32,11 +49,13 @@ GRANT ALL PRIVILEGES ON DBNAMEHERE.* TO 'USERNAMEHERE'@'%';
 FLUSH PRIVILEGES;
 ```
 
-# Логика
+Логика
+============
 
 ## Users
 
-0. Регистрация, отсылаем http://localhost:5433/api/users/registration `POST`
+### Регистрация  
+Отсылаем http://localhost:5433/api/users/registration `POST`
 ```json
 {
   "Email": "local@host.com",
@@ -45,16 +64,17 @@ FLUSH PRIVILEGES;
   "SurName": "Иванов",
   "LastName": "Иванович"
 }  
-```
+```  
 Получаем: `"Account created."`  
   
-1. Авторизация, отсылаем http://localhost:5433/api/users/login `GET`  
+### Авторизация  
+Отсылаем http://localhost:5433/api/users/login `GET`  
 ```json
 {
 	"email": "local@host.com",
 	"password": "superpassword999"
 }
-```
+```  
 Получаем:  
 ```json
 {
@@ -65,71 +85,122 @@ FLUSH PRIVILEGES;
 ```
 Все следующие обращения выполняются с этим токеном по `Auth: Bearer Token`!  
   
-2. Получение информации о себе http://localhost:5433/api/users/info `GET`
+### Получение информации о себе  
+http://localhost:5433/api/users/info `GET`
 ```json
 {
     "userId": 7,
     "email": "local@host.com",
     "passwordHash": null,
     "passwordSalt": null,
-    "firstName": "Василий",
+    "firstName": "Иван",
     "surName": "Иванов",
     "lastName": "Иванович",
     "queues": null
 }
 ```  
   
-3. Обновление информации о себе http://localhost:5433/api/users/update `PUT`  
+### Обновление информации о себе  
+http://localhost:5433/api/users/update `PUT`  
 Как при регистрации, но указываем обновляемые поля - почта, пароль, ФИО
 ```json
 {
   "FirstName":"Пётр"
 }
-```
+```  
 Получаем: `"Account updated."`  
   
-4. Удаление пользователем своего аккаунта http://localhost:5433/api/users/delete `DELETE`
+### Удаление пользователем своего аккаунта  
+http://localhost:5433/api/users/delete `DELETE`
 Получаем: `"Account deleted."`  
   
 ## Queues
 
-5. Создать очередь http://localhost:5433/api/queues/create `POST`  
+### Создать очередь  
+http://localhost:5433/api/queues/create `POST`  
 ```json
 {
 	"Name": "Рыжий заяц",
 	"Description": "Кафе открыто с 11:20 до 20:05",
-  "Status": true
+	"Status": true
 }
-```
-Получаем: `{ QRCode: "unknow" }`  
+```  
+Получаем:  
+```json
+{
+	"QRCode": "Deep Linking"
+}
+```  
+Данный QR-код должен перенаправлять в наше приложение неся в себе QueueId
   
-6. Изменить название, описание или статус http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`  
+### Изменить название, описание или статус очереди  
+http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`  
 ```json
 {
 	"Name": "Биба и Боба",
 	"Description": "Мастерская работает с 13:00 до 00:00",
-  "Status": false
+	"Status": false
 }
-```
+```  
 Получаем: `"Queue updated."`  
   
-7. Удалить очередь http://localhost:5433/api/queues/delete/44 `DELETE`
+### Получить информацию об очереди  
+http://localhost:5433/api/queues/info/44 {QueueId=44} `GET`  
+Получаем: 
+```json
+{
+	"Name": "Биба и Боба",
+	"Description": "Мастерская работает с 13:00 до 00:00",
+	"Status": false
+}
+```  
+  
+###  Удалить очередь 
+http://localhost:5433/api/queues/delete/44 `DELETE`  
 Получаем: `"Queue deleted."`  
   
 ## Positions
 
-8. Встать в очередь http://localhost:5433/api/positions/44 `POST`
-Получаем: `"In queue."`  
+### Встать в очередь  
+http://localhost:5433/api/positions/44 `POST`  
+Получаем: 
+```json
+{
+	"Id": 101,
+	"QueueId": 44,
+	"UserId": 7,
+	"Place": 1
+}
+```  
   
-9. Выйти из очереди http://localhost:5433/api/positions/44 `DELETE`
+### Выйти из очереди  
+http://localhost:5433/api/positions/44 `DELETE`  
 Получаем: `"Out queue."`  
   
-10. Изменить позицию стоящего в очереди (владелец) http://localhost:5433/api/positions/44 `PUT`
+### Удалить стоящего в очереди (владелец)  
+http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`  
+Получаем: `"Client removed from queue."`  
+  
+### Изменить позицию стоящего в очереди (владелец)  
+http://localhost:5433/api/positions/44 `PUT`
 ```json
 {
 	"UserId": 7,
 	"Place": 1
 }
 ```  
+Получаем: `"Client in queue on 1 place."`  
   
-11. Удалить стоящего в очереди (владелец) http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`
+### Получение информации о пользователях в очереди
+http://localhost:5433/api/positions/44 `GET`  
+Получаем: 
+```json
+[{
+	"UserId": 7,
+	"Place": 2
+},
+{
+	"UserId": 2,
+	"Place": 1
+}]
+```

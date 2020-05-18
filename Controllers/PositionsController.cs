@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,99 +12,127 @@ namespace SUEQ_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PositionsController : ControllerBase
     {
         private readonly SUEQContext _context;
-
         public PositionsController(SUEQContext context)
         {
             _context = context;
         }
-
-        // GET: api/Positions
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Position>>> GetPositions()
+        // Встать в очередь
+        [HttpPost("{queueId}")]
+        public async Task<ActionResult<Position>> InQueue(int queueId)
         {
-            return await _context.Positions.ToListAsync();
-        }
+            var queue = await _context.Queues.FindAsync(queueId);
+            if (queue == null)
+                return BadRequest("Queue not exist.");
+            if (!queue.Status)
+                return BadRequest("Queue closed.");
 
-        // GET: api/Positions/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Position>> GetPosition(int id)
-        {
-            var position = await _context.Positions.FindAsync(id);
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+            bool userInQueue = await _context.Positions.AnyAsync(p => p.QueueId == queue.QueueId && p.UserId == userId);
+            if (userInQueue)
+                return BadRequest("Already in queue");
 
-            if (position == null)
-            {
-                return NotFound();
-            }
+            var position = new Position();
+            position.QueueId = queueId;
+            position.UserId = userId;
+            int count = await _context.Positions.CountAsync(item => item.QueueId == queueId);
+            position.Place = count + 1;
 
-            return position;
-        }
-
-        // PUT: api/Positions/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPosition(int id, Position position)
-        {
-            if (id != position.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(position).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PositionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Positions
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<Position>> PostPosition(Position position)
-        {
             _context.Positions.Add(position);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPosition", new { id = position.Id }, position);
         }
-
-        // DELETE: api/Positions/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Position>> DeletePosition(int id)
+        // Если очередь изменилась, нужно проверить что нет пустых мест или повторящихся
+        private async Task<bool> ReCalcPositions(int queueId, int deletedPlace)
         {
-            var position = await _context.Positions.FindAsync(id);
-            if (position == null)
+            int lastPlace = await _context.Positions.CountAsync(p => p.QueueId == queueId);
+
+            for (int i = deletedPlace + 1; i <= lastPlace; i += 1)
             {
-                return NotFound();
+                var position = await _context.Positions.SingleAsync(p => p.Place == i && p.QueueId == queueId);
+                position.Place -= 1;
+                _context.Entry(position).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
             }
+
+            return true;
+        }
+        // Выйти из очереди
+        [HttpDelete("{queueId}")]
+        public async Task<ActionResult> OutQueue(int queueId)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+            var position = await _context.Positions.SingleOrDefaultAsync(p => p.QueueId == queueId && p.UserId == userId);
+            if (position == null)
+                return NotFound();
+
+            int deletedPlace = position.Place;
 
             _context.Positions.Remove(position);
             await _context.SaveChangesAsync();
 
-            return position;
-        }
+            await ReCalcPositions(queueId, deletedPlace);
 
-        private bool PositionExists(int id)
+            return Ok("Out queue.");
+        }
+        // Удалить стоящего в очереди (владелец)
+        [HttpDelete("{queueId}/{userId}")]
+        public async Task<ActionResult> OutQueue(int queueId, int userId)
         {
-            return _context.Positions.Any(e => e.Id == id);
+            var ownerId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+            var isOwner = await _context.Queues.AnyAsync(q => q.UserId == userId && q.QueueId == queueId);
+            if (!isOwner)
+                return BadRequest("You not owner or queue not exist.");
+
+            var position = await _context.Positions.SingleOrDefaultAsync(p => p.QueueId == queueId && p.UserId == userId);
+            if (position == null)
+                return NotFound();
+
+            int deletedPlace = position.Place;
+
+            _context.Positions.Remove(position);
+            await _context.SaveChangesAsync();
+
+            await ReCalcPositions(queueId, deletedPlace);
+
+            return Ok("Client removed from queue.");
+        }
+        public class PositionModel
+        {
+            public int UserId;
+            public int Place;
+        }
+        // Изменить позицию стоящего в очереди(владелец)
+        [HttpPut("{queueId}")]
+        public async Task<ActionResult<Position[]>> ChangePosition(int queueId, PositionModel changePosition)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+            var isOwner = await _context.Queues.AnyAsync(q => q.UserId == userId && q.QueueId == queueId);
+            if (!isOwner)
+                return BadRequest("You not owner or queue not exist.");
+
+            var position = await _context.Positions.SingleOrDefaultAsync(p =>
+                p.UserId == changePosition.UserId && p.QueueId == queueId);
+            position.Place = changePosition.Place;
+
+            _context.Entry(position).State = EntityState.Modified;
+           await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        // Получение информации о пользователях в очереди
+        [HttpGet("{queueId}")]
+        public ActionResult<Position[]> GetAllPosition(int queueId)
+        {
+            var allPositions = _context.Positions.TakeWhile(p => p.QueueId == queueId);
+            if (allPositions == null)
+                return Ok("Queue empty.");
+
+            return allPositions.ToArray();
         }
     }
 }
