@@ -96,16 +96,6 @@
 				{
 					"name": "Получение инфы о юзере",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JLQsNGB0LjQu9C40Lkg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJlYzA0ZGYwYS02YzIwLTRlMmItOTdhMS0xODIzOTE1NWRmZDEiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5NzMyMzM1LCJleHAiOjE1ODk4MTg3MzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.HpmfJIt_i50luqoOJ7d1rcLdFcIKkYq8p-JrxeoLtw0",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -127,16 +117,6 @@
 				{
 					"name": "Обновление инфы о юзере",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JLQsNGB0LjQu9C40Lkg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJlYzA0ZGYwYS02YzIwLTRlMmItOTdhMS0xODIzOTE1NWRmZDEiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5NzMyMzM1LCJleHAiOjE1ODk4MTg3MzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.HpmfJIt_i50luqoOJ7d1rcLdFcIKkYq8p-JrxeoLtw0",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -167,16 +147,6 @@
 				{
 					"name": "Удаление аккаунта",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JjQstCw0L0g0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJlNmYzNTBlZi02OTY4LTQzMWItYWI0Yy0wZDI0YzUyZmExNGYiLCJVc2VySWQiOiI0IiwibmJmIjoxNTg5NzE3MjQ4LCJleHAiOjE1OTIzMDkyNDgsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.KDEk_scmJ64HPqw4BaJpG622LXevCPdLQP0C-5oAdIQ",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"body": {
@@ -206,16 +176,6 @@
 					"response": []
 				}
 			],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0J_RkdGC0YAg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyZTI1OTNmYy1iZmVlLTQ1YjAtYjNjYi05YmI5NGQ1M2QzMGMiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5ODE0Njc1LCJleHAiOjE1ODk5MDEwNzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.0qfQGuRCUMxaxgB4tTHo8AjKh0ej7lQxDwilWnGTDWc",
-						"type": "string"
-					}
-				]
-			},
 			"event": [
 				{
 					"listen": "prerequest",
@@ -245,12 +205,24 @@
 			"item": [
 				{
 					"name": "Создание очереди",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5920f623-6b9c-4560-840d-b929bdee63ba",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"Name\":\"Кафе Рыжий Заяц\",\n\t\"Description\":\"Кафе работает с 10 до 18!\",\n\t\"Status\":false,\n\t\"UserId\":1\n}",
+							"raw": "{\n    \"name\": \"Кафе Рыжий Заяц\",\n    \"description\": \"Кафе работает с 10 до 18!\",\n    \"status\": false\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -258,7 +230,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5433/api/queues",
+							"raw": "http://localhost:5433/api/queues/create",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -266,14 +238,15 @@
 							"port": "5433",
 							"path": [
 								"api",
-								"queues"
+								"queues",
+								"create"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Получение очереди",
+					"name": "Изменить название, описание или статус очереди",
 					"event": [
 						{
 							"listen": "test",
@@ -286,23 +259,20 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n\t\"Name\": \"Биба и Боба\",\r\n\t\"Description\": \"Мастерская работает с 13:00 до 00:00\",\r\n\t\"Status\": false\r\n}",
 							"options": {
 								"raw": {
-									"language": "xml"
+									"language": "json"
 								}
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5433/api/queues/1",
+							"raw": "http://localhost:5433/api/queues/update/5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -311,23 +281,59 @@
 							"path": [
 								"api",
 								"queues",
-								"1"
+								"update",
+								"5"
 							]
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Получить информацию об очереди",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/queues/info/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"queues",
+								"info",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить очередь",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/queues/delete/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"queues",
+								"delete",
+								"3"
+							]
+						},
+						"description": "Получаем: \"Queue deleted.\""
+					},
+					"response": []
 				}
 			],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0J_RkdGC0YAg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyZTI1OTNmYy1iZmVlLTQ1YjAtYjNjYi05YmI5NGQ1M2QzMGMiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5ODE0Njc1LCJleHAiOjE1ODk5MDEwNzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.0qfQGuRCUMxaxgB4tTHo8AjKh0ej7lQxDwilWnGTDWc",
-						"type": "string"
-					}
-				]
-			},
 			"event": [
 				{
 					"listen": "prerequest",
@@ -354,17 +360,123 @@
 		},
 		{
 			"name": "Позиции",
-			"item": [],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0J_RkdGC0YAg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyZTI1OTNmYy1iZmVlLTQ1YjAtYjNjYi05YmI5NGQ1M2QzMGMiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5ODE0Njc1LCJleHAiOjE1ODk5MDEwNzUsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.0qfQGuRCUMxaxgB4tTHo8AjKh0ej7lQxDwilWnGTDWc",
-						"type": "string"
-					}
-				]
-			},
+			"item": [
+				{
+					"name": "Встать в очередь",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/positions/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"positions",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Выйти из очереди",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/positions/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"positions",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить стоящего в очереди (владелец)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/positions/6/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"positions",
+								"6",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение информации о пользователях в очереди",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/positions/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"positions",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменить позицию стоящего в очереди (владелец)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"UserId\": 3,\r\n\t\"Place\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/positions/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"positions",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"event": [
 				{
 					"listen": "prerequest",
@@ -388,6 +500,38 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JjQstCw0L0g0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiI1N2M1MGY4MS01MjA0LTRiYjYtODU2NC0zZmI0NDA4YjA5MmYiLCJVc2VySWQiOiIzIiwibmJmIjoxNTg5ODE5OTMxLCJleHAiOjE1ODk5MDYzMzEsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.2TSTt5cHVDlWmRo_ltWcR20i7q984CCETwtQDQQxzYQ",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "9446faf8-1088-475d-b8b7-86486c13f974",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "de61e68f-9d9c-439b-b567-978658c110e5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"protocolProfileBehavior": {}

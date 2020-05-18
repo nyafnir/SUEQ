@@ -17,5 +17,6 @@ namespace SUEQ_API.Models
         public string LastName { get; set; }
 
         public List<Queue> Queues { get; set; }
+        public List<Position> Positions { get; set; }
     }
 }

@@ -44,7 +44,7 @@ namespace SUEQ_API.Controllers
             _context.Positions.Add(position);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPosition", new { id = position.Id }, position);
+            return Ok(position);
         }
         // Если очередь изменилась, нужно проверить что нет пустых мест или повторящихся
         private async Task<bool> ReCalcPositions(int queueId, int deletedPlace)
@@ -103,8 +103,8 @@ namespace SUEQ_API.Controllers
         }
         public class PositionModel
         {
-            public int UserId;
-            public int Place;
+            public int UserId { get; set; }
+            public int Place { get; set; }
         }
         // Изменить позицию стоящего в очереди(владелец)
         [HttpPut("{queueId}")]
@@ -117,6 +117,11 @@ namespace SUEQ_API.Controllers
 
             var position = await _context.Positions.SingleOrDefaultAsync(p =>
                 p.UserId == changePosition.UserId && p.QueueId == queueId);
+
+            int lastPlace = await _context.Positions.CountAsync(p => p.QueueId == queueId);
+            if (changePosition.Place < 1 || changePosition.Place > lastPlace || changePosition.Place == position.Place)
+                return BadRequest("Incorrect place (small them one or bigger last place or unchanged)");
+
             position.Place = changePosition.Place;
 
             _context.Entry(position).State = EntityState.Modified;
@@ -126,13 +131,13 @@ namespace SUEQ_API.Controllers
         }
         // Получение информации о пользователях в очереди
         [HttpGet("{queueId}")]
-        public ActionResult<Position[]> GetAllPosition(int queueId)
+        public ActionResult<IEnumerable<Position>> GetAllPosition(int queueId)
         {
-            var allPositions = _context.Positions.TakeWhile(p => p.QueueId == queueId);
+            var allPositions = _context.Positions.Where(p => p.QueueId == queueId).ToList();
             if (allPositions == null)
                 return Ok("Queue empty.");
 
-            return allPositions.ToArray();
+            return allPositions;
         }
     }
 }
