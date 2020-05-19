@@ -36,10 +36,10 @@
 - [x] 19. Реализован контроллер управления позициями
 - [x] 20. Полное тестирование, попытки отсылать неправильные запросы, осмотр ответов. Итог: п.21 и п.22
 - [ ] 21. Внедрение рефреш токена
-- [ ] 22. Изменить ответы запросов на постоянную форму
+- [x] 22. Изменить ответы запросов на постоянную форму
 - [ ] 23. Добавлено подтверждение регистрации и смена пароля по почте
 - [ ] 24. Доработка `HTTPS` (п.8)
-- [ ] 25. `Deep Linking` и QR-код
+- [ ] 25. `Deep Linking` и QR-код?
 
 База данных
 ============
@@ -58,162 +58,49 @@ FLUSH PRIVILEGES;
 ## Users
 
 ### Регистрация  
-Отсылаем http://localhost:5433/api/users/registration `POST`
-```json
-{
-  "Email": "local@host.com",
-  "Password": "superpassword999",
-  "FirstName": "Иван",
-  "SurName": "Иванов",
-  "LastName": "Иванович"
-}  
-```  
-Получаем: `"Account created."`  
+http://localhost:5433/api/users/registration `POST`
   
 ### Авторизация  
-Отсылаем http://localhost:5433/api/users/login `GET`  
-```json
-{
-	"email": "local@host.com",
-	"password": "superpassword999"
-}
-```  
-Получаем:  
-```json
-{
-    "validation": true,
-    "error": null,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JLQsNGB0LjQu9C40Lkg0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiJjZWEzZDdiMC02Y2RhLTRmMjktODRiZS1jNTAzNTBmY2E4N2EiLCJVc2VySWQiOiI3IiwibmJmIjoxNTg5NzMyMjM5LCJleHAiOjE1ODk4MTg2MzksImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.J3iM_biP-YTEVGua74bfrENcUPxquhBhcl_A7iJW88w"
-}
-```
-Все следующие обращения выполняются с этим токеном по `Auth: Bearer Token`!  
+http://localhost:5433/api/users/login `GET`  
+Все следующие обращения выполняются с этим токеном как `Auth: Bearer Token`!  
   
 ### Получение информации о себе  
 http://localhost:5433/api/users/info `GET`
-```json
-{
-    "userId": 7,
-    "email": "local@host.com",
-    "passwordHash": null,
-    "passwordSalt": null,
-    "firstName": "Иван",
-    "surName": "Иванов",
-    "lastName": "Иванович",
-    "queues": null
-}
-```  
   
 ### Обновление информации о себе  
 http://localhost:5433/api/users/update `PUT`  
-Как при регистрации, но указываем обновляемые поля - почта, пароль, ФИО
-```json
-{
-  "FirstName":"Пётр"
-}
-```  
-Получаем: `"Account updated."`  
   
 ### Удаление пользователем своего аккаунта  
 http://localhost:5433/api/users/delete `DELETE`
-Получаем: `"Account deleted."`  
   
 ## Queues
 
 ### Создать очередь  
 http://localhost:5433/api/queues/create `POST`  
-```json
-{
-	"Name": "Рыжий заяц",
-	"Description": "Кафе открыто с 11:20 до 20:05",
-	"Status": true
-}
-```  
-Получаем:  
-```json
-{
-    "queueId": 3,
-    "name": "Кафе Рыжий Заяц",
-    "description": "Кафе работает с 10 до 18!",
-    "status": true,
-    "qrCode": "Deep Linking",
-    "userId": 1,
-    "user": null
-}
-```  
-Данный QR-код должен перенаправлять в наше приложение неся в себе QueueId
+QR-код должен перенаправлять в наше приложение неся в себе QueueId
   
 ### Изменить название, описание или статус очереди  
 http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`  
-```json
-{
-	"Name": "Биба и Боба",
-	"Description": "Мастерская работает с 13:00 до 00:00",
-	"Status": false
-}
-```  
-Получаем: `"Queue updated."`  
   
 ### Получить информацию об очереди  
 http://localhost:5433/api/queues/info/44 {QueueId=44} `GET`  
-Получаем: 
-```json
-{
-    "queueId": 3,
-    "name": "Кафе Рыжий Заяц",
-    "description": "Кафе работает с 10 до 18!",
-    "status": true,
-    "qrCode": "Deep Linking",
-    "userId": 1,
-    "user": null
-}
-```  
   
 ###  Удалить очередь 
 http://localhost:5433/api/queues/delete/44 `DELETE`  
-Получаем: `"Queue deleted."`  
   
 ## Positions
 
 ### Встать в очередь  
 http://localhost:5433/api/positions/44 `POST`  
-Получаем: 
-```json
-{
-	"Id": 101,
-	"QueueId": 44,
-	"UserId": 7,
-	"Place": 1
-}
-```  
   
 ### Выйти из очереди  
 http://localhost:5433/api/positions/44 `DELETE`  
-Получаем: `"Out queue."`  
   
 ### Удалить стоящего в очереди (владелец)  
 http://localhost:5433/api/positions/44/7 {UserId=7} `DELETE`  
-Получаем: `"Client removed from queue."`  
   
 ### Изменить позицию стоящего в очереди (владелец)  
 http://localhost:5433/api/positions/44 `PUT`
-```json
-{
-	"UserId": 7,
-	"Place": 1
-}
-```  
-Получаем: `"Client in queue on 1 place."`  
   
 ### Получение информации о пользователях в очереди
 http://localhost:5433/api/positions/44 `GET`  
-Получаем: 
-```json
-[{
-	"UserId": 7,
-	"Place": 2
-},
-{
-	"UserId": 2,
-	"Place": 1
-}]
-```

@@ -45,20 +45,7 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "email",
-								"value": "A",
-								"type": "text",
-								"disabled": true
-							},
-							{
-								"key": "password",
-								"value": "ABC",
-								"type": "text",
-								"disabled": true
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n\t\"email\":\"local@host.com\",\n\t\"password\":\"superpassword999\"\n}\n",
@@ -264,7 +251,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"Name\": \"Биба и Боба\",\r\n\t\"Description\": \"Мастерская работает с 13:00 до 00:00\",\r\n\t\"Status\": false\r\n}",
+							"raw": "{\r\n\t\"Name\": \"Биба и Боба\",\r\n\t\"Description\": \"Мастерская работает с 13:00 до 00:00\",\r\n\t\"Status\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -272,7 +259,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5433/api/queues/update/5",
+							"raw": "http://localhost:5433/api/queues/update/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -282,7 +269,7 @@
 								"api",
 								"queues",
 								"update",
-								"5"
+								"7"
 							]
 						}
 					},
@@ -294,7 +281,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5433/api/queues/info/5",
+							"raw": "http://localhost:5433/api/queues/info/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -304,7 +291,7 @@
 								"api",
 								"queues",
 								"info",
-								"5"
+								"7"
 							]
 						}
 					},
@@ -367,7 +354,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5433/api/positions/6",
+							"raw": "http://localhost:5433/api/positions/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -376,7 +363,7 @@
 							"path": [
 								"api",
 								"positions",
-								"6"
+								"7"
 							]
 						}
 					},
@@ -431,7 +418,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5433/api/positions/6",
+							"raw": "http://localhost:5433/api/positions/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -440,7 +427,7 @@
 							"path": [
 								"api",
 								"positions",
-								"6"
+								"7"
 							]
 						}
 					},
@@ -507,7 +494,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JjQstCw0L0g0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiI1N2M1MGY4MS01MjA0LTRiYjYtODU2NC0zZmI0NDA4YjA5MmYiLCJVc2VySWQiOiIzIiwibmJmIjoxNTg5ODE5OTMxLCJleHAiOjE1ODk5MDYzMzEsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.2TSTt5cHVDlWmRo_ltWcR20i7q984CCETwtQDQQxzYQ",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JjQstCw0L0g0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyNGZlZjAxNC1hYTAwLTQzODMtYmMzMS0wZGRjMjhmYzkyYjkiLCJVc2VySWQiOiIzIiwibmJmIjoxNTg5OTA5NDA2LCJleHAiOjE1ODk5OTU4MDYsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.J4bgFIcFDvMEoU2UNYtxrhKCI4_jbV71vC1otBHdUFY",
 				"type": "string"
 			}
 		]
