@@ -14,7 +14,8 @@
     "Issuer": "SUEQ-API",
     "Audience": "UEQ-Client",
     "Key": "supersecretkey",
-    "Lifetime": "1440"
+    "TokenMinutes": "60",
+    "RefreshTokenMinutes": "259200"
   },
 
   "DataBase": {

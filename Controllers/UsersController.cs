@@ -29,6 +29,31 @@ namespace SUEQ_API.Controllers
             _context = context;
             Configuration = configuration;
         }
+        // Генератор рефреш токена
+        public async Task<string> GenerateRefreshToken(int userId)
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            string refreshToken = Convert.ToBase64String(randomNumber);
+
+            var refreshRecord = await _context.Refreshs.FindAsync(userId);
+            if (refreshRecord == null)
+            {
+                _context.Refreshs.Add(new Refresh { 
+                    UserId = userId, 
+                    RefreshToken = refreshToken
+                });
+            }
+            else
+            {
+                refreshRecord.RefreshToken = refreshToken;
+                _context.Entry(refreshRecord).State = EntityState.Modified;
+            }
+            await _context.SaveChangesAsync();
+
+            return refreshToken;
+        }
         // Соль для хэширования
         private byte[] GetSalt()
         {
@@ -53,7 +78,32 @@ namespace SUEQ_API.Controllers
             );
             return hashed;
         }
-        // Авторизация
+        // Генератор токена доступа
+        public JwtSecurityToken GetJwt(User user)
+        {
+            var now = DateTime.UtcNow;
+
+            var claims = new[] {
+                new Claim(JwtRegisteredClaimNames.Sub, $"{user.SurName} {user.FirstName} {user.LastName}"),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("UserId", user.UserId.ToString())
+            };
+
+            // Создаем JWT
+            var jwt = new JwtSecurityToken(
+                issuer: Configuration["Token:Issuer"],
+                audience: Configuration["Token:Audience"],
+                notBefore: now,
+                claims: claims,
+                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Configuration["Token:TokenMinutes"]))),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
+                    System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])),
+                    SecurityAlgorithms.HmacSha256)
+            );
+            return jwt;
+        }
+        // Авторизация получение рефреш токена и токена доступа
         [AllowAnonymous]
         [HttpGet("login")]
         public async Task<ActionResult<ResponseWithToken>> Login(LoginModel login)
@@ -82,26 +132,9 @@ namespace SUEQ_API.Controllers
                     UserMessage = "Необходимо подтвердить почту, пройдя по ссылке в сообщении, которое было Вам отправлено после регистрации!"
                 });
             */
-            var now = DateTime.UtcNow;
-            
-            var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, $"{user.SurName} {user.FirstName} {user.LastName}"),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("UserId", user.UserId.ToString())
-            };
+            var jwt = GetJwt(user);
 
-            // Создаем JWT
-            var jwt = new JwtSecurityToken(
-                issuer: Configuration["Token:Issuer"],
-                audience: Configuration["Token:Audience"],
-                notBefore: now,
-                claims: claims,
-                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Configuration["Token:Lifetime"]))),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
-                    System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])), 
-                    SecurityAlgorithms.HmacSha256)
-            );
+            var refreshToken = await GenerateRefreshToken(user.UserId);
 
             return Ok(new ResponseWithToken
             {
@@ -110,7 +143,36 @@ namespace SUEQ_API.Controllers
                 UserMessage = "Авторизация прошла успешно!",
                 User = new UserModel(user),
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
-                RefreshToken = null
+                RefreshToken = refreshToken
+            });
+        }
+        // Обновление токена доступа через рефреш токен
+        [HttpPost("refresh")]
+        public async Task<ActionResult<ResponseWithToken>> Refresh(string token, string refreshToken)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+
+            var refreshRecord = await _context.Refreshs.FindAsync(userId);
+            if (refreshRecord == null || refreshRecord.RefreshToken != refreshToken)
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Refresh token are invalid.",
+                    UserMessage = "Ваш токен обновления не найден или неправильный, попробуйте перезайти!"
+                });
+
+            var newRefreshToken = await GenerateRefreshToken(userId);
+
+            var user = await _context.Users.FindAsync(userId);
+            var jwt = GetJwt(user);
+
+            return Ok(new ResponseWithToken
+            {
+                Code = 200,
+                DevMessage = "Got your tokens.",
+                UserMessage = "Авторизация прошла успешно!",
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
+                RefreshToken = newRefreshToken
             });
         }
 

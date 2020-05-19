@@ -15,5 +15,7 @@ namespace SUEQ_API.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Queue> Queues { get; set; }
         public DbSet<Position> Positions { get; set; }
+
+        public DbSet<Refresh> Refreshs { get; set; }
     }
 }
