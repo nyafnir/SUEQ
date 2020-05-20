@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 // Проверка почты
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace SUEQ_API.Controllers
 {
@@ -30,25 +31,33 @@ namespace SUEQ_API.Controllers
             Configuration = configuration;
         }
         // Генератор рефреш токена
-        public async Task<string> GenerateRefreshToken(int userId)
+        public string GetRefreshToken()
         {
             var randomNumber = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-            string refreshToken = Convert.ToBase64String(randomNumber);
-
-            var refreshRecord = await _context.Refreshs.FindAsync(userId);
-            if (refreshRecord == null)
+            return Convert.ToBase64String(randomNumber);
+        }
+        // Запись токенов в бд
+        public async Task<string> RecordTokens(int userId, string accessToken, string refreshToken)
+        {
+            var tokensRecord = await _context.Refreshs.FindAsync(userId);
+            if (tokensRecord == null)
             {
-                _context.Refreshs.Add(new Refresh { 
-                    UserId = userId, 
-                    RefreshToken = refreshToken
+                _context.Refreshs.Add(new Refresh
+                {
+                    UserId = userId,
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                    AtCreated = DateTime.Now
                 });
             }
             else
             {
-                refreshRecord.RefreshToken = refreshToken;
-                _context.Entry(refreshRecord).State = EntityState.Modified;
+                tokensRecord.AccessToken = accessToken;
+                tokensRecord.RefreshToken = refreshToken;
+                tokensRecord.AtCreated = DateTime.Now;
+                _context.Entry(tokensRecord).State = EntityState.Modified;
             }
             await _context.SaveChangesAsync();
 
@@ -78,9 +87,12 @@ namespace SUEQ_API.Controllers
             );
             return hashed;
         }
-        // Генератор токена доступа
-        public JwtSecurityToken GetJwt(User user)
+        // Генератор токена доступа (jwt - json web token)
+        public string GetAccessToken(User user)
         {
+            // Microsoft.IdentityModel.Tokens.SecurityToken
+            // Нужно удалить старый токен выданный этому пользователю!!
+
             var now = DateTime.UtcNow;
 
             var claims = new[] {
@@ -101,7 +113,7 @@ namespace SUEQ_API.Controllers
                     System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])),
                     SecurityAlgorithms.HmacSha256)
             );
-            return jwt;
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
         // Авторизация получение рефреш токена и токена доступа
         [AllowAnonymous]
@@ -124,17 +136,18 @@ namespace SUEQ_API.Controllers
                     DevMessage = "Password are invalid.",
                     UserMessage = "Неправильный пароль!"
                 });
-            /*
-            if (!findUser.EmailConfirmed)
+            
+            if (!user.EmailConfirmed)
                 return BadRequest(new ResponseWithToken {
                     Code = 422,
                     DevMessage = "Email not confirmed.",
                     UserMessage = "Необходимо подтвердить почту, пройдя по ссылке в сообщении, которое было Вам отправлено после регистрации!"
                 });
-            */
-            var jwt = GetJwt(user);
+            
+            var accessToken = GetAccessToken(user);
+            var refreshToken = GetRefreshToken();
 
-            var refreshToken = await GenerateRefreshToken(user.UserId);
+            await RecordTokens(user.UserId, accessToken, refreshToken);
 
             return Ok(new ResponseWithToken
             {
@@ -142,36 +155,47 @@ namespace SUEQ_API.Controllers
                 DevMessage = "Take your token.",
                 UserMessage = "Авторизация прошла успешно!",
                 User = new UserModel(user),
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
+                AccessToken = accessToken,
                 RefreshToken = refreshToken
             });
         }
         // Обновление токена доступа через рефреш токен
+        [AllowAnonymous]
         [HttpPost("refresh")]
-        public async Task<ActionResult<ResponseWithToken>> Refresh(string token, string refreshToken)
+        public async Task<ActionResult<ResponseWithToken>> Refresh(ResponseWithToken tokens)
         {
-            int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
-
-            var refreshRecord = await _context.Refreshs.FindAsync(userId);
-            if (refreshRecord == null || refreshRecord.RefreshToken != refreshToken)
+            var refreshRecord = await _context.Refreshs.SingleOrDefaultAsync(r => 
+                r.AccessToken == tokens.AccessToken && r.RefreshToken == tokens.RefreshToken);
+            if (refreshRecord == null)
                 return BadRequest(new Response
                 {
                     Code = 422,
-                    DevMessage = "Refresh token are invalid.",
-                    UserMessage = "Ваш токен обновления не найден или неправильный, попробуйте перезайти!"
+                    DevMessage = "Pair tokens are invalid.",
+                    UserMessage = "Пара токенов доступа и обновления не найдена или неправильна, попробуйте перезайти!"
                 });
 
-            var newRefreshToken = await GenerateRefreshToken(userId);
+            var expiredDays = Convert.ToDouble(Configuration["Token:RefreshTokenDays"]);
+            if (refreshRecord.AtCreated.AddMinutes(expiredDays) <= DateTime.Now)
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Refresh token are expired.",
+                    UserMessage = "Ваш токен обновления истёк, пожалуйста, перезайдите!"
+                });
+            
+            var user = await _context.Users.FindAsync(refreshRecord.UserId);
 
-            var user = await _context.Users.FindAsync(userId);
-            var jwt = GetJwt(user);
+            var newAccessToken = GetAccessToken(user);
+            var newRefreshToken = GetRefreshToken();
+
+            await RecordTokens(refreshRecord.UserId, newAccessToken, newRefreshToken);
 
             return Ok(new ResponseWithToken
             {
                 Code = 200,
                 DevMessage = "Got your tokens.",
-                UserMessage = "Авторизация прошла успешно!",
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
+                UserMessage = "Обновление токенов доступа и обновления прошло успешно!",
+                AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
             });
         }
@@ -267,9 +291,10 @@ namespace SUEQ_API.Controllers
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
-            /*
+            
             newUser.EmailConfirmed = true;
-            string code = manager.GenerateEmailConfirmationToken(newUser.UserId) ;
+            /*
+            string code = manager.GenerateEmailConfirmationToken(newUser.UserId);
             string callbackUrl = IdentityHelper.GetUserConfirmationRedirectUrl(code, newUser.UserId, Request);
             manager.SendEmail(newUser.UserId, "Confirm your account", 
                 "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">HERE</a>.");

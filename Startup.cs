@@ -28,6 +28,16 @@ namespace SUEQ_API
         private int https_port;
         private bool ssl;
 
+        private bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken token, TokenValidationParameters @params)
+        {
+            Console.WriteLine("CHECKED LT ", token.ToString());
+            if (expires != null)
+            {
+                return expires > DateTime.Now;
+            }
+            return false;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             // Получение параметров httpS
@@ -74,12 +84,14 @@ namespace SUEQ_API
                             ValidAudience = Configuration["Token:Audience"],
                             // Проверяем срок жизни
                             ValidateLifetime = true,
-
+                            LifetimeValidator = CustomLifetimeValidator,
+                            // Проверяем ключ
+                            ValidateIssuerSigningKey = true,
                             // Вытягиваем и указываем преобразованный ключ
                             IssuerSigningKey = new SymmetricSecurityKey(
                                 System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])),
-                            // Проверяем ключ
-                            ValidateIssuerSigningKey = true,
+                            // Устранение перекоса часов (иначе +5 минут к expires)
+                            ClockSkew = TimeSpan.Zero
                         };
                     });
             // Инициализируем контроллеры
