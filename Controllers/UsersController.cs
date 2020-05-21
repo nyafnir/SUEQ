@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SUEQ_API.Models;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
 // Хэширование пароля
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
@@ -13,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 // Проверка почты
-using System.ComponentModel.DataAnnotations;
+using SUEQ_API.Services;
 
 namespace SUEQ_API.Controllers
 {
@@ -284,19 +285,24 @@ namespace SUEQ_API.Controllers
                 SurName = registration.SurName,
                 LastName = registration.LastName,
                 PasswordSalt = salt,
-                PasswordHash = ToHash(registration.Password, salt)
+                PasswordHash = ToHash(registration.Password, salt),
+                EmailConfirmed = false
             };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+
+            // Отправляем сообщение
+            string linkWithCode = Guid.NewGuid().ToString(); // TODO: LINK
+            var message = new EmailService.ModelMessage
+            {
+                ToName = newUser.FirstName,
+                ToEmail = newUser.Email,
+                Text = $"{newUser.SurName} {newUser.FirstName} {newUser.LastName}, перейдите по ссылке, чтобы закончить регистрацию : {linkWithCode}",
+                Html = "Пожалуйста подтвердите Ваш аккаунт, чтобы закончить регистрацию, нажав по ссылке: <a href=\"" + linkWithCode + "\">нажмите сюда</a><br/>"
+            };
+            await EmailService.SendMail(message);
             
-            newUser.EmailConfirmed = true;
-            /*
-            string code = manager.GenerateEmailConfirmationToken(newUser.UserId);
-            string callbackUrl = IdentityHelper.GetUserConfirmationRedirectUrl(code, newUser.UserId, Request);
-            manager.SendEmail(newUser.UserId, "Confirm your account", 
-                "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">HERE</a>.");
-            */
             return Ok(new ResponseWithUser
             {
                 Code = 200,
@@ -304,6 +310,48 @@ namespace SUEQ_API.Controllers
                 UserMessage = "Аккаунт создан! Подтвердите почту перейдя по ссылке отправленной в письме.",
                 User = new UserModel(newUser)
             });
+        }
+
+        [HttpGet("confirm/email")]
+        public async Task<ActionResult<Response>> ConfirmEmail(string userId, string code)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            
+            if (user == null)
+                return BadRequest(UserNotFoundById());
+
+            if (user.EmailConfirmed)
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Email already confirmed.",
+                    UserMessage = "Электронный почтовый адрес уже подтвержден!"
+                });
+
+            if (code != "0") // TODO: ГДЕ ХРАНИТЬ?
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Code invalid.",
+                    UserMessage = "Неправильный код!"
+                });
+
+            user.EmailConfirmed = true;
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new Response
+            {
+                Code = 200,
+                DevMessage = "Account confirmed.",
+                UserMessage = "Аккаунт подтвержден! Вернитесь в приложение и попробуйте зайти."
+            });
+        }
+
+        [HttpGet("forgot/password")]
+        public void ForgotPassword()
+        {
+            return; // TODO: RESET PASSWORD
         }
 
         [HttpGet("info")]
@@ -400,10 +448,13 @@ namespace SUEQ_API.Controllers
         public async Task<ActionResult<ResponseWithUser>> Logout()
         {
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
-            var refresh = await _context.Refreshs.FindAsync(userId);
 
+            var refresh = await _context.Refreshs.FindAsync(userId);
             _context.Refreshs.Remove(refresh);
             await _context.SaveChangesAsync();
+
+            Startup.Storage.Store(Convert.ToString(userId), "");
+            Startup.Storage.Persist();
 
             return Ok(new ResponseWithUser
             {
@@ -419,7 +470,7 @@ namespace SUEQ_API.Controllers
             {
                 Code = 422,
                 DevMessage = "User not found by ID.",
-                UserMessage = "Пользователь не найден, пожалуйста, попробуйте перезайти!"
+                UserMessage = "Пользователь не найден!"
             };
         }
     }

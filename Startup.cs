@@ -22,12 +22,12 @@ namespace SUEQ_API
 {
     public class Startup
     {
-        private readonly IConfiguration Configuration;
+        public static IConfiguration Configuration;
         public static LocalStorage Storage;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            using (Storage = new LocalStorage(new LocalStorageConfiguration() // TODO: Возможно нужен Load, если она очищается при каждом запуске, а не сборке
+            using (Storage = new LocalStorage(new LocalStorageConfiguration()
             {
                 // EnableEncryption = false,
                 // EncryptionSalt = "LocalStorage",
@@ -38,7 +38,7 @@ namespace SUEQ_API
         }
 
         private int https_port;
-        private bool ssl;
+        public static bool ssl;
         
         private bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken token, TokenValidationParameters @params)
         {

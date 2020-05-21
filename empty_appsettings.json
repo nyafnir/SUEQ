@@ -1,21 +1,23 @@
 {
   "Name": "Server Universal Electronic Queue",
-  "urls": "http://localhost:5433",
 
+  "urls": "http://localhost:5433",
   "https_port": "0",
-  "Email": {
-    "SMTP": "smtp.localhost.com",
-    "Port": "0",
-    "Username": "root",
-    "Password": "toor"
+
+  "SMTP": {
+    "Host": "smtp.gmail.com",
+    "Port": "587",
+    "Usermail": "joe@contoso.com",
+    "Password": "JoeSuperBoy",
+    "Username": "Joe S."
   },
 
   "Token": {
     "Issuer": "SUEQ-API",
     "Audience": "UEQ-Client",
     "Key": "supersecretkey",
-    "TokenMinutes": "60",
-    "RefreshTokenMinutes": "259200"
+    "AccessExpireMinutes": "60",
+    "RefreshExpireMinutes": "259200"
   },
 
   "DataBase": {
