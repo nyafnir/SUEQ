@@ -11,6 +11,9 @@
 				{
 					"name": "Регистрация",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -44,6 +47,9 @@
 						"disableBodyPruning": true
 					},
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -70,11 +76,63 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Refresh",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwianRpIjoiNjIwODNiZjAtMmVjMy00YTliLTkxYmQtZTUzNjIxNGFjZWZiIiwiaWF0IjoiMjAuMDUuMjAyMCAxMzo0MzoxOSIsInVuaXF1ZV9uYW1lIjoiMSIsIlVzZXJJZCI6IjEiLCJuYmYiOjE1ODk5ODIxOTksImV4cCI6MTU4OTk4NTc5OSwiaXNzIjoiU1VFUS1BUEkiLCJhdWQiOiJVRVEtQ2xpZW50In0.2TmoN0dMuKmNq80hY4T7D-8LK5mstYfC_w9Ty2Sd9Js\",\n    \"refreshToken\": \"FTfVGODchKUW1cHF/hBuG6xJKKregy05Dte90+tpw2I=\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/users/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"refresh"
+							]
+						}
+					},
+					"response": []
 				}
 			],
-			"auth": {
-				"type": "noauth"
-			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "02944428-316c-4739-8570-e8d9bd49efa9",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "09be70a1-4ffd-46b0-a9b9-a732717990e6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
@@ -156,6 +214,37 @@
 								"api",
 								"users",
 								"delete",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Выход",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5433/api/users/logout/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"logout",
 								""
 							]
 						}
@@ -494,7 +583,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLQmNCy0LDQvdC-0LIg0JjQstCw0L0g0JjQstCw0L3QvtCy0LjRhyIsImVtYWlsIjoibG9jYWxAaG9zdC5jb20iLCJqdGkiOiIyNGZlZjAxNC1hYTAwLTQzODMtYmMzMS0wZGRjMjhmYzkyYjkiLCJVc2VySWQiOiIzIiwibmJmIjoxNTg5OTA5NDA2LCJleHAiOjE1ODk5OTU4MDYsImlzcyI6IlNVRVEtQVBJIiwiYXVkIjoiVUVRLUNsaWVudCJ9.J4bgFIcFDvMEoU2UNYtxrhKCI4_jbV71vC1otBHdUFY",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwianRpIjoiNjIwODNiZjAtMmVjMy00YTliLTkxYmQtZTUzNjIxNGFjZWZiIiwiaWF0IjoiMjAuMDUuMjAyMCAxMzo0MzoxOSIsInVuaXF1ZV9uYW1lIjoiMSIsIlVzZXJJZCI6IjEiLCJuYmYiOjE1ODk5ODIxOTksImV4cCI6MTU4OTk4NTc5OSwiaXNzIjoiU1VFUS1BUEkiLCJhdWQiOiJVRVEtQ2xpZW50In0.2TmoN0dMuKmNq80hY4T7D-8LK5mstYfC_w9Ty2Sd9Js",
 				"type": "string"
 			}
 		]

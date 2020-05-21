@@ -52,8 +52,8 @@ namespace SUEQ_API.Models
 		public object User { get; set; }
 	}
 
-	// Стандартный ответ содержащий токен и пользователя
-	public class ResponseWithToken : ResponseWithUser
+	// Предъявляемая модель с токенами для их обновления
+	public class TokensModel
 	{
 		[Required]
 		public string AccessToken { get; set; }
@@ -61,6 +61,14 @@ namespace SUEQ_API.Models
 		public string RefreshToken { get; set; }
 	}
 
+	// Стандартный ответ содержащий токен и пользователя
+	public class ResponseWithTokenAndUser : ResponseWithUser
+	{
+		[Required]
+		public string AccessToken { get; set; }
+		[Required]
+		public string RefreshToken { get; set; }
+	}
 
 	// Возвращаемая модель очереди
 	public class QueueModel

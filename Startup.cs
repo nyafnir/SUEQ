@@ -14,28 +14,67 @@ using Microsoft.Extensions.Logging;
 // JWT аутентификаци€
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
+using Hanssens.Net;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SUEQ_API
 {
     public class Startup
     {
         private readonly IConfiguration Configuration;
+        public static LocalStorage Storage;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            using (Storage = new LocalStorage(new LocalStorageConfiguration() // TODO: ¬озможно нужен Load, если она очищаетс€ при каждом запуске, а не сборке
+            {
+                // EnableEncryption = false,
+                // EncryptionSalt = "LocalStorage",
+                AutoLoad = true,
+                AutoSave = false,
+                Filename = "SUEQ-API.LOCALSTORAGE"
+            })) { };
         }
 
         private int https_port;
         private bool ssl;
-
+        
         private bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken token, TokenValidationParameters @params)
         {
-            Console.WriteLine("CHECKED LT ", token.ToString());
             if (expires != null)
             {
-                return expires > DateTime.Now;
+                return expires < DateTime.Now;
             }
+
             return false;
+        }
+
+        private static Task AdditionalValidation(TokenValidatedContext context)
+        {
+            var userId = context.Principal.FindFirst("UserId").Value;
+            if (userId == null)
+                context.Fail("User not found");
+
+            // ѕредоставл€ем доступ только записанным пользовател€м
+            string lastAccessToken;
+            try
+            { 
+                lastAccessToken = Storage.Get<string>(userId); 
+            }
+            catch
+            { 
+                context.Fail("User not authenticated");
+                return Task.CompletedTask;
+            }
+            // ѕредоставл€ем доступ только по последнему токену доступа
+            var token = new JwtSecurityTokenHandler().WriteToken(context.SecurityToken);
+            lastAccessToken = lastAccessToken.Remove(lastAccessToken.LastIndexOf('.') + 1);
+            if (lastAccessToken != token)
+            {
+                context.Fail("Token Expired");
+            }
+            return Task.CompletedTask;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -70,6 +109,7 @@ namespace SUEQ_API
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
+                        options.SaveToken = true;
                         options.RequireHttpsMetadata = ssl;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
@@ -93,6 +133,10 @@ namespace SUEQ_API
                             // ”странение перекоса часов (иначе +5 минут к expires)
                             ClockSkew = TimeSpan.Zero
                         };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnTokenValidated = AdditionalValidation
+                        };
                     });
             // »нициализируем контроллеры
             services.AddControllers();
@@ -100,7 +144,7 @@ namespace SUEQ_API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            logger.LogInformation("SSL: {0}", ssl);
+            logger.LogInformation("Status SSL: {0}", ssl);
 
             if (env.IsDevelopment())
             {

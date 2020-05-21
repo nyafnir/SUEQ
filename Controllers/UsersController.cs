@@ -14,7 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 // Проверка почты
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 
 namespace SUEQ_API.Controllers
 {
@@ -61,6 +60,9 @@ namespace SUEQ_API.Controllers
             }
             await _context.SaveChangesAsync();
 
+            Startup.Storage.Store(Convert.ToString(userId), accessToken);
+            Startup.Storage.Persist();
+            
             return refreshToken;
         }
         // Соль для хэширования
@@ -90,25 +92,20 @@ namespace SUEQ_API.Controllers
         // Генератор токена доступа (jwt - json web token)
         public string GetAccessToken(User user)
         {
-            // Microsoft.IdentityModel.Tokens.SecurityToken
-            // Нужно удалить старый токен выданный этому пользователю!!
-
             var now = DateTime.UtcNow;
-
-            var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, $"{user.SurName} {user.FirstName} {user.LastName}"),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("UserId", user.UserId.ToString())
-            };
 
             // Создаем JWT
             var jwt = new JwtSecurityToken(
                 issuer: Configuration["Token:Issuer"],
                 audience: Configuration["Token:Audience"],
                 notBefore: now,
-                claims: claims,
-                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Configuration["Token:TokenMinutes"]))),
+                claims: new[] {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Iat, now.ToString(), ClaimValueTypes.Integer64),
+                    new Claim("UserId", user.UserId.ToString())
+                },
+                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Configuration["Token:AccessExpireMinutes"]))),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
                     System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])),
                     SecurityAlgorithms.HmacSha256)
@@ -118,12 +115,12 @@ namespace SUEQ_API.Controllers
         // Авторизация получение рефреш токена и токена доступа
         [AllowAnonymous]
         [HttpGet("login")]
-        public async Task<ActionResult<ResponseWithToken>> Login(LoginModel login)
+        public async Task<ActionResult<ResponseWithTokenAndUser>> Login(LoginModel login)
         {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
             if (user == null)
                 return BadRequest(new Response
-                { 
+                {
                     Code = 422,
                     DevMessage = "User not found.", 
                     UserMessage = "Пользователя с такой почтой не существует!"
@@ -138,7 +135,8 @@ namespace SUEQ_API.Controllers
                 });
             
             if (!user.EmailConfirmed)
-                return BadRequest(new ResponseWithToken {
+                return BadRequest(new Response
+                {
                     Code = 422,
                     DevMessage = "Email not confirmed.",
                     UserMessage = "Необходимо подтвердить почту, пройдя по ссылке в сообщении, которое было Вам отправлено после регистрации!"
@@ -149,10 +147,10 @@ namespace SUEQ_API.Controllers
 
             await RecordTokens(user.UserId, accessToken, refreshToken);
 
-            return Ok(new ResponseWithToken
+            return Ok(new ResponseWithTokenAndUser
             {
                 Code = 200,
-                DevMessage = "Take your token.",
+                DevMessage = "Got your tokens.",
                 UserMessage = "Авторизация прошла успешно!",
                 User = new UserModel(user),
                 AccessToken = accessToken,
@@ -162,7 +160,7 @@ namespace SUEQ_API.Controllers
         // Обновление токена доступа через рефреш токен
         [AllowAnonymous]
         [HttpPost("refresh")]
-        public async Task<ActionResult<ResponseWithToken>> Refresh(ResponseWithToken tokens)
+        public async Task<ActionResult<ResponseWithTokenAndUser>> Refresh(TokensModel tokens)
         {
             var refreshRecord = await _context.Refreshs.SingleOrDefaultAsync(r => 
                 r.AccessToken == tokens.AccessToken && r.RefreshToken == tokens.RefreshToken);
@@ -174,8 +172,8 @@ namespace SUEQ_API.Controllers
                     UserMessage = "Пара токенов доступа и обновления не найдена или неправильна, попробуйте перезайти!"
                 });
 
-            var expiredDays = Convert.ToDouble(Configuration["Token:RefreshTokenDays"]);
-            if (refreshRecord.AtCreated.AddMinutes(expiredDays) <= DateTime.Now)
+            var refreshExpireMinutes = Convert.ToDouble(Configuration["Token:RefreshExpireMinutes"]);
+            if (refreshRecord.AtCreated.AddMinutes(refreshExpireMinutes) <= DateTime.Now)
                 return BadRequest(new Response
                 {
                     Code = 422,
@@ -190,10 +188,10 @@ namespace SUEQ_API.Controllers
 
             await RecordTokens(refreshRecord.UserId, newAccessToken, newRefreshToken);
 
-            return Ok(new ResponseWithToken
+            return Ok(new ResponseWithTokenAndUser
             {
                 Code = 200,
-                DevMessage = "Got your tokens.",
+                DevMessage = "Got your updated tokens.",
                 UserMessage = "Обновление токенов доступа и обновления прошло успешно!",
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
@@ -395,6 +393,23 @@ namespace SUEQ_API.Controllers
                 Code = 200,
                 DevMessage = "Account deleted.",
                 UserMessage = "Аккаунт удален!"
+            });
+        }
+
+        [HttpDelete("logout")]
+        public async Task<ActionResult<ResponseWithUser>> Logout()
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
+            var refresh = await _context.Refreshs.FindAsync(userId);
+
+            _context.Refreshs.Remove(refresh);
+            await _context.SaveChangesAsync();
+
+            return Ok(new ResponseWithUser
+            {
+                Code = 200,
+                DevMessage = "Logout.",
+                UserMessage = "Успешный выход!"
             });
         }
 
