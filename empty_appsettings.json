@@ -5,11 +5,11 @@
   "https_port": "0",
 
   "SMTP": {
-    "Host": "smtp.gmail.com",
-    "Port": "587",
-    "Usermail": "joe@contoso.com",
-    "Password": "JoeSuperBoy",
-    "Username": "Joe S."
+    "Host": "smtp.sibmail.com",
+    "Port": "25",
+    "Usermail": "joe@sibmail.com",
+    "Password": "superpassword2000",
+    "Username": "Universal Electronic Queue"
   },
 
   "Token": {

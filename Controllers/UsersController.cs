@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 // Проверка почты
 using SUEQ_API.Services;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace SUEQ_API.Controllers
 {
@@ -292,17 +293,20 @@ namespace SUEQ_API.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            // Отправляем сообщение
-            string linkWithCode = Guid.NewGuid().ToString(); // TODO: LINK
+            // Отправляем сообщение с ссылкой подтверждения
+            string code = Guid.NewGuid().ToString();
+            Startup.Storage.Store(Convert.ToString(newUser.UserId), code);
+            Startup.Storage.Persist();
+            string linkWithCode = $"{Configuration["urls"].Split(new char[] { '^' }, 1)[0]}/api/users/confirm/email?userId={newUser.UserId}&code={code}";
             var message = new EmailService.ModelMessage
             {
                 ToName = newUser.FirstName,
                 ToEmail = newUser.Email,
-                Text = $"{newUser.SurName} {newUser.FirstName} {newUser.LastName}, перейдите по ссылке, чтобы закончить регистрацию : {linkWithCode}",
+                Text = $"{newUser.SurName} {newUser.FirstName} {newUser.LastName}, перейдите по ссылке, чтобы закончить регистрацию: " + linkWithCode,
                 Html = "Пожалуйста подтвердите Ваш аккаунт, чтобы закончить регистрацию, нажав по ссылке: <a href=\"" + linkWithCode + "\">нажмите сюда</a><br/>"
             };
             await EmailService.SendMail(message);
-            
+
             return Ok(new ResponseWithUser
             {
                 Code = 200,
@@ -312,13 +316,14 @@ namespace SUEQ_API.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpGet("confirm/email")]
-        public async Task<ActionResult<Response>> ConfirmEmail(string userId, string code)
+        public async Task<ActionResult<Response>> ConfirmEmail(int userId, string code)
         {
             var user = await _context.Users.FindAsync(userId);
             
             if (user == null)
-                return BadRequest(UserNotFoundById());
+                return BadRequest(UserNotFound());
 
             if (user.EmailConfirmed)
                 return BadRequest(new Response
@@ -328,7 +333,9 @@ namespace SUEQ_API.Controllers
                     UserMessage = "Электронный почтовый адрес уже подтвержден!"
                 });
 
-            if (code != "0") // TODO: ГДЕ ХРАНИТЬ?
+            var trueCode = Startup.Storage.Get<string>(Convert.ToString(userId));
+
+            if (code != trueCode)
                 return BadRequest(new Response
                 {
                     Code = 422,
@@ -348,10 +355,84 @@ namespace SUEQ_API.Controllers
             });
         }
 
-        [HttpGet("forgot/password")]
-        public void ForgotPassword()
+        [AllowAnonymous]
+        [HttpPost("forgot/password")]
+        public async Task<ActionResult<Response>> ForgotPassword(string email)
         {
-            return; // TODO: RESET PASSWORD
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return BadRequest(UserNotFound());
+
+            if (!user.EmailConfirmed)
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Email not confirmed.",
+                    UserMessage = "Данный электронный адрес ещё не подтвержден!"
+                });
+
+            // Отправляем сообщение с ссылкой сброса пароля
+            string code = Guid.NewGuid().ToString();
+            Startup.Storage.Store(Convert.ToString(user.UserId), code);
+            Startup.Storage.Persist();
+            string linkWithCode = $"{Configuration["urls"].Split(new char[] { '^' }, 1)[0]}/api/users/reset/password?userId={user.UserId}&code={code}";
+            var message = new EmailService.ModelMessage
+            {
+                ToName = user.FirstName,
+                ToEmail = user.Email,
+                Text = $"{user.SurName} {user.FirstName} {user.LastName}, перейдите по ссылке, чтобы закончить регистрацию: " + linkWithCode,
+                Html = "Пожалуйста подтвердите Ваш аккаунт, чтобы закончить регистрацию, нажав по ссылке: <a href=\"" + linkWithCode + "\">нажмите сюда</a><br/>"
+            };
+            await EmailService.SendMail(message);
+
+            return Ok(new Response
+            {
+                Code = 200,
+                DevMessage = "Link to reset password has been sent your email.",
+                UserMessage = "Ссылка для сброса пароля отправлена Вам на почту!"
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("reset/password")]
+        public async Task<ActionResult<Response>> ResetPassword(int userId, string code)
+        {
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+                return BadRequest(UserNotFound());
+
+            var trueCode = Startup.Storage.Get<string>(Convert.ToString(userId));
+
+            if (code != trueCode)
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Code invalid.",
+                    UserMessage = "Неправильный код!"
+                });
+
+            int[] arr = new int[16];
+            Random rnd = new Random();
+            string newPassword = "";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = rnd.Next(33, 125);
+                newPassword += (char)arr[i];
+            }
+
+            user.PasswordSalt = GetSalt();
+            user.PasswordHash = ToHash(newPassword, user.PasswordSalt);
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new Response
+            {
+                Code = 200,
+                DevMessage = $"Password reset. New: {newPassword}",
+                UserMessage = $"Пароль сброшен! Вернитесь в приложение и попробуйте зайти с новым паролем: {newPassword}"
+            });
         }
 
         [HttpGet("info")]
@@ -464,12 +545,12 @@ namespace SUEQ_API.Controllers
             });
         }
 
-        private static Response UserNotFoundById()
+        private static Response UserNotFound()
         {
-            return new ResponseWithUser
+            return new Response
             {
                 Code = 422,
-                DevMessage = "User not found by ID.",
+                DevMessage = "The user not found.",
                 UserMessage = "Пользователь не найден!"
             };
         }

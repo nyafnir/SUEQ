@@ -40,7 +40,8 @@
 - [x] 23. Добавлено подтверждение регистрации и смена пароля по почте
 - [ ] 24. Доработка `HTTPS` (п.8)
 - [ ] 25. `Deep Linking` и QR-код?
-
+- [ ] 26. Защита от множественных обращений  
+  
 База данных
 ============
 
@@ -56,13 +57,19 @@ FLUSH PRIVILEGES;
 ============
 
 ## Users
-
+  
 ### Регистрация  
 http://localhost:5433/api/users/registration `POST`
   
-### Авторизация  
+### Авторизация (первое получение токена доступа и токена обновления)  
 http://localhost:5433/api/users/login `GET`  
-Все следующие обращения выполняются с этим токеном как `Auth: Bearer Token`!  
+Все следующие обращения выполняются с этим токеном доступа как `Auth: Bearer Token` когда его срок исткает необходимо обновить токены  
+  
+### Обновление токенов доступа  
+http://localhost:5433/api/users/refresh `POST`
+  
+### Сброс пароля  
+http://localhost:5433/api/users/forgot/password?email=local@host.com  `POST` 
   
 ### Получение информации о себе  
 http://localhost:5433/api/users/info `GET`
@@ -77,7 +84,7 @@ http://localhost:5433/api/users/delete `DELETE`
 
 ### Создать очередь  
 http://localhost:5433/api/queues/create `POST`  
-QR-код должен перенаправлять в наше приложение неся в себе QueueId
+QR-код должен перенаправлять в мобильное приложение неся в себе QueueId вызывая информацию об очереди предлагает встать в неё
   
 ### Изменить название, описание или статус очереди  
 http://localhost:5433/api/queues/update/44 {QueueId=44} `PUT`  

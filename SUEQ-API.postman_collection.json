@@ -54,7 +54,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\":\"local@host.com\",\n\t\"password\":\"superpassword999\"\n}\n",
+							"raw": "{\n\t\"email\":\"local@host.com\",\n\t\"password\":\"Hq,%@|ntdm>#WUs5\"\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -78,6 +78,37 @@
 					"response": []
 				},
 				{
+					"name": "Забыл пароль",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5433/api/users/forgot/password?email=local@host.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5433",
+							"path": [
+								"api",
+								"users",
+								"forgot",
+								"password"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "local@host.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Refresh",
 					"request": {
 						"auth": {
@@ -87,7 +118,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwianRpIjoiNjIwODNiZjAtMmVjMy00YTliLTkxYmQtZTUzNjIxNGFjZWZiIiwiaWF0IjoiMjAuMDUuMjAyMCAxMzo0MzoxOSIsInVuaXF1ZV9uYW1lIjoiMSIsIlVzZXJJZCI6IjEiLCJuYmYiOjE1ODk5ODIxOTksImV4cCI6MTU4OTk4NTc5OSwiaXNzIjoiU1VFUS1BUEkiLCJhdWQiOiJVRVEtQ2xpZW50In0.2TmoN0dMuKmNq80hY4T7D-8LK5mstYfC_w9Ty2Sd9Js\",\n    \"refreshToken\": \"FTfVGODchKUW1cHF/hBuG6xJKKregy05Dte90+tpw2I=\"\n}\n",
+							"raw": "{\n\t\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwianRpIjoiM2M4NzNmZmUtNzM1NC00MjZlLThlNDEtNzc5OGI4MzlkNmU3IiwiaWF0IjoiMjEuMDUuMjAyMCAxMToxODowNSIsIlVzZXJJZCI6IjEiLCJuYmYiOjE1OTAwNTk4ODUsImV4cCI6MTU5MDA2MzQ4NSwiaXNzIjoiU1VFUS1BUEkiLCJhdWQiOiJVRVEtQ2xpZW50In0.XKmiSu0CtiZGB8QiRDsR_NqKcLGOIN8L0vx4-vaAz80\",\n    \"refreshToken\": \"npN5bteDx2E3ruHrKYRl5Oo+Ft23MYrfTmhA9J1+gZI=\"\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
