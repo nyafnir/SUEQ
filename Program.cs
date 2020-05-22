@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 namespace SUEQ_API
 {
@@ -30,6 +31,13 @@ namespace SUEQ_API
                     webBuilder.UseStartup<Startup>();
                     var AppSettings = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
                     webBuilder.UseUrls(AppSettings["urls"]);
+                    // Требовать сертификат
+                    if (AppSettings["https_port"] != "0")
+                        webBuilder.ConfigureKestrel(o =>
+                        {
+                            o.ConfigureHttpsDefaults(o =>
+                                o.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
+                        });
                 });
     }
 }

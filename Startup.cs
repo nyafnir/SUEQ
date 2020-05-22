@@ -17,6 +17,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using Hanssens.Net;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
+using System.Net.Http;
+using SUEQ_API.Services;
 
 namespace SUEQ_API
 {
@@ -54,7 +58,10 @@ namespace SUEQ_API
         {
             var userId = context.Principal.FindFirst("UserId").Value;
             if (userId == null)
+            {
                 context.Fail("User not found");
+                return Task.CompletedTask;
+            }
 
             // Предоставляем доступ только записанным пользователям
             string lastAccessToken;
@@ -77,24 +84,67 @@ namespace SUEQ_API
             return Task.CompletedTask;
         }
 
+        // Расшифровка сертификата
+        private static byte[] StringToByteArray(string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+
+            for (int i = 0; i < NumberChars; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return bytes;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             // Получение параметров httpS
             https_port = Convert.ToInt32(Configuration["https_port"]);
             ssl = https_port != 0;
-            // Настройка передаваемого заголовка STS
-            services.AddHsts(options =>
+            if (ssl)
             {
-                options.Preload = true; // Загружается заранее
-                options.IncludeSubDomains = true; // Включает поддомены
-                options.MaxAge = TimeSpan.FromDays(30); // Пусть срок жизни 30 дней
-            });
-            // Настройка переадресации
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect; // Статус принимаемый по умолчанию
-                options.HttpsPort = https_port; // Диапазон существующих портов вписывается в int32
-            });
+                // Настройка передаваемого заголовка STS
+                services.AddHsts(options =>
+                {
+                    options.Preload = true; // Загружается заранее
+                    options.IncludeSubDomains = true; // Включает поддомены
+                    options.MaxAge = TimeSpan.FromDays(30); // Пусть срок жизни 30 дней
+                });
+                // Настройка переадресации
+                services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect; // Статус принимаемый по умолчанию
+                    options.HttpsPort = https_port; // Диапазон существующих портов вписывается в int32
+                });
+                // Настройка проверки сертификата
+                services.AddCertificateForwarding(options =>
+                {
+                    options.CertificateHeader = "X-SSL-CERT";
+                    options.HeaderConverter = (headerValue) =>
+                    {
+                        X509Certificate2 clientCertificate = null;
+
+                        if (!string.IsNullOrWhiteSpace(headerValue))
+                        {
+                            byte[] bytes = StringToByteArray(headerValue);
+                            clientCertificate = new X509Certificate2(bytes);
+                        }
+
+                        return clientCertificate;
+                    };
+                });
+                // Авторизируем свой сертификат и его проверку
+                var clientCertificate = new X509Certificate2(
+                    Path.Combine(Configuration["Certificate:Path"]), Configuration["Certificate:Password"]);
+                var handler = new HttpClientHandler();
+                handler.ClientCertificates.Add(clientCertificate);
+                services.AddHttpClient<InterceptorCertificates>("CertificatedInterceptor", c =>
+                {
+                }).ConfigurePrimaryHttpMessageHandler(() => handler);
+            }
+
             // Регистрируем наш контекст базы данных в зависимостях
             services.AddDbContext<SUEQContext>(options => {
                 options.UseMySql(
@@ -162,6 +212,7 @@ namespace SUEQ_API
 
             app.UseRouting();
 
+            if (ssl) app.UseCertificateForwarding();
             app.UseAuthentication();
             app.UseAuthorization();
 

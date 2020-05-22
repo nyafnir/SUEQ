@@ -15,7 +15,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 // Проверка почты
 using SUEQ_API.Services;
-using Microsoft.AspNetCore.Http.Extensions;
 
 namespace SUEQ_API.Controllers
 {
