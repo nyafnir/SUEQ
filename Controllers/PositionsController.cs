@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SUEQ_API.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SUEQ_API.Controllers
 {
@@ -37,7 +37,7 @@ namespace SUEQ_API.Controllers
                 });
 
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
-            bool userInQueue = await _context.Positions.AnyAsync(p => 
+            bool userInQueue = await _context.Positions.AnyAsync(p =>
                 p.QueueId == queue.QueueId && p.UserId == userId);
             if (userInQueue)
                 return BadRequest(new Response
@@ -54,7 +54,7 @@ namespace SUEQ_API.Controllers
                 UserId = userId,
                 Place = lastPlace + 1
             };
-            
+
             _context.Positions.Add(position);
             await _context.SaveChangesAsync();
 
@@ -87,7 +87,7 @@ namespace SUEQ_API.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
 
-            var position = await _context.Positions.SingleOrDefaultAsync(p => 
+            var position = await _context.Positions.SingleOrDefaultAsync(p =>
                 p.QueueId == queueId && p.UserId == userId);
             if (position == null)
                 return BadRequest(new Response
@@ -116,14 +116,14 @@ namespace SUEQ_API.Controllers
         public async Task<ActionResult<Response>> DeleteFromQueue(int queueId, int userId)
         {
             var ownerId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
-            var queue = await _context.Queues.SingleOrDefaultAsync(q => 
+            var queue = await _context.Queues.SingleOrDefaultAsync(q =>
                 q.UserId == userId && q.QueueId == queueId);
             if (queue == null)
                 return BadRequest(QueuesController.QueueNotFound());
             if (queue.UserId != ownerId)
                 return BadRequest(QueuesController.QueueNotOwner());
 
-            var position = await _context.Positions.SingleOrDefaultAsync(p => 
+            var position = await _context.Positions.SingleOrDefaultAsync(p =>
                 p.QueueId == queueId && p.UserId == userId);
             if (position == null)
                 return BadRequest(new Response
@@ -153,7 +153,7 @@ namespace SUEQ_API.Controllers
         public async Task<ActionResult<Response>> ChangePosition(int queueId, PositionModel changePosition)
         {
             int ownerId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value);
-            var queue = await _context.Queues.SingleOrDefaultAsync(q => 
+            var queue = await _context.Queues.SingleOrDefaultAsync(q =>
                 q.UserId == ownerId && q.QueueId == queueId);
             if (queue == null)
                 return BadRequest(QueuesController.QueueNotFound());
@@ -175,7 +175,7 @@ namespace SUEQ_API.Controllers
             position.Place = changePosition.Place;
 
             _context.Entry(position).State = EntityState.Modified;
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return Ok(new Response
             {

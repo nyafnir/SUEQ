@@ -1,20 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SUEQ_API.Models;
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.DataAnnotations;
-// Хэширование пароля
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-// Использование токена
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
+using SUEQ_API.Models;
 // Проверка почты
 using SUEQ_API.Services;
+using System;
+using System.ComponentModel.DataAnnotations;
+// Использование токена
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+// Хэширование пароля
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace SUEQ_API.Controllers
 {
@@ -63,7 +63,7 @@ namespace SUEQ_API.Controllers
 
             Startup.Storage.Store(Convert.ToString(userId), accessToken);
             Startup.Storage.Persist();
-            
+
             return refreshToken;
         }
         // Соль для хэширования
@@ -123,18 +123,19 @@ namespace SUEQ_API.Controllers
                 return BadRequest(new Response
                 {
                     Code = 422,
-                    DevMessage = "User not found.", 
+                    DevMessage = "User not found.",
                     UserMessage = "Пользователя с такой почтой не существует!"
                 });
 
             string PasswordHash = ToHash(login.Password, user.PasswordSalt);
             if (user.PasswordHash != PasswordHash)
-                return BadRequest(new Response {
+                return BadRequest(new Response
+                {
                     Code = 422,
                     DevMessage = "Password are invalid.",
                     UserMessage = "Неправильный пароль!"
                 });
-            
+
             if (!user.EmailConfirmed)
                 return BadRequest(new Response
                 {
@@ -142,7 +143,7 @@ namespace SUEQ_API.Controllers
                     DevMessage = "Email not confirmed.",
                     UserMessage = "Необходимо подтвердить почту, пройдя по ссылке в сообщении, которое было Вам отправлено после регистрации!"
                 });
-            
+
             var accessToken = GetAccessToken(user);
             var refreshToken = GetRefreshToken();
 
@@ -163,7 +164,7 @@ namespace SUEQ_API.Controllers
         [HttpPost("refresh")]
         public async Task<ActionResult<ResponseWithTokenAndUser>> Refresh(TokensModel tokens)
         {
-            var refreshRecord = await _context.Refreshs.SingleOrDefaultAsync(r => 
+            var refreshRecord = await _context.Refreshs.SingleOrDefaultAsync(r =>
                 r.AccessToken == tokens.AccessToken && r.RefreshToken == tokens.RefreshToken);
             if (refreshRecord == null)
                 return BadRequest(new Response
@@ -181,7 +182,7 @@ namespace SUEQ_API.Controllers
                     DevMessage = "Refresh token are expired.",
                     UserMessage = "Ваш токен обновления истёк, пожалуйста, перезайдите!"
                 });
-            
+
             var user = await _context.Users.FindAsync(refreshRecord.UserId);
 
             var newAccessToken = GetAccessToken(user);
@@ -246,7 +247,7 @@ namespace SUEQ_API.Controllers
                     Code = 422,
                     DevMessage = "Email already exists.",
                     UserMessage = "Такой электронный почтовый адрес уже используется!"
-                }); 
+                });
 
             if (!ValidationEmail(registration.Email))
                 return BadRequest(new Response
@@ -254,11 +255,11 @@ namespace SUEQ_API.Controllers
                     Code = 422,
                     DevMessage = "Incorrect email.",
                     UserMessage = "Указанный электронный почтовый адрес определен как не существующий!"
-                }); 
+                });
 
             if (
                 registration.FirstName == null ||
-                registration.SurName == null || 
+                registration.SurName == null ||
                 registration.LastName == null ||
                 !ValidationSizeFIO(registration.FirstName, registration.SurName, registration.LastName)
             )
@@ -320,7 +321,7 @@ namespace SUEQ_API.Controllers
         public async Task<ActionResult<Response>> ConfirmEmail(int userId, string code)
         {
             var user = await _context.Users.FindAsync(userId);
-            
+
             if (user == null)
                 return BadRequest(UserNotFound());
 
@@ -506,7 +507,7 @@ namespace SUEQ_API.Controllers
                 User = new UserModel(user)
             });
         }
-        
+
         [HttpDelete("delete")]
         public async Task<ActionResult<ResponseWithUser>> DeleteUser()
         {

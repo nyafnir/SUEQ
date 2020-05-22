@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System.Net;
 
 namespace SUEQ_API
 {
@@ -12,13 +13,16 @@ namespace SUEQ_API
             CreateHostBuilder(args).Build().Run();
         }
 
+        public static int Https_port { get; private set; }
+        public static bool Ssl { get; private set; }
+
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 // Переопределение переменных окружения
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
-                    config.AddJsonFile("appsettings.json");
+                    config.AddJsonFile("Properties/appsettings.json");
                     config.AddEnvironmentVariables();
                     // Возможность задавать значения из командной строки
                     if (args != null)
@@ -28,16 +32,31 @@ namespace SUEQ_API
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                    var AppSettings = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                    webBuilder.UseUrls(AppSettings["urls"]);
-                    // Требовать сертификат
-                    if (AppSettings["https_port"] != "0")
-                        webBuilder.ConfigureKestrel(o =>
+                    var AppSettings = new ConfigurationBuilder().AddJsonFile("Properties/appsettings.json").Build();
+                    Https_port = System.Convert.ToInt32(AppSettings["HttpsPort"]); // Диапазон существующих портов вписывается в int32
+                    Ssl = Https_port != 0;
+
+                    webBuilder.ConfigureKestrel(o =>
+                    {
+                        o.Configure(AppSettings.GetSection("Kestrel"));
+                        o.Listen(IPAddress.Any, System.Convert.ToInt32(AppSettings["HttpPort"]));
+                        // Требовать сертификат, если включен httpS
+                        if (Ssl)
                         {
+                            o.Listen(IPAddress.Any, Https_port,
+                                    listenOptions =>
+                                    {
+                                        listenOptions.UseHttps(AppSettings["Certificate:PFX"],
+                                            AppSettings["Certificate:Password"]);
+                                    });
                             o.ConfigureHttpsDefaults(o =>
-                                o.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
-                        });
+                            {
+                                o.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+                            });
+                        }
+                    });
+
+                    webBuilder.UseStartup<Startup>();
                 });
     }
 }

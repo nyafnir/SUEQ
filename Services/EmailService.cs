@@ -31,7 +31,7 @@ namespace SUEQ_API.Services
             SmtpClient smtpClient = new SmtpClient(Startup.Configuration["SMTP:Host"], System.Convert.ToInt32(Startup.Configuration["SMTP:Port"]));
             NetworkCredential credentials = new NetworkCredential(Startup.Configuration["SMTP:Usermail"], Startup.Configuration["SMTP:Password"]);
             smtpClient.Credentials = credentials;
-            smtpClient.EnableSsl = Startup.ssl;
+            smtpClient.EnableSsl = Program.Ssl;
 
             smtpClient.Send(mailMsg);
 

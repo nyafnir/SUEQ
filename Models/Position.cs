@@ -9,7 +9,7 @@ namespace SUEQ_API.Models
         [Required]
         public int Place { get; set; }
         [Required]
-        public int QueueId { get; set; } 
+        public int QueueId { get; set; }
         public virtual Queue Queue { get; set; }
         [Required]
         public int UserId { get; set; }

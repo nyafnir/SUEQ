@@ -1,26 +1,22 @@
-using System;
+// Аутентификация
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 // Подключение базы данных
 using Microsoft.EntityFrameworkCore;
-using SUEQ_API.Models;
+using Hanssens.Net;
 // Настройки и переменная настроек для appsettings
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 // Логгирование
 using Microsoft.Extensions.Logging;
-// JWT аутентификация
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Threading.Tasks;
-using Hanssens.Net;
+using SUEQ_API.Models;
+using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography.X509Certificates;
-using System.IO;
-using System.Net.Http;
-using SUEQ_API.Services;
+using System.Threading.Tasks;
 
 namespace SUEQ_API
 {
@@ -37,13 +33,10 @@ namespace SUEQ_API
                 // EncryptionSalt = "LocalStorage",
                 AutoLoad = true,
                 AutoSave = false,
-                Filename = "SUEQ-API.LOCALSTORAGE"
+                Filename = "Properties/SUEQ-API.LOCALSTORAGE"
             })) { };
         }
 
-        private int https_port;
-        public static bool ssl;
-        
         private bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken token, TokenValidationParameters @params)
         {
             if (expires != null)
@@ -66,11 +59,11 @@ namespace SUEQ_API
             // Предоставляем доступ только записанным пользователям
             string lastAccessToken;
             try
-            { 
-                lastAccessToken = Storage.Get<string>(userId); 
+            {
+                lastAccessToken = Storage.Get<string>(userId);
             }
             catch
-            { 
+            {
                 context.Fail("User not authenticated");
                 return Task.CompletedTask;
             }
@@ -84,26 +77,9 @@ namespace SUEQ_API
             return Task.CompletedTask;
         }
 
-        // Расшифровка сертификата
-        private static byte[] StringToByteArray(string hex)
-        {
-            int NumberChars = hex.Length;
-            byte[] bytes = new byte[NumberChars / 2];
-
-            for (int i = 0; i < NumberChars; i += 2)
-            {
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            }
-
-            return bytes;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
-            // Получение параметров httpS
-            https_port = Convert.ToInt32(Configuration["https_port"]);
-            ssl = https_port != 0;
-            if (ssl)
+            if (Program.Ssl)
             {
                 // Настройка передаваемого заголовка STS
                 services.AddHsts(options =>
@@ -115,38 +91,14 @@ namespace SUEQ_API
                 // Настройка переадресации
                 services.AddHttpsRedirection(options =>
                 {
-                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect; // Статус принимаемый по умолчанию
-                    options.HttpsPort = https_port; // Диапазон существующих портов вписывается в int32
+                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                    options.HttpsPort = Program.Https_port;
                 });
-                // Настройка проверки сертификата
-                services.AddCertificateForwarding(options =>
-                {
-                    options.CertificateHeader = "X-SSL-CERT";
-                    options.HeaderConverter = (headerValue) =>
-                    {
-                        X509Certificate2 clientCertificate = null;
-
-                        if (!string.IsNullOrWhiteSpace(headerValue))
-                        {
-                            byte[] bytes = StringToByteArray(headerValue);
-                            clientCertificate = new X509Certificate2(bytes);
-                        }
-
-                        return clientCertificate;
-                    };
-                });
-                // Авторизируем свой сертификат и его проверку
-                var clientCertificate = new X509Certificate2(
-                    Path.Combine(Configuration["Certificate:Path"]), Configuration["Certificate:Password"]);
-                var handler = new HttpClientHandler();
-                handler.ClientCertificates.Add(clientCertificate);
-                services.AddHttpClient<InterceptorCertificates>("CertificatedInterceptor", c =>
-                {
-                }).ConfigurePrimaryHttpMessageHandler(() => handler);
             }
 
             // Регистрируем наш контекст базы данных в зависимостях
-            services.AddDbContext<SUEQContext>(options => {
+            services.AddDbContext<SUEQContext>(options =>
+            {
                 options.UseMySql(
                     $"server={Configuration["DataBase:Host"]};" +
                     $"database={Configuration["DataBase:Name"]};" +
@@ -159,8 +111,8 @@ namespace SUEQ_API
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
-                        options.SaveToken = true;
-                        options.RequireHttpsMetadata = ssl;
+                        options.SaveToken = false;
+                        options.RequireHttpsMetadata = Program.Ssl;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             // Проверяем издателя
@@ -194,25 +146,20 @@ namespace SUEQ_API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            logger.LogInformation("Status SSL: {0}", ssl);
+            logger.LogInformation("Status SSL: {0} | Port: {1}", Program.Ssl, Program.Https_port);
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // Отсылаем заголовок Strict-Transport-Security, чтобы избежать обращения к незащищенному http
-                // Это стандартная необходимая защита
-                if (ssl) app.UseHsts();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             // Перенаправление на httpS
-            if (ssl) app.UseHttpsRedirection();
+            if (Program.Ssl)
+            {
+                app.UseHsts();
+                // Перенаправляем на httpS, чтобы избежать обращения к незащищенному http
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 
-            if (ssl) app.UseCertificateForwarding();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -223,7 +170,7 @@ namespace SUEQ_API
                 // Ответ при переходе в корневой узел
                 endpoints.MapGet("/", async context =>
                 {
-                    logger.LogInformation("Processing request {0}", context.Request.Path);
+                    logger.LogInformation("Someone went to the root {0}", context.Request.Path);
                     var sb = new System.Text.StringBuilder()
                         .Append("<center><h1>Интерфейс работает и принимает запросы!</center></h1>");
                     context.Response.ContentType = "text/html;charset=utf-8";
