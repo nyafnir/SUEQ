@@ -11,6 +11,11 @@
     "Password": "1234"
   },
 
+  "GoogleCaptcha": {
+    "PublicKey": "get on www.google.com/recaptcha",
+    "PrivateKey": "get on www.google.com/recaptcha"
+  },
+
   "SMTP": {
     "Host": "smtp.sibmail.com",
     "Port": "25",

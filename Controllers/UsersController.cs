@@ -113,8 +113,12 @@ namespace SUEQ_API.Controllers
         // Авторизация получение рефреш токена и токена доступа
         [AllowAnonymous]
         [HttpGet("login")]
-        public async Task<ActionResult<ResponseWithTokenAndUser>> Login(LoginModel login)
+        public async Task<ActionResult<ResponseWithTokenAndUser>> Login(/* string captchaResponse, */ LoginModel login)
         {
+            bool isValidCaptcha = true; // GoogleCaptcha.ValidateCaptcha(captchaResponse);
+            if (!isValidCaptcha)
+                return BadRequest(GoogleCaptcha.NotValidCaptcha());
+
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
             if (user == null)
                 return BadRequest(new Response
@@ -235,8 +239,12 @@ namespace SUEQ_API.Controllers
 
         [AllowAnonymous]
         [HttpPost("registration")]
-        public async Task<ActionResult<ResponseWithUser>> CreateUser(UserModel registration)
+        public async Task<ActionResult<ResponseWithUser>> CreateUser(/* string captchaResponse, */ UserModel registration)
         {
+            bool isValidCaptcha = true; // GoogleCaptcha.ValidateCaptcha(captchaResponse);
+            if (!isValidCaptcha)
+                return BadRequest(GoogleCaptcha.NotValidCaptcha());
+
             var isEmailExist = await _context.Users.AnyAsync(u => u.Email == registration.Email);
             if (isEmailExist)
                 return BadRequest(new Response
@@ -354,8 +362,12 @@ namespace SUEQ_API.Controllers
 
         [AllowAnonymous]
         [HttpPost("forgot/password")]
-        public async Task<ActionResult<Response>> ForgotPassword(string email)
+        public async Task<ActionResult<Response>> ForgotPassword(/* string captchaResponse, */ string email)
         {
+            bool isValidCaptcha = true; // GoogleCaptcha.ValidateCaptcha(captchaResponse);
+            if (!isValidCaptcha)
+                return BadRequest(GoogleCaptcha.NotValidCaptcha());
+
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
             if (user == null)
                 return BadRequest(UserNotFound());
