@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
 using SUEQ_API.Models;
 using System;
 using System.Threading.Tasks;
@@ -35,9 +36,16 @@ namespace SUEQ_API.Controllers
                 Name = createQueue.Name,
                 Description = createQueue.Description,
                 Status = createQueue.Status,
-                UserId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value),
-                QRCode = "Deep Linking" // TODO
+                UserId = Convert.ToInt32(HttpContext.User.FindFirst("UserId").Value)
             };
+
+            string urlToQueue = $"{Startup.Configuration["UrlForLinks"]}/api/queues/{queue.QueueId}";
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(urlToQueue, QRCodeGenerator.ECCLevel.Q);
+            BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
+            byte[] deepQrCode = qrCode.GetGraphic(20);
+
+            queue.QRCode = deepQrCode;
 
             _context.Queues.Add(queue);
             await _context.SaveChangesAsync();

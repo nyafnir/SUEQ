@@ -92,7 +92,7 @@ namespace SUEQ_API.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public bool Status { get; set; }
-        public string QRCode { get; set; }
+        public byte[] QRCode { get; set; }
     }
 
     // Стандартный ответ содержащий очередь

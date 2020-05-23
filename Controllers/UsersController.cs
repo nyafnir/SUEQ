@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SUEQ_API.Models;
 // Проверка почты
@@ -24,11 +23,9 @@ namespace SUEQ_API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly SUEQContext _context;
-        private readonly IConfiguration Configuration;
-        public UsersController(SUEQContext context, IConfiguration configuration)
+        public UsersController(SUEQContext context)
         {
             _context = context;
-            Configuration = configuration;
         }
         // Генератор рефреш токена
         public string GetRefreshToken()
@@ -97,8 +94,8 @@ namespace SUEQ_API.Controllers
 
             // Создаем JWT
             var jwt = new JwtSecurityToken(
-                issuer: Configuration["Token:Issuer"],
-                audience: Configuration["Token:Audience"],
+                issuer: Startup.Configuration["Token:Issuer"],
+                audience: Startup.Configuration["Token:Audience"],
                 notBefore: now,
                 claims: new[] {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
@@ -106,9 +103,9 @@ namespace SUEQ_API.Controllers
                     new Claim(JwtRegisteredClaimNames.Iat, now.ToString(), ClaimValueTypes.Integer64),
                     new Claim("UserId", user.UserId.ToString())
                 },
-                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Configuration["Token:AccessExpireMinutes"]))),
+                expires: now.Add(TimeSpan.FromMinutes(Convert.ToDouble(Startup.Configuration["Token:AccessExpireMinutes"]))),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(
-                    System.Text.Encoding.ASCII.GetBytes(Configuration["Token:Key"])),
+                    System.Text.Encoding.ASCII.GetBytes(Startup.Configuration["Token:Key"])),
                     SecurityAlgorithms.HmacSha256)
             );
             return new JwtSecurityTokenHandler().WriteToken(jwt);
@@ -174,7 +171,7 @@ namespace SUEQ_API.Controllers
                     UserMessage = "Пара токенов доступа и обновления не найдена или неправильна, попробуйте перезайти!"
                 });
 
-            var refreshExpireMinutes = Convert.ToDouble(Configuration["Token:RefreshExpireMinutes"]);
+            var refreshExpireMinutes = Convert.ToDouble(Startup.Configuration["Token:RefreshExpireMinutes"]);
             if (refreshRecord.AtCreated.AddMinutes(refreshExpireMinutes) <= DateTime.Now)
                 return BadRequest(new Response
                 {
@@ -297,7 +294,7 @@ namespace SUEQ_API.Controllers
             string code = Guid.NewGuid().ToString();
             Startup.Storage.Store(Convert.ToString(newUser.UserId), code);
             Startup.Storage.Persist();
-            string linkWithCode = $"{Configuration["urls"].Split(new char[] { '^' }, 1)[0]}/api/users/confirm/email?userId={newUser.UserId}&code={code}";
+            string linkWithCode = $"{Startup.Configuration["UrlForLinks"].Split(new char[] { '^' }, 1)[0]}/api/users/confirm/email?userId={newUser.UserId}&code={code}";
             var message = new EmailService.ModelMessage
             {
                 ToName = newUser.FirstName,
@@ -375,7 +372,7 @@ namespace SUEQ_API.Controllers
             string code = Guid.NewGuid().ToString();
             Startup.Storage.Store(Convert.ToString(user.UserId), code);
             Startup.Storage.Persist();
-            string linkWithCode = $"{Configuration["urls"].Split(new char[] { '^' }, 1)[0]}/api/users/reset/password?userId={user.UserId}&code={code}";
+            string linkWithCode = $"{Startup.Configuration["UrlForLinks"].Split(new char[] { '^' }, 1)[0]}/api/users/reset/password?userId={user.UserId}&code={code}";
             var message = new EmailService.ModelMessage
             {
                 ToName = user.FirstName,

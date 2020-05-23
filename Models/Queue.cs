@@ -11,7 +11,7 @@ namespace SUEQ_API.Models
         public string Description { get; set; }
         [Required]
         public bool Status { get; set; }
-        public string QRCode { get; set; }
+        public byte[] QRCode { get; set; } // Bitmap
         [Required]
         public int UserId { get; set; }
         public User User { get; set; }

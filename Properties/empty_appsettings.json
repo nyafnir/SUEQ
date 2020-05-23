@@ -1,21 +1,28 @@
 {
   "Name": "Server Universal Electronic Queue",
 
-  "urls": "http://localhost:5433",
-  "https_port": "0",
+  "UrlForLinks": "http://192.168.0.3:5443",
+
+  "HttpPort": "5443",
+  "HttpsPort": "44344",
+
+  "Certificate": {
+    "PFX": "Properties/localhost.pfx",
+    "Password": "1234"
+  },
 
   "SMTP": {
     "Host": "smtp.sibmail.com",
     "Port": "25",
-    "Usermail": "joe@sibmail.com",
-    "Password": "superpassword2000",
+    "Usermail": "here_your_login@sibmail.com",
+    "Password": "here_your_password",
     "Username": "Universal Electronic Queue"
   },
 
   "Token": {
     "Issuer": "SUEQ-API",
     "Audience": "UEQ-Client",
-    "Key": "supersecretkey",
+    "Key": "any_super_secret_key",
     "AccessExpireMinutes": "60",
     "RefreshExpireMinutes": "259200"
   },
@@ -28,6 +35,14 @@
     "User": "root"
   },
 
+  "Kestrel": {
+    "Limits": {
+      "MaxConcurrentConnections": 100,
+      "MaxConcurrentUpgradedConnections": 100
+    },
+    "DisableStringReuse": true
+  },
+
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -36,5 +51,6 @@
     }
   },
 
+  "Urls": "",
   "AllowedHosts": "*"
 }
