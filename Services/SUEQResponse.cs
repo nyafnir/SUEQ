@@ -5,9 +5,7 @@ namespace SUEQ_API.Models
     // Базовый ответ от сервера
     public class Response
     {
-        [Required]
         public int Code { get; set; }
-        [Required]
         public string DevMessage { get; set; }
         public string UserMessage { get; set; }
     }
@@ -15,9 +13,7 @@ namespace SUEQ_API.Models
     // Отправляемая модель авторизации
     public class LoginModel
     {
-        [Required]
         public string Email { get; set; }
-        [Required]
         public string Password { get; set; }
     }
 
@@ -47,25 +43,20 @@ namespace SUEQ_API.Models
     // Стандартный ответ содержащий пользователя
     public class ResponseWithUser : Response
     {
-        [Required]
         public object User { get; set; }
     }
 
     // Предъявляемая модель с токенами для их обновления
     public class TokensModel
     {
-        [Required]
         public string AccessToken { get; set; }
-        [Required]
         public string RefreshToken { get; set; }
     }
 
     // Стандартный ответ содержащий токен и пользователя
     public class ResponseWithTokenAndUser : ResponseWithUser
     {
-        [Required]
         public string AccessToken { get; set; }
-        [Required]
         public string RefreshToken { get; set; }
     }
 
@@ -97,7 +88,6 @@ namespace SUEQ_API.Models
     // Стандартный ответ содержащий очередь
     public class ResponseWithQueue : Response
     {
-        [Required]
         public object Queue { get; set; }
     }
 
@@ -124,13 +114,11 @@ namespace SUEQ_API.Models
     // Стандартный ответ содержащий позицию
     public class ResponseWithPosition : Response
     {
-        [Required]
         public object Position { get; set; }
     }
     // Стандартный ответ содержащий список позиций в очереди
     public class ResponseWithPositions : Response
     {
-        [Required]
         public object Positions { get; set; }
     }
 }
