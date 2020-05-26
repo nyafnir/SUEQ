@@ -19,8 +19,6 @@ namespace SUEQ_API.Models
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
-        [Required]
-        public string CaptchaResponse { get; set; }
     }
 
     // Возвращаемая модель пользователя
