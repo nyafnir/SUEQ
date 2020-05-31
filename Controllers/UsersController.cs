@@ -227,6 +227,17 @@ namespace SUEQ_API.Controllers
                 return true;
             else
                 return false;
+            /*
+            try
+            {
+                new EmailAddressAttribute().IsValid(email);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            */
         }
 
         private bool ValidationPassword(string password)
@@ -239,7 +250,8 @@ namespace SUEQ_API.Controllers
 
         [AllowAnonymous]
         [HttpPost("registration")]
-        public async Task<ActionResult<ResponseWithUser>> CreateUser(/* string captchaResponse, */ UserModel registration)
+        public async Task<ActionResult<ResponseWithUser>> CreateUser(/* string captchaResponse, */
+            UserModel registration)
         {
             bool isValidCaptcha = true; // GoogleCaptcha.ValidateCaptcha(captchaResponse);
             if (!isValidCaptcha)
@@ -310,7 +322,19 @@ namespace SUEQ_API.Controllers
                 Text = $"{newUser.SurName} {newUser.FirstName} {newUser.LastName}, перейдите по ссылке, чтобы закончить регистрацию: " + linkWithCode,
                 Html = "Пожалуйста подтвердите Ваш аккаунт, чтобы закончить регистрацию, нажав по ссылке: <a href=\"" + linkWithCode + "\">нажмите сюда</a><br/>"
             };
-            await EmailService.SendMail(message);
+            try
+            {
+                await EmailService.SendMail(message);
+            }
+            catch
+            {
+                return BadRequest(new Response
+                {
+                    Code = 422,
+                    DevMessage = "Catch error by sender mail.",
+                    UserMessage = "Не удалось отправить письмо на Вашу электронную почту, свяжитесь с разработчиками!"
+                });
+            }
 
             return Ok(new ResponseWithUser
             {

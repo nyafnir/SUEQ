@@ -41,7 +41,7 @@
 - [x] 23. Добавлено подтверждение регистрации и смена пароля по почте. Пакет `Sendgrid v6.3.4` (SMTP)
 - [x] 24. Доработка `HTTPS` (п.8), работа с `.PFX` сертификатом с паролем. Пакет `Microsoft.AspNetCore.Authentication.Certificate`
 - [x] 25. `Deep Linking` и QR-код. Пакет `QRCoder`
-- [x] 26. Защита от множественных обращений - ReCaptcha от Google (отключена, так как нужна реализация ответа с front-end). Пакет `Microsoft.AspNetCore.WebPages`   
+- [x] 26. Защита от множественных обращений - ReCaptcha от Google (отключена и не доделана, так как нужна реализация ответа с front-end). Пакет `Microsoft.AspNetCore.WebPages`   
   
 База данных
 ============
