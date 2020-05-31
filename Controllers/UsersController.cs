@@ -227,17 +227,6 @@ namespace SUEQ_API.Controllers
                 return true;
             else
                 return false;
-            /*
-            try
-            {
-                new EmailAddressAttribute().IsValid(email);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            */
         }
 
         private bool ValidationPassword(string password)
