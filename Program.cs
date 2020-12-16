@@ -18,11 +18,13 @@ namespace SUEQ_API
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseWindowsService() // Программа будет работать как служба
                 // Переопределение переменных окружения
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    var env = hostingContext.HostingEnvironment;
-                    config.AddJsonFile("Properties/appsettings.json");
+                    // config.Sources.Clear(); // Очищает все поставщики конфигурации
+                    // var env = hostingContext.HostingEnvironment; // env.EnvironmentName
+                    config.AddJsonFile("Properties/appsettings.json", false, false);
                     config.AddEnvironmentVariables();
                     // Возможность задавать значения из командной строки
                     if (args != null)
