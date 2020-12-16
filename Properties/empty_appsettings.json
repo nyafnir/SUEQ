@@ -1,7 +1,7 @@
 {
   "Name": "Server Universal Electronic Queue",
 
-  "UrlForLinks": "http://192.168.0.3:5443",
+  "UrlForLinks": "http://127.0.0.1:5443",
 
   "HttpPort": "5443",
   "HttpsPort": "44344",
