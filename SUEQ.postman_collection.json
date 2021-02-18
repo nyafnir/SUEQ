@@ -1,12 +1,13 @@
 {
 	"info": {
-		"_postman_id": "414c3149-ef8b-4634-a20c-e40aaa49462e",
-		"name": "Тесты",
+		"_postman_id": "57f96829-c9bb-4254-8ce6-96a64d32a129",
+		"name": "SUEQ v2",
+		"description": "Server Universal Electronic Queue",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Анонимная авторизация",
+			"name": "Users",
 			"item": [
 				{
 					"name": "Регистрация",
@@ -26,14 +27,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/users/registration",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/registration",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"registration"
 							]
@@ -62,14 +60,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/users/login",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/login",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"login"
 							]
@@ -86,14 +81,11 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/users/forgot/password?email=local@host.com",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/forgot/password?email=local@host.com",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"forgot",
 								"password"
@@ -109,7 +101,7 @@
 					"response": []
 				},
 				{
-					"name": "Refresh",
+					"name": "Обновление токена доступа",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -126,63 +118,29 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/users/refresh",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/refresh",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"refresh"
 							]
 						}
 					},
 					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "02944428-316c-4739-8570-e8d9bd49efa9",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
 				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "09be70a1-4ffd-46b0-a9b9-a732717990e6",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Управление аккаунтом",
-			"item": [
 				{
 					"name": "Получение инфы о юзере",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/users/info",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/info",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"info"
 							]
@@ -205,14 +163,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/users/update",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/update",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"update"
 							]
@@ -235,14 +190,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/users/delete/",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/delete/",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"delete",
 								""
@@ -266,14 +218,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/users/logout/",
-							"protocol": "http",
+							"raw": "{{api-link}}/users/logout/",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"users",
 								"logout",
 								""
@@ -287,7 +236,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "abf35a46-9b40-4e5c-a7a4-460633cde245",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -297,18 +245,16 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "0a369c3f-ba14-47a5-b25c-e07c71194def",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
-			"name": "Очереди",
+			"name": "Queues",
 			"item": [
 				{
 					"name": "Создание очереди",
@@ -316,7 +262,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5920f623-6b9c-4560-840d-b929bdee63ba",
 								"exec": [
 									""
 								],
@@ -337,14 +282,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/queues/create",
-							"protocol": "http",
+							"raw": "{{api-link}}/queues/create",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"queues",
 								"create"
 							]
@@ -358,7 +300,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d1f78c89-2dd2-4544-8ee3-59a87ca4360e",
 								"exec": [
 									""
 								],
@@ -379,14 +320,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/queues/update/7",
-							"protocol": "http",
+							"raw": "{{api-link}}/queues/update/7",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"queues",
 								"update",
 								"7"
@@ -401,14 +339,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/queues/info/7",
-							"protocol": "http",
+							"raw": "{{api-link}}/queues/info/7",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"queues",
 								"info",
 								"7"
@@ -423,14 +358,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/queues/delete/3",
-							"protocol": "http",
+							"raw": "{{api-link}}/queues/delete/3",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"queues",
 								"delete",
 								"3"
@@ -445,7 +377,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "6d5e5d13-2fdd-4997-9f5f-9e2d5dd9ebcb",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -455,18 +386,16 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "eefae38e-b619-4ae3-89a5-a5419547a38d",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
-			"name": "Позиции",
+			"name": "Positions",
 			"item": [
 				{
 					"name": "Встать в очередь",
@@ -474,14 +403,11 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/positions/7",
-							"protocol": "http",
+							"raw": "{{api-link}}/positions/7",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"positions",
 								"7"
 							]
@@ -495,14 +421,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/positions/5",
-							"protocol": "http",
+							"raw": "{{api-link}}/positions/5",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"positions",
 								"5"
 							]
@@ -516,14 +439,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/positions/6/3",
-							"protocol": "http",
+							"raw": "{{api-link}}/positions/6/3",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"positions",
 								"6",
 								"3"
@@ -538,14 +458,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5443/api/positions/7",
-							"protocol": "http",
+							"raw": "{{api-link}}/positions/7",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"positions",
 								"7"
 							]
@@ -568,14 +485,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5443/api/positions/6",
-							"protocol": "http",
+							"raw": "{{api-link}}/positions/6",
 							"host": [
-								"localhost"
+								"{{api-link}}"
 							],
-							"port": "5443",
 							"path": [
-								"api",
 								"positions",
 								"6"
 							]
@@ -588,7 +502,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "54d4db6d-32b1-4b5f-9577-e0d2890c873b",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -598,32 +511,19 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "548c43f1-6b15-45dd-83ec-98cde813218f",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
 	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwianRpIjoiNjIwODNiZjAtMmVjMy00YTliLTkxYmQtZTUzNjIxNGFjZWZiIiwiaWF0IjoiMjAuMDUuMjAyMCAxMzo0MzoxOSIsInVuaXF1ZV9uYW1lIjoiMSIsIlVzZXJJZCI6IjEiLCJuYmYiOjE1ODk5ODIxOTksImV4cCI6MTU4OTk4NTc5OSwiaXNzIjoiU1VFUS1BUEkiLCJhdWQiOiJVRVEtQ2xpZW50In0.2TmoN0dMuKmNq80hY4T7D-8LK5mstYfC_w9Ty2Sd9Js",
-				"type": "string"
-			}
-		]
-	},
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "9446faf8-1088-475d-b8b7-86486c13f974",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -633,7 +533,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "de61e68f-9d9c-439b-b567-978658c110e5",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -641,5 +540,10 @@
 			}
 		}
 	],
-	"protocolProfileBehavior": {}
+	"variable": [
+		{
+			"key": "api-link",
+			"value": "http://localhost:3000/api/v2"
+		}
+	]
 }
