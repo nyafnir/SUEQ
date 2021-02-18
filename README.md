@@ -40,6 +40,8 @@ FLUSH PRIVILEGES;
 
 # Маршруты
 
+Запросы на сервер выполняются в формате JSON. Отвечает сервер в этом же формате.
+
 ## /
 
 Перенаправляет на **/api**
@@ -50,25 +52,40 @@ FLUSH PRIVILEGES;
 
 ## /api/v2
 
-Главный маршрут для всех запросов. Пример api-ссылки для регистрации с использованием главного маршрута: **/api/v2/auth/registration**
+Главный маршрут для всех запросов. Пример api-ссылки для регистрации с использованием главного маршрута: **/api/v2/user/registration**
 
-# Users
+# User
 
-## `POST` /auth/registration
+## `POST` /user/registration
 
 Регистрация пользователя
+Поле | Пример значения
+------------ | -------------
+email | test1@host.com
+password | КрутойПароль1
+surname | Кочергин
+firstname | Василий
+lastname | Леонидович
 
-## `GET` /auth/login
+## `GET` /user/login
 
 Авторизация
+Поле | Пример значения
+------------ | -------------
+email | test1@host.com
+password | КрутойПароль1
 
-## `POST` /auth/refresh
+## `POST` /user/refresh
 
 Обновление токенов
+Поле | Пример значения
+------------ | -------------
+tokenaccess | последний_токен_доступа
+tokenrefresh | последний_токен_обновления_токена_доступа
 
-## `POST` /auth/forgot-password?email=local@host.com
+## `POST` /user/forgot-password?email=local@host.com
 
-Сброс пароля для аккаунта имеющего почту local@host.com
+На почту local@host.com будет отправлена ссылка для сброса пароля
 
 ## `GET` /user/info
 
@@ -77,17 +94,26 @@ FLUSH PRIVILEGES;
 ## `PUT` /user/update
 
 Обновление информации о себе
+Поле | Пример значения
+------------ | -------------
+email | test2@host.com
+password | КрутойПароль2
+surname | Чайковский
+firstname | Пётр
+lastname | Владимирович
 
 ## `DELETE` /user/delete
 
 Удаление своего аккаунта
+- Вы будете удалены из всех очередей
+- Очереди созданные вами будут удалены
 
 # Queues
 
 ## `POST` /queues/create
 
-Создать очередь 
-QR-код является Bitmap в byte[] и содержит ссылку вида: `.../queues/{QueueId}`
+Создать очередь
+В ответе вы получите QR-код, который является Bitmap в byte[] и содержит ссылку вида: `.../queues/{QueueId}`
 
 ## `PUT` /queues/update/44
 
