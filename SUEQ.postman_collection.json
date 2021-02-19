@@ -7,8 +7,35 @@
 	},
 	"item": [
 		{
-			"name": "Users",
+			"name": "User",
 			"item": [
+				{
+					"name": "Забыл пароль",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/user/forgot-password?email=local@host.com",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"user",
+								"forgot-password"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "local@host.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "Регистрация",
 					"request": {
@@ -18,8 +45,34 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"Email\":\"local@host.com\",\r\n  \"Password\":\"superpassword999\",\r\n  \"FirstName\":\"Иван\",\r\n  \"SurName\":\"Иванов\",\r\n  \"LastName\":\"Иванович\"\r\n}",
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "test1@host.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "КрутойПароль1",
+									"type": "text"
+								},
+								{
+									"key": "surname",
+									"value": "Кочергин",
+									"type": "text"
+								},
+								{
+									"key": "firstname",
+									"value": "Василий",
+									"type": "text"
+								},
+								{
+									"key": "lastname",
+									"value": "Леонидович",
+									"type": "text"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -27,12 +80,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/users/registration",
+							"raw": "{{api-link}}/user/registration",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"users",
+								"user",
 								"registration"
 							]
 						}
@@ -51,8 +104,19 @@
 						"method": "GET",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\":\"local@host.com\",\n\t\"password\":\"Hq,%@|ntdm>#WUs5\"\n}\n",
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "test1@host.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "КрутойПароль1",
+									"type": "text"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -60,12 +124,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/users/login",
+							"raw": "{{api-link}}/user/login",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"users",
+								"user",
 								"login"
 							]
 						}
@@ -73,28 +137,75 @@
 					"response": []
 				},
 				{
-					"name": "Забыл пароль",
+					"name": "Получение инфы о юзере",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
+						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/users/forgot/password?email=local@host.com",
+							"raw": "{{api-link}}/user/info",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"users",
-								"forgot",
-								"password"
-							],
-							"query": [
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление инфы о юзере",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
 								{
 									"key": "email",
-									"value": "local@host.com"
+									"value": "test2@host.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "КрутойПароль2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "surname",
+									"value": "Чайковский",
+									"type": "text"
+								},
+								{
+									"key": "firstname",
+									"value": "Пётр",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "lastname",
+									"value": "Владимирович",
+									"type": "text",
+									"disabled": true
 								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/user/update",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"user",
+								"update"
 							]
 						}
 					},
@@ -109,8 +220,21 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwianRpIjoiM2M4NzNmZmUtNzM1NC00MjZlLThlNDEtNzc5OGI4MzlkNmU3IiwiaWF0IjoiMjEuMDUuMjAyMCAxMToxODowNSIsIlVzZXJJZCI6IjEiLCJuYmYiOjE1OTAwNTk4ODUsImV4cCI6MTU5MDA2MzQ4NSwiaXNzIjoiU1VFUS1BUEkiLCJhdWQiOiJVRVEtQ2xpZW50In0.XKmiSu0CtiZGB8QiRDsR_NqKcLGOIN8L0vx4-vaAz80\",\n    \"refreshToken\": \"npN5bteDx2E3ruHrKYRl5Oo+Ft23MYrfTmhA9J1+gZI=\"\n}\n",
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "tokenaccess",
+									"value": "последний_токен_доступа",
+									"description": "последний_токен_доступа",
+									"type": "text"
+								},
+								{
+									"key": "tokenrefresh",
+									"value": "последний_токен_обновления_токена_доступа",
+									"description": "последний_токен_обновления_токена_доступа",
+									"type": "text"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -118,58 +242,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/users/refresh",
+							"raw": "{{api-link}}/user/refresh",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"users",
+								"user",
 								"refresh"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Получение инфы о юзере",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/users/info",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"info"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Обновление инфы о юзере",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"FirstName\":\"Пётр\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api-link}}/users/update",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"update"
 							]
 						}
 					},
@@ -190,12 +269,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/users/delete/",
+							"raw": "{{api-link}}/user/delete/",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"users",
+								"user",
 								"delete",
 								""
 							]
@@ -218,12 +297,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/users/logout/",
+							"raw": "{{api-link}}/user/logout/",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"users",
+								"user",
 								"logout",
 								""
 							]
@@ -273,8 +352,27 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Кафе Рыжий Заяц\",\n    \"description\": \"Кафе работает с 10 до 18!\",\n    \"status\": false\n}",
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Кафе Рыжий Заяц",
+									"description": "От 3 до 100 символов",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Кафе работает с 10 до 18!",
+									"description": "От 0 до 2000 символов",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "false",
+									"description": "Закрыто или открыто",
+									"type": "text"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -311,8 +409,27 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n\t\"Name\": \"Биба и Боба\",\r\n\t\"Description\": \"Мастерская работает с 13:00 до 00:00\",\r\n\t\"Status\": true\r\n}",
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Биба и Боба",
+									"description": "От 3 до 100 символов",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Мастерская работает с 13:00 до 00:00",
+									"description": "От 0 до 2000 символов",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "true",
+									"description": "Закрыто или открыто",
+									"type": "text"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
