@@ -1,30 +1,11 @@
-const dotenv = require('dotenv');
-// Загружаем файл .env в process.env
-dotenv.config();
-
 const webServer = require('./services/web-server.js');
-const database = require('./services/database.js');
-const dbConfig = require('./config/database.js');
-
-// Количество открытых соединений с базой данных
-const defaultThreadPoolSize = 4; // По умолчанию - 4, этого достаточно для наших задач
-process.env.UV_THREADPOOL_SIZE = dbConfig.pool.poolMax + defaultThreadPoolSize;
+const connection = require('./services/database.js');
 
 async function startup() {
-    console.log('Запуск сервера универсальной электронной очереди...');
+    console.info('Запуск сервера универсальной электронной очереди...');
 
     try {
-        console.log('Инициализация модуля базы данных...');
-
-        database.initialize();
-    } catch (err) {
-        console.error(err);
-
-        process.exit(1);
-    }
-
-    try {
-        console.log('Инициализация главного модуля веб-сервера...');
+        console.info('Инициализация главного модуля веб-сервера...');
 
         await webServer.initialize();
     } catch (err) {
@@ -39,29 +20,29 @@ startup();
 async function shutdown(e) {
     let err = e;
 
-    console.log('Выключение сервера...');
+    console.warn('Выключение сервера...');
 
     try {
-        console.log('Завершение модуля веб-сервера...');
+        console.warn('Завершение модуля веб-сервера...');
 
         await webServer.close();
     } catch (e) {
-        console.log('Обнаружена ошибка веб-сервера', e);
+        console.error('Обнаружена ошибка веб-сервера', e);
 
         err = err || e;
     }
 
     try {
-        console.log('Завершение модуля базы данных...');
+        console.warn('Отключение от базы данных...');
 
-        database.close();
+        await connection.end();
     } catch (err) {
-        console.log('Обнаружена ошибка базы данных', e);
+        console.error('Обнаружена ошибка при отключении от базы данных', e);
 
         err = err || e;
     }
 
-    console.log('Завершение приложения...');
+    console.warn('Завершение приложения...');
 
     if (err) {
         process.exit(1);
@@ -84,7 +65,7 @@ process.on('SIGINT', () => {
     shutdown();
 });
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
     console.log('Непредвиденная ошибка');
     console.error(err);
 
