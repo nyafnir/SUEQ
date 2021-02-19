@@ -4,25 +4,34 @@
   "description": "Server Universal Electronic Queue (Node.js & Express REST API)",
   "main": "src/index.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
     "start": "node ."
   },
   "keywords": [
     "nodejs",
     "express",
     "mysql",
+    "sequelize",
     "restapi"
   ],
   "author": "NyafiRawr",
   "homepage": "http://github.com/NyafiRawr/SUEQ#readme",
   "license": "UNLICENSED",
   "dependencies": {
-    "cors": "^2.8.5",
+    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.9.2",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "mysql2": "^2.2.5"
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.5.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1"
+  }
 }
