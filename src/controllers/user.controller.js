@@ -1,7 +1,7 @@
 const db = require('../models');
 const User = db.user;
 const Joi = require('joi');
-
+const mail = require('../services/mail');
 const Response = require('./response');
 
 const schemaForgotPassword = Joi.string()
@@ -31,8 +31,11 @@ exports.forgotPassword = async (request, response) => {
 
     // TODO: Проверка что пользователь не спамит запрос на сброс пароля
 
-    // TODO: Отправка ссылки на сброс пароля
-    // await smtp.send(email, getLinkPasswordReset(email));
+    // TODO: Ссылка на сброс пароля
+    mail.send(
+        value,
+        '<h1>Эта почта была указана для регистрации в нашей системе.</h1><p>Чтобы завершить регистрацию перейдите по ссылке!</p>'
+    );
 
     response
         .status(200)
