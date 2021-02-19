@@ -2,6 +2,7 @@ const db = require('../models');
 const User = db.user;
 const Joi = require('joi');
 const mail = require('../services/mail');
+const security = require('../services/security');
 const Response = require('./response');
 
 const schemaForgotPassword = Joi.string()
@@ -79,10 +80,11 @@ exports.registration = async (request, response) => {
         return;
     }
 
+    const salt = security.generateSalt(12);
     await User.create({
         email: request.body.email,
-        passwordHash: request.body.password,
-        passwordSalt: 'salt',
+        passwordHash: security.hash(request.body.password, salt),
+        passwordSalt: salt,
         surname: request.body.surname,
         firstname: request.body.firstname,
         lastname: request.body.lastname,
