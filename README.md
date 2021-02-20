@@ -67,7 +67,7 @@ surname | Кочергин
 firstname | Василий
 lastname | Леонидович
 
-## `GET` /user/login - Авторизация
+## `POST` /user/login - Авторизация
 
 Запрос
 Поле | Пример значения
@@ -75,13 +75,12 @@ lastname | Леонидович
 email | test1@host.com
 password | КрутойПароль1
 
-## `POST` /user/refresh - Обновление токенов
+## `POST` /user/login/refresh - Обновление токена доступа
 
 Запрос
 Поле | Пример значения
 ------------ | -------------
-tokenaccess | последний_токен_доступа
-tokenrefresh | последний_токен_обновления_токена_доступа
+token_refresh | последний_токен_обновления_токена_доступа
 
 ## `POST` /user/forgot-password?email=local@host.com
 

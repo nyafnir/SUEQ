@@ -66,7 +66,6 @@ exports.registration = async (request, response) => {
         firstname: request.body.firstname,
         lastname: request.body.lastname,
     });
-
     if (error) {
         response.status(400).send(new Response(error.message));
         return;
@@ -120,25 +119,66 @@ const schemaLogin = Joi.object({
         .required(),
 });
 
-exports.login = (request, response) => {
+exports.login = async (request, response) => {
+    const postData = request.body;
+
     const { error, value } = schemaLogin.validate({
-        email: request.body.email,
-        password: request.body.password,
+        email: postData.email,
+        password: postData.password,
     });
+    if (error) {
+        response.status(400).send(new Response(error.message));
+        return;
+    }
 
-    // TODO: generate token access + refresh
+    const user = await User.findOne({ where: { email: value.email } });
 
-    response.status(200).send(
-        new Response(
-            'Выполнен вход в систему.',
-            'В data токен доступа и токен обновления токена доступа.',
-            null,
-            {
-                accesstoken: '-',
-                refreshtoken: '-',
-            }
-        )
-    );
+    if (value.password !== security.hash(value.password, user.salt)) {
+        response.status(400).send(new Response('Неправильный пароль.'));
+        return;
+    }
+
+    const tokens = security.createTokens(user.id);
+
+    response
+        .status(200)
+        .send(
+            new Response(
+                'Выполнен вход в систему.',
+                'В data два токена: доступа и обновления токена доступа.',
+                tokens
+            )
+        );
+};
+
+const schemaRefresh = Joi.string().required();
+
+exports.refresh = (request, response) => {
+    const postData = request.body;
+
+    const { error, value } = schemaRefresh.validate({
+        refreshToken: postData.refreshToken,
+    });
+    if (error) {
+        response.status(400).send(new Response(error.message));
+        return;
+    }
+
+    const user = { id: 1 };
+
+    try {
+        response
+            .status(200)
+            .send(
+                new Response(
+                    'Токен доступа обновлен.',
+                    'Новый токен доступа в data.',
+                    security.updateAccessToken(user.id, value.refreshToken)
+                )
+            );
+    } catch (err) {
+        response.status(400).send(new Response(err.message));
+    }
 };
 
 exports.delete = (request, response) => {
@@ -164,10 +204,6 @@ exports.info = (request, response) => {
 };
 
 exports.update = (request, response) => {
-    response.status(404).send(new Response('Не реализовано.'));
-};
-
-exports.refresh = (request, response) => {
     response.status(404).send(new Response('Не реализовано.'));
 };
 

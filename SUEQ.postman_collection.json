@@ -242,12 +242,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/refresh",
+							"raw": "{{api-link}}/user/login/refresh",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
 								"user",
+								"login",
 								"refresh"
 							]
 						}
@@ -269,14 +270,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/delete/",
+							"raw": "{{api-link}}/user/delete",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
 								"user",
-								"delete",
-								""
+								"delete"
 							]
 						}
 					},
@@ -297,14 +297,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/logout/",
+							"raw": "{{api-link}}/user/logout",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
 								"user",
-								"logout",
-								""
+								"logout"
 							]
 						}
 					},
