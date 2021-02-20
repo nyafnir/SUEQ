@@ -133,7 +133,9 @@ exports.login = async (request, response) => {
 
     const user = await User.findOne({ where: { email: value.email } });
 
-    if (value.password !== security.hash(value.password, user.salt)) {
+    if (
+        user.passwordHash !== security.hash(value.password, user.passwordSalt)
+    ) {
         response.status(400).send(new Response('Неправильный пароль.'));
         return;
     }
@@ -200,13 +202,13 @@ exports.delete = (request, response) => {
 };
 
 exports.info = (request, response) => {
-    response.status(404).send(new Response('Не реализовано.'));
+    response.status(500).send(new Response('Не реализовано.'));
 };
 
 exports.update = (request, response) => {
-    response.status(404).send(new Response('Не реализовано.'));
+    response.status(500).send(new Response('Не реализовано.'));
 };
 
 exports.logout = (request, response) => {
-    response.status(404).send(new Response('Не реализовано.'));
+    response.status(500).send(new Response('Не реализовано.'));
 };

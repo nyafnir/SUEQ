@@ -7,7 +7,7 @@ connection.connect((error) => {
     if (error) {
         throw error;
     }
-    console.info('База данных подключена');
+    console.info('Установлено соединение с базой данных');
 });
 
 module.exports = connection;

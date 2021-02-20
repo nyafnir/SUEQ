@@ -1,17 +1,20 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 // key: refresh; value: access
 const listTokens = {};
 
 function getAccessToken(userId) {
-    return jwt.sign(userId, process.env.TOKEN_ACCESS_SECRET, {
+    return jwt.sign({ uid: userId }, process.env.TOKEN_ACCESS_SECRET, {
         expiresIn: `${process.env.TOKEN_ACCESS_LIFE_SECONDS}s`,
+        algorithm: 'HS256',
     });
 }
 
 function getRefreshToken(userId) {
-    return jwt.sign(userId, process.env.TOKEN_REFRESH_SECRET, {
+    return jwt.sign({ uid: userId }, process.env.TOKEN_REFRESH_SECRET, {
         expiresIn: `${process.env.TOKEN_REFRESH_LIFE_SECONDS}s`,
+        algorithm: 'HS256',
     });
 }
 
@@ -52,24 +55,10 @@ const generateSalt = (rounds) => {
         .slice(0, rounds);
 };
 
-const hasher = (password, salt) => {
+const hash = (password, salt) => {
     let hash = crypto.createHmac('sha512', salt);
     hash.update(password);
-    let value = hash.digest('hex');
-    return {
-        salt: salt,
-        hashedpassword: value,
-    };
-};
-
-const hash = (password, salt) => {
-    if (password == null || salt == null) {
-        throw new Error('Не указан пароль или соль');
-    }
-    if (typeof password !== 'string' || typeof salt !== 'string') {
-        throw new Error('Пароль и соль должны иметь тип строки.');
-    }
-    return hasher(password, salt);
+    return hash.digest('hex');
 };
 
 module.exports = {

@@ -6,6 +6,9 @@ module.exports = (app) => {
     router.post('/forgot-password', controller.forgotPassword);
     router.post('/registration', controller.registration);
     router.post('/login', controller.login);
+
+    router.use(require('../middleware/auth.middleware'));
+
     router.post('/login/refresh', controller.refresh);
     router.get('/info', controller.info);
     router.put('/update', controller.update);
