@@ -2,10 +2,10 @@ const webServer = require('./services/web-server.js');
 const connection = require('./services/database.js');
 
 async function startup() {
-    console.info('Запуск сервера универсальной электронной очереди...');
+    console.info('Запуск сервера...');
 
     try {
-        console.info('Инициализация главного модуля веб-сервера...');
+        console.info('Инициализация главного модуля...');
 
         await webServer.initialize();
     } catch (err) {
@@ -23,11 +23,11 @@ async function shutdown(e) {
     console.warn('Выключение сервера...');
 
     try {
-        console.warn('Завершение модуля веб-сервера...');
+        console.warn('Завершение главного модуля...');
 
         await webServer.close();
     } catch (e) {
-        console.error('Обнаружена ошибка веб-сервера', e);
+        console.error('Обнаружена ошибка главного модуля', e);
 
         err = err || e;
     }
