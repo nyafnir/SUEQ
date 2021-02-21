@@ -1,23 +1,24 @@
 const nodemailer = require('nodemailer');
+const config = require('../config');
 
 const transport = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
+    host: config.mail.host,
+    port: config.mail.port,
     auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASSWORD,
+        user: config.mail.user,
+        pass: config.mail.password,
     },
 });
 
-function send(to, html) {
+const send = (to, html) => {
     transport.sendMail(
         {
-            from: process.env.MAIL_FROM,
+            from: config.mail.from,
             to,
-            subject: process.env.MAIL_SUBJECT,
+            subject: config.mail.subject,
             html,
         },
-        function (error, info) {
+        (error, info) => {
             if (error) {
                 console.error(error);
             } else {
@@ -25,6 +26,6 @@ function send(to, html) {
             }
         }
     );
-}
+};
 
 module.exports.send = send;
