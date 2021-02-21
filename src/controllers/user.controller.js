@@ -3,7 +3,7 @@ const User = db.user;
 const Joi = require('joi');
 const mail = require('../services/mail');
 const security = require('../services/security');
-const Response = require('./response');
+const Response = require('../response');
 
 const schemaForgotPassword = Joi.string()
     .email({

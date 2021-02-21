@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Response = require('../response');
 
 module.exports = (request, response, next) => {
     const token =
@@ -14,16 +15,15 @@ module.exports = (request, response, next) => {
                 if (err) {
                     return response
                         .status(401)
-                        .json({ error: true, message: 'Доступ запрещен.' });
+                        .send(new Response('Нет доступа.'));
                 }
                 request.decoded = decoded;
                 next();
             }
         );
     } else {
-        return response.status(403).send({
-            error: true,
-            message: 'Токен доступа не найден в запросе.',
-        });
+        return response
+            .status(403)
+            .send(new Response('Токен доступа не указан в запросе.'));
     }
 };
