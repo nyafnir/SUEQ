@@ -25,7 +25,7 @@ db.sequelize = sequelize;
 
 //#region Обрабатываемые модели
 
-db.user = require('./user.model.js')(sequelize, Sequelize);
+db.User = require('./user.model.js')(sequelize, Sequelize);
 
 //#endregion
 

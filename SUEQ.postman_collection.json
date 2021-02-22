@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "User",
+			"name": "User (без токена)",
 			"item": [
 				{
 					"name": "Забыл пароль",
@@ -17,20 +17,24 @@
 						},
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@host.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{api-link}}/user/forgot-password?email=local@host.com",
+							"raw": "{{api-link}}/users/password/forgot",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
-								"forgot-password"
-							],
-							"query": [
-								{
-									"key": "email",
-									"value": "local@host.com"
-								}
+								"users",
+								"password",
+								"forgot"
 							]
 						}
 					},
@@ -45,34 +49,8 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "test1@host.com",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "КрутойПароль1",
-									"type": "text"
-								},
-								{
-									"key": "surname",
-									"value": "Кочергин",
-									"type": "text"
-								},
-								{
-									"key": "firstname",
-									"value": "Василий",
-									"type": "text"
-								},
-								{
-									"key": "lastname",
-									"value": "Леонидович",
-									"type": "text"
-								}
-							],
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\",\r\n    \"surname\": \"Кочергин\",\r\n    \"firstname\": \"Василий\",\r\n    \"lastname\": \"Леонидович\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -80,12 +58,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/registration",
+							"raw": "{{api-link}}/users/registration",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
+								"users",
 								"registration"
 							]
 						}
@@ -93,30 +71,16 @@
 					"response": []
 				},
 				{
-					"name": "Авторизация",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Аутентификация",
 					"request": {
 						"auth": {
 							"type": "noauth"
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "test1@host.com",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "КрутойПароль1",
-									"type": "text"
-								}
-							],
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -124,30 +88,58 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/login",
+							"raw": "{{api-link}}/users/authenticate",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
-								"login"
+								"users",
+								"authenticate"
 							]
 						}
 					},
 					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				},
 				{
-					"name": "Получение инфы о юзере",
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Профиль пользователя",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/user/info",
+							"raw": "{{api-link}}/users/info",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
+								"users",
 								"info"
 							]
 						}
@@ -155,43 +147,13 @@
 					"response": []
 				},
 				{
-					"name": "Обновление инфы о юзере",
+					"name": "Обновление профиля",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "test2@host.com",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "password",
-									"value": "КрутойПароль2",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "surname",
-									"value": "Чайковский",
-									"type": "text"
-								},
-								{
-									"key": "firstname",
-									"value": "Пётр",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "lastname",
-									"value": "Владимирович",
-									"type": "text",
-									"disabled": true
-								}
-							],
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test2@host.com\",\r\n    \"password\": \"КрутойПароль2\",\r\n    \"surname\": \"Чайковский\",\r\n    \"firstname\": \"Пётр\",\r\n    \"lastname\": \"Васильевич\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -199,12 +161,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/update",
+							"raw": "{{api-link}}/users/update",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
+								"users",
 								"update"
 							]
 						}
@@ -214,42 +176,22 @@
 				{
 					"name": "Обновление токена доступа",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
+						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "tokenaccess",
-									"value": "последний_токен_доступа",
-									"description": "последний_токен_доступа",
-									"type": "text"
-								},
-								{
-									"key": "tokenrefresh",
-									"value": "последний_токен_обновления_токена_доступа",
-									"description": "последний_токен_обновления_токена_доступа",
-									"type": "text"
-								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{api-link}}/user/login/refresh",
+							"raw": "{{api-link}}/users/refresh-token?token=test",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
-								"login",
-								"refresh"
+								"users",
+								"refresh-token"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "test"
+								}
 							]
 						}
 					},
@@ -270,13 +212,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/delete",
+							"raw": "{{api-link}}/users/delete/",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
-								"delete"
+								"users",
+								"delete",
+								""
 							]
 						}
 					},
@@ -297,317 +240,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/user/logout",
+							"raw": "{{api-link}}/users/logout/",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
-								"user",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "Queues",
-			"item": [
-				{
-					"name": "Создание очереди",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "name",
-									"value": "Кафе Рыжий Заяц",
-									"description": "От 3 до 100 символов",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "Кафе работает с 10 до 18!",
-									"description": "От 0 до 2000 символов",
-									"type": "text"
-								},
-								{
-									"key": "status",
-									"value": "false",
-									"description": "Закрыто или открыто",
-									"type": "text"
-								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api-link}}/queues/create",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"queues",
-								"create"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Изменить название, описание или статус очереди",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "name",
-									"value": "Биба и Боба",
-									"description": "От 3 до 100 символов",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "Мастерская работает с 13:00 до 00:00",
-									"description": "От 0 до 2000 символов",
-									"type": "text"
-								},
-								{
-									"key": "status",
-									"value": "true",
-									"description": "Закрыто или открыто",
-									"type": "text"
-								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api-link}}/queues/update/7",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"queues",
-								"update",
-								"7"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Получить информацию об очереди",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/queues/info/7",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"queues",
-								"info",
-								"7"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Удалить очередь",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/queues/delete/3",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"queues",
-								"delete",
-								"3"
-							]
-						},
-						"description": "Получаем: \"Queue deleted.\""
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "Positions",
-			"item": [
-				{
-					"name": "Встать в очередь",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/positions/7",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"positions",
-								"7"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Выйти из очереди",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/positions/5",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"positions",
-								"5"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Удалить стоящего в очереди (владелец)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/positions/6/3",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"positions",
-								"6",
-								"3"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Получение информации о пользователях в очереди",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/positions/7",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"positions",
-								"7"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Изменить позицию стоящего в очереди (владелец)",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n\t\"UserId\": 3,\r\n\t\"Place\": 1\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api-link}}/positions/6",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"positions",
-								"6"
+								"users",
+								"logout",
+								""
 							]
 						}
 					},
@@ -636,6 +276,16 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjE0MDI3Mjc2LCJleHAiOjE2MTQwMjgxNzZ9.w969n6TApiiLtS7HYfETQ_v7zqQx9D9FLVSSDhFu-XA",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",

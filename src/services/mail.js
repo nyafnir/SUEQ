@@ -13,7 +13,7 @@ const transport = nodemailer.createTransport({
 
 // Отправить письмо на почту "to" с содержанием в формате html
 const send = (to, html) => {
-    transport.sendMail(
+    return transport.sendMail(
         {
             from: mail.from,
             to,
@@ -22,9 +22,7 @@ const send = (to, html) => {
         },
         (error, info) => {
             if (error) {
-                log.error(error);
-            } else {
-                log.info(info);
+                log.error('При отправке письма произошла ошибка!', error);
             }
         }
     );

@@ -1,44 +1,68 @@
 const dotenv = require('dotenv');
-// Загружаем файл .env в process.env
-dotenv.config();
+dotenv.config(); // Загружаем файл .env в process.env
 
 module.exports = {
     server: {
-        address: process.env.ADDRESS || 'localhost',
-        port: process.env.PORT || 3000,
+        address: process.env.ADDRESS,
+        port: parseInt(process.env.PORT, 10),
+        limit: {
+            rate: {
+                windowMs: parseInt(process.env.LIMIT_RATE_WINDOW_MS, 10),
+                max: parseInt(process.env.LIMIT_RATE_MAX_REQUESTS, 10),
+                message:
+                    'Слишком много запросов, пожалуйста, попробуйте позже.',
+            },
+            speed: {
+                windowMs: parseInt(process.env.LIMIT_SPEED_WINDOW_MS, 10),
+                delayAfter: parseInt(process.env.LIMIT_SPEED_DELAY_AFTER, 10),
+                delayMs: parseInt(process.env.LIMIT_SPEED_DELAY_MS, 10),
+            },
+        },
     },
     database: {
         dialect: 'mysql',
         credentials: {
-            host: process.env.DB_HOST || 'localhost',
-            port: process.env.DB_PORT || '3306',
-            database: process.env.DB_DATABASE || 'ueq',
-            user: process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || '',
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT, 10),
+            database: process.env.DB_DATABASE,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
         },
         pool: {
-            max: 5,
-            min: 0,
-            acquire: 30000,
-            idle: 10000,
+            max: parseInt(process.env.DB_POOL_MAX, 10),
+            min: parseInt(process.env.DB_POOL_MIN, 10),
+            acquire: parseInt(process.env.DB_POOL_ACQUIRE, 10),
+            idle: parseInt(process.env.DB_POOL_IDLE, 10),
         },
     },
     mail: {
         host: process.env.MAIL_HOST,
-        port: process.env.MAIL_PORT,
+        port: parseInt(process.env.MAIL_PORT, 10),
         user: process.env.MAIL_USER,
         password: process.env.MAIL_PASSWORD,
         from: process.env.MAIL_FROM,
         subject: process.env.MAIL_SUBJECT,
     },
+    hash: {
+        saltRounds: parseInt(process.env.HASH_SALT_ROUNDS, 10),
+    },
     tokens: {
         access: {
             secret: process.env.TOKEN_ACCESS_SECRET,
-            life: process.env.TOKEN_ACCESS_LIFE,
+            life: parseInt(process.env.TOKEN_ACCESS_LIFE, 10),
         },
         refresh: {
             secret: process.env.TOKEN_REFRESH_SECRET,
-            life: process.env.TOKEN_REFRESH_LIFE,
+            life: parseInt(process.env.TOKEN_REFRESH_LIFE, 10),
+        },
+        cookieOptions: {
+            expires: parseInt(process.env.TOKEN_COOKIE_LIFE, 10),
+        },
+        passwordReset: {
+            expires: parseInt(process.env.TOKEN_PASSWORD_RESET_LIFE, 10),
+        },
+        emailConfirmed: {
+            expires: parseInt(process.env.TOKEN_EMAIL_CONFIRMED_LIFE, 10),
         },
     },
 };

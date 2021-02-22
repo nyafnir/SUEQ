@@ -1,9 +1,14 @@
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { server } = require('../config.js');
 const { homepage } = require('../../package.json');
-const { log } = require('../logger');
+const log = require('../logger');
+const errorHandler = require('../handlers/error.handler');
+const rateLimit = require('express-rate-limit');
+const slowDown = require('express-slow-down');
+const helmet = require('helmet');
 
 let httpServer;
 
@@ -14,8 +19,19 @@ const initialize = () => {
 
         // Обработка content-type: application/json
         app.use(bodyParser.json());
-        // Обработка content-type: application/x-www-form-urlencoded
-        app.use(bodyParser.urlencoded({ extended: true }));
+        // Обработка куков
+        app.use(cookieParser());
+
+        // Ограничение скорости за лёгкий спам запросами
+        const speedLimiter = slowDown(server.limit.speed);
+        app.use(speedLimiter);
+
+        // Блокировка за серьёзный спам запросами
+        const rateLimiter = rateLimit(server.limit.rate);
+        app.use(rateLimiter);
+
+        // Защита HTTP-заголовков (содержит в себе 11 проверок)
+        app.use(helmet());
 
         //#region Маршруты
 
@@ -27,13 +43,11 @@ const initialize = () => {
             response.redirect(homepage);
         });
 
-        require('../routes/user.routes')(app);
+        app.use('/api/v2/users', require('../controllers/users.controller'));
 
         //#endregion
 
-        app.get('*', (request, response) => {
-            response.status(404).json();
-        });
+        app.use(errorHandler);
 
         const webServer = httpServer
             .listen(server.port, server.address)
