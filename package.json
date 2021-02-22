@@ -1,5 +1,5 @@
 {
-  "name": "SUEQ",
+  "name": "sueq",
   "version": "2.0.0",
   "description": "Server Universal Electronic Queue (Node.js & Express REST API)",
   "main": "src/index.js",
@@ -26,6 +26,8 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.4.18",
+    "pino": "^6.11.1",
+    "pino-pretty": "^4.5.0",
     "sequelize": "^6.5.0"
   },
   "devDependencies": {

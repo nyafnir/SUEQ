@@ -202,7 +202,7 @@ exports.delete = (request, response) => {
 };
 
 exports.info = (request, response) => {
-    response.status(500).send(new Response('Не реализовано.'));
+    response.send('Ok.');
 };
 
 exports.update = (request, response) => {

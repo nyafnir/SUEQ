@@ -1,28 +1,30 @@
 const nodemailer = require('nodemailer');
-const config = require('../config');
+const { mail } = require('../config');
+const { log } = require('../logger');
 
 const transport = nodemailer.createTransport({
-    host: config.mail.host,
-    port: config.mail.port,
+    host: mail.host,
+    port: mail.port,
     auth: {
-        user: config.mail.user,
-        pass: config.mail.password,
+        user: mail.user,
+        pass: mail.password,
     },
 });
 
+// Отправить письмо на почту "to" с содержанием в формате html
 const send = (to, html) => {
     transport.sendMail(
         {
-            from: config.mail.from,
+            from: mail.from,
             to,
-            subject: config.mail.subject,
+            subject: mail.subject,
             html,
         },
         (error, info) => {
             if (error) {
-                console.error(error);
+                log.error(error);
             } else {
-                console.info(info);
+                log.info(info);
             }
         }
     );

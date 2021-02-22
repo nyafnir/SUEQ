@@ -1,31 +1,32 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { tokens } = require('../config');
 
 // key: refresh; value: access
 const listTokens = {};
 
-function getAccessToken(userId) {
-    return jwt.sign({ uid: userId }, process.env.TOKEN_ACCESS_SECRET, {
-        expiresIn: `${process.env.TOKEN_ACCESS_LIFE_SECONDS}s`,
+const getAccessToken = (userId) => {
+    return jwt.sign({ uid: userId }, tokens.access.secret, {
+        expiresIn: `${tokens.access.life}s`,
         algorithm: 'HS256',
     });
-}
+};
 
-function getRefreshToken(userId) {
-    return jwt.sign({ uid: userId }, process.env.TOKEN_REFRESH_SECRET, {
-        expiresIn: `${process.env.TOKEN_REFRESH_LIFE_SECONDS}s`,
+const getRefreshToken = (userId) => {
+    return jwt.sign({ uid: userId }, tokens.refresh.secret, {
+        expiresIn: `${tokens.refresh.life}s`,
         algorithm: 'HS256',
     });
-}
+};
 
 const createTokens = (userId) => {
     const access = getAccessToken(userId);
     const refresh = getRefreshToken(userId);
     listTokens[refresh] = {
         access_token: access,
-        access_token_life_seconds: process.env.TOKEN_ACCESS_LIFE_SECONDS,
+        access_token_life: tokens.access.life,
         refresh_token: refresh,
-        refresh_token_life_seconds: process.env.TOKEN_REFRESH_LIFE_SECONDS,
+        refresh_token_life: tokens.refresh.life,
     };
     return listTokens[refresh];
 };

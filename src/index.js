@@ -1,73 +1,86 @@
 const webServer = require('./services/web-server.js');
-const connection = require('./services/database.js');
+const { database } = require('./config');
+const db = require('./models');
+const { log } = require('./logger');
 
-async function startup() {
-    console.info('Запуск сервера...');
+const startup = async () => {
+    log.info('Запуск сервера...');
 
     try {
-        console.info('Инициализация главного модуля...');
+        log.info('Инициализация главного модуля...');
 
         await webServer.initialize();
     } catch (err) {
-        console.error(err);
+        log.error(err);
 
         process.exit(1);
     }
-}
+
+    try {
+        log.info(
+            `Соединение с базой данных ${database.credentials.database} по адресу: http://${database.credentials.host}:${database.credentials.port}`
+        );
+
+        await db.sequelize.sync({ force: false });
+    } catch (err) {
+        log.error(err);
+
+        process.exit(1);
+    }
+};
 
 startup();
 
-async function shutdown(e) {
-    let err = e;
+const shutdown = async (error = null) => {
+    let err = error;
 
-    console.warn('Выключение сервера...');
+    log.warn('Выключение сервера...');
 
     try {
-        console.warn('Завершение главного модуля...');
+        log.warn('Завершение главного модуля...');
 
         await webServer.close();
-    } catch (e) {
-        console.error('Обнаружена ошибка главного модуля', e);
+    } catch (error) {
+        log.error('Обнаружена ошибка главного модуля', error);
 
-        err = err || e;
+        err = err || error;
     }
 
     try {
-        console.warn('Отключение от базы данных...');
+        log.warn('Отключение от базы данных...');
 
-        await connection.end();
-    } catch (err) {
-        console.error('Обнаружена ошибка при отключении от базы данных', e);
+        await db.sequelize.close();
+    } catch (error) {
+        log.error('Обнаружена ошибка при отключении от базы данных', error);
 
-        err = err || e;
+        err = err || error;
     }
 
-    console.warn('Завершение приложения...');
+    log.warn('Завершение приложения...');
 
     if (err) {
         process.exit(1);
     } else {
         process.exit(0);
     }
-}
+};
 
 //#region Отслеживаем событие закрытия сервера
 
 process.on('SIGTERM', () => {
-    console.log('Отправлен SIGTERM от какого-то процесса извне');
+    log.warn('Отправлен SIGTERM от какого-то процесса извне!');
 
     shutdown();
 });
 
 process.on('SIGINT', () => {
-    console.log('Отправлен SIGINT (Ctrl + C)');
+    log.warn('Отправлен SIGINT (Ctrl + C)!');
 
     shutdown();
 });
 
 process.on('uncaughtException', (err) => {
-    console.log('Непредвиденная ошибка');
-    console.error(err);
+    log.error('Непредвиденная ошибка!', err);
 
     shutdown(err);
 });

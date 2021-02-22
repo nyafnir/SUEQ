@@ -31,4 +31,14 @@ module.exports = {
         from: process.env.MAIL_FROM,
         subject: process.env.MAIL_SUBJECT,
     },
+    tokens: {
+        access: {
+            secret: process.env.TOKEN_ACCESS_SECRET,
+            life: process.env.TOKEN_ACCESS_LIFE,
+        },
+        refresh: {
+            secret: process.env.TOKEN_REFRESH_SECRET,
+            life: process.env.TOKEN_REFRESH_LIFE,
+        },
+    },
 };
