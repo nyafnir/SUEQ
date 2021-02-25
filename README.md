@@ -24,29 +24,7 @@ REST API сервер на основе NodeJS: Express + Sequelize (mysql) + no
 # Содержание
 
 <!--ts-->
--   [Как запустить?](./README.md#Инструкция-по-запуску)
--   [Как создать базу данных и её пользователя в MySQL?](./README.md#Создание-базы-данных-в-MySQL)
--   [Маршруты по которым можно общаться с сервером](https://github.com/NyafiRawr/SUEQ/wiki)
+-   [Как запустить?](https://github.com/NyafiRawr/SUEQ/wiki/%D0%9A%D0%B0%D0%BA-%D0%B7%D0%B0%D0%BF%D1%83%D1%81%D1%82%D0%B8%D1%82%D1%8C%3F)
+-   [Как создать базу данных и её пользователя в MySQL?](https://github.com/NyafiRawr/SUEQ/wiki/%D0%9A%D0%B0%D0%BA-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D1%8C-%D0%B1%D0%B0%D0%B7%D1%83-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B8-%D0%B5%D1%91-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F-%D0%B2-MySQL%3F)
+-   [Маршруты по которым можно общаться с сервером](https://github.com/NyafiRawr/SUEQ/wiki/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%D1%8B-%D0%BF%D0%BE-%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D1%8B%D0%BC-%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE-%D0%BE%D0%B1%D1%89%D0%B0%D1%82%D1%8C%D1%81%D1%8F-%D1%81-%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%BE%D0%BC)
 <!--te-->
-
-# Инструкция по запуску
-
-1. Скачиваем репозиторий
-2. Настраиваем `.env.example` ([почта для тестов](https://mailtrap.io)), а затем сохраняем как `.env`
-3. Устанавливаем окружение [Node JS](https://nodejs.org/ru/download/)
-4. Открываем консоль в папке с приложением и устанавливаем зависимости: `npm i`
-5. Запускаем приложение: `npm run start`  
-Если русский язык в виде кракозябр, то используйте `chcp65001-russian-language-in-console.reg`
-
-# Создание базы данных в MySQL
-
-На вашем MySQL сервере выполните команды по следующему шаблону:
-
-```mysql
-CREATE DATABASE `моя-база`;
-CREATE USER 'КрутойПользователь'@'%' IDENTIFIED BY 'КрутойПароль';
-GRANT ALL PRIVILEGES ON `моя-база`.* TO `КрутойПользователь`@'%';
-FLUSH PRIVILEGES;
-```
-
-Таблицы будут созданы автоматический
