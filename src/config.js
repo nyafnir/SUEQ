@@ -20,7 +20,7 @@ module.exports = {
         },
     },
     database: {
-        dialect: 'mysql',
+        dialect: process.env.DB_DIALECT,
         credentials: {
             host: process.env.DB_HOST,
             port: parseInt(process.env.DB_PORT, 10),
