@@ -1,46 +1,26 @@
 const Response = require('../response');
 
-const errorHandler = (err, request, response, next) => {
+const errorHandler = (error, request, response, next) => {
     switch (true) {
-        case err.name === 'ValidationError':
+        case error instanceof Response:
+            return response.status(400).send(error);
+        case error.name === 'ValidationError':
             return response
                 .status(400)
                 .send(
                     new Response(
                         'Ошибка в введенных данных.',
-                        'Ошибки перечисленны в data.',
-                        err.messages
+                        'Ошибки перечислены в data.',
+                        error.messages
                     )
                 );
-        case err.name === 'UnauthorizedError':
+        case error.name === 'UnauthorizedError':
             return response
                 .status(401)
                 .send(
                     new Response(
                         'Вы не авторизованы в системе, сначала нужно войти!',
-                        err.name,
-                        err
-                    )
-                );
-        case typeof err === 'string':
-            if (err.toLowerCase().endsWith('not found')) {
-                return response
-                    .status(404)
-                    .send(
-                        new Response(
-                            'Такой страницы нет на сервере.',
-                            `Имя ошибки: ${err.name}. Содержимое указано в data.`,
-                            err
-                        )
-                    );
-            }
-            return response
-                .status(400)
-                .send(
-                    new Response(
-                        'Ошибка в запросе.',
-                        `Имя ошибки: ${err.name}. Содержимое указано в data.`,
-                        err
+                        `${error.name}: ${error.message} ${error.inner.expiredAt}`
                     )
                 );
         default:
@@ -49,8 +29,10 @@ const errorHandler = (err, request, response, next) => {
                 .send(
                     new Response(
                         'Неизвестная ошибка сервера, сообщите об этом в службу поддержки.',
-                        `Имя ошибки: ${err.name}. Содержимое указано в data.`,
-                        err
+                        `Имя ошибки: ${
+                            error.name
+                        }. Время: ${Date.now().toString()}. Содержимое указано в data.`,
+                        error
                     )
                 );
     }

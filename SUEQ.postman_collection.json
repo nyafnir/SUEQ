@@ -10,6 +10,36 @@
 			"name": "User (без токена)",
 			"item": [
 				{
+					"name": "Аутентификация",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/users/authenticate",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"users",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Забыл пароль",
 					"request": {
 						"auth": {
@@ -71,30 +101,18 @@
 					"response": []
 				},
 				{
-					"name": "Аутентификация",
+					"name": "Обновить токена доступа",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{api-link}}/users/authenticate",
+							"raw": "{{api-link}}/users/refresh-token",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
 								"users",
-								"authenticate"
+								"refresh-token"
 							]
 						}
 					},
@@ -129,7 +147,7 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "Профиль пользователя",
+					"name": "Получить профиль",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -147,7 +165,7 @@
 					"response": []
 				},
 				{
-					"name": "Обновление профиля",
+					"name": "Обновить профиль",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -174,24 +192,46 @@
 					"response": []
 				},
 				{
-					"name": "Обновление токена доступа",
+					"name": "Отозвать токена доступа",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/users/refresh-token?token=test",
+							"raw": "{{api-link}}/users/revoke-token",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
 								"users",
-								"refresh-token"
-							],
-							"query": [
-								{
-									"key": "token",
-									"value": "test"
+								"revoke-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Выйти из аккаунта",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/users/logout/everywhere",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"users",
+								"logout",
+								"everywhere"
 							]
 						}
 					},
@@ -219,34 +259,6 @@
 							"path": [
 								"users",
 								"delete",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Выход",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api-link}}/users/logout/",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"logout",
 								""
 							]
 						}
@@ -281,7 +293,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjE0MDI3Mjc2LCJleHAiOjE2MTQwMjgxNzZ9.w969n6TApiiLtS7HYfETQ_v7zqQx9D9FLVSSDhFu-XA",
+				"value": "",
 				"type": "string"
 			}
 		]

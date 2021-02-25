@@ -21,6 +21,6 @@
     "curly": "error",
     "brace-style": "error",
     // Настройка отдельных правил
-    "no-unused-vars": 1
+    "no-unused-vars": 0
   }
 }

@@ -55,14 +55,14 @@ module.exports = {
             secret: process.env.TOKEN_REFRESH_SECRET,
             life: parseInt(process.env.TOKEN_REFRESH_LIFE, 10),
         },
-        cookieOptions: {
-            expires: parseInt(process.env.TOKEN_COOKIE_LIFE, 10),
-        },
-        passwordReset: {
-            expires: parseInt(process.env.TOKEN_PASSWORD_RESET_LIFE, 10),
-        },
-        emailConfirmed: {
-            expires: parseInt(process.env.TOKEN_EMAIL_CONFIRMED_LIFE, 10),
-        },
+        passwordResetTimeout: parseInt(
+            process.env.TOKEN_PASSWORD_RESET_TIMEOUT_MS,
+            10
+        ),
+        emailConfirmedTimeout: parseInt(
+            process.env.TOKEN_EMAIL_CONFIRMED_TIMEOUT_MS,
+            10
+        ),
+        accountRescueTimeout: parseInt(process.env.TOKEN_RESCUE_TIMEOUT_MS, 10),
     },
 };

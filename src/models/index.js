@@ -26,6 +26,13 @@ db.sequelize = sequelize;
 //#region Обрабатываемые модели
 
 db.User = require('./user.model.js')(sequelize, Sequelize);
+db.RefreshToken = require('./refreshtoken.model.js')(sequelize, Sequelize);
+db.User.hasMany(db.RefreshToken, {
+    foreignKey: 'userId',
+});
+db.RefreshToken.belongsTo(db.User, {
+    foreignKey: 'userId',
+});
 
 //#endregion
 

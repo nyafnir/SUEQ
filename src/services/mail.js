@@ -20,7 +20,7 @@ const send = (to, html) => {
             subject: mail.subject,
             html,
         },
-        (error, info) => {
+        (error) => {
             if (error) {
                 log.error('При отправке письма произошла ошибка!', error);
             }
@@ -28,4 +28,6 @@ const send = (to, html) => {
     );
 };
 
-module.exports.send = send;
+module.exports = {
+    send,
+};
