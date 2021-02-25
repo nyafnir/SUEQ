@@ -1,6 +1,6 @@
 # SUEQ | Server Universal Electronic Queue
 
-REST API сервер на основе NodeJS: Express + Sequelize (mysql) + nodemailer
+REST API сервер на основе NodeJS: Express + Sequelize + nodemailer
 + Защита HTTP-заголовков (helmet)  
 + Защита от спам-запросов: ограничение скорости (express-slow-down) и полная блокировка на время (express-rate-limit)  
 + Красивое и удобное логгирование происходящего (pino)
