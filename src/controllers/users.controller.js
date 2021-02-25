@@ -294,7 +294,7 @@ exports.forgotPassword = async (request, response, next) => {
     const token = generateToken(
         { email: user.email, updatedAt: user.updatedAt, userId: user.id },
         user.passwordHash,
-        `${config.tokens.passwordReset.expires}ms`
+        `${config.tokens.passwordResetTimeout}ms`
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset/${user.id}/${token}`;
 
@@ -377,7 +377,7 @@ exports.registration = async (request, response) => {
         user.passwordSalt,
         `${config.tokens.emailConfirmedTimeout}ms`
     );
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirmed/${user.id}/${token}`;
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm/${user.id}/${token}`;
 
     mail.send(
         user.email,
@@ -391,14 +391,6 @@ exports.registration = async (request, response) => {
         <i>Возникли проблемы? Обратитесь в службу поддержки внутри приложения.</i>`
     );
 
-    // TODO: учесть кейс с внезапным выключением
-    setTimeout(async () => {
-        user = await db.User.findByPk(user.id);
-        if (user.confirmed === false) {
-            await user.destroy();
-        }
-    }, config.tokens.emailConfirmedTimeout);
-
     return response
         .status(200)
         .send(
@@ -408,7 +400,7 @@ exports.registration = async (request, response) => {
         );
 };
 
-exports.registrationConfirmed = async (request, response) => {
+exports.registrationConfirm = async (request, response) => {
     const getData = request.params;
 
     const user = await db.User.findByPk(getData.userId);
@@ -593,6 +585,14 @@ exports.update = async (request, response) => {
     const user = request.user;
     const updateFields = request.body;
 
+    if (updateFields.password !== null) {
+        const salt = await generateSalt();
+        const hash = await generateHash(updateFields.password, salt);
+        updateFields.passwordHash = hash;
+        updateFields.passwordSalt = salt;
+        delete updateFields.password;
+    }
+
     await user.update(updateFields);
 
     return response
@@ -642,14 +642,6 @@ exports.delete = async (request, response, next) => {
     }
 
     removeRefreshTokenFromCookie(response);
-
-    // TODO: учесть кейс с внезапным выключением
-    setTimeout(async () => {
-        user = await db.User.findByPk(user.id);
-        if (user.removeAt !== null) {
-            await user.destroy();
-        }
-    }, config.tokens.emailConfirmedTimeout);
 
     const token = generateToken(
         { userId: user.id },
@@ -717,9 +709,9 @@ router.get(
 
 router.post('/registration', registrationSchema, this.registration);
 router.get(
-    '/registration/confirmed/:userId/:token',
+    '/registration/confirm/:userId/:token',
     userIdAndTokenSchema,
-    this.registrationConfirmed
+    this.registrationConfirm
 );
 
 router.post('/authenticate', authenticateSchema, this.authenticate);

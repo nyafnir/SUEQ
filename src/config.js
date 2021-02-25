@@ -34,6 +34,16 @@ module.exports = {
             acquire: parseInt(process.env.DB_POOL_ACQUIRE, 10),
             idle: parseInt(process.env.DB_POOL_IDLE, 10),
         },
+        events: {
+            accountNotRescueCheck: parseInt(
+                process.env.DB_EVENTS_ACCOUNT_NOT_RESCUE_MS,
+                10
+            ),
+            emailNotConfirmCheck: parseInt(
+                process.env.DB_EVENTS_EMAIL_NOT_CONFIRM_MS,
+                10
+            ),
+        },
     },
     mail: {
         host: process.env.MAIL_HOST,
