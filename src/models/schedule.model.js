@@ -54,7 +54,7 @@ module.exports = (sequelize, Sequelize) => {
             // Дата окончания действия
             workTo: {
                 type: Sequelize.DATE,
-                defaultValue: '3000-01-01',
+                defaultValue: '2077-01-01', // Предположим наше приложение проработает 56 лет. Удобнее, чем работать с null
                 allowNull: false,
             },
         },
