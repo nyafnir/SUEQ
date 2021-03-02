@@ -13,8 +13,9 @@ REST API сервер на основе NodeJS: Express + Sequelize + nodemailer
 - Двухфакторная аутентификация (2FA) (телефон с установленным 2FA-приложением, например, Google Authenticator, Authy)
 - Возможность аутентификации через Google
 - Чат со службой поддержки
-- Реализация очередей и позиций
 - Роли и привилегии
+- GUI настроек для ОС Windows
+- Запуск в виде службы для ОС Windows
 
 <p>
 <img src="https://img.shields.io/github/package-json/v/NyafiRawr/SUEQ" alt="GitHub package.json version" />
