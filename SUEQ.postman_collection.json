@@ -1,127 +1,296 @@
 {
 	"info": {
 		"_postman_id": "57f96829-c9bb-4254-8ce6-96a64d32a129",
-		"name": "SUEQ v2",
+		"name": "SUEQ",
 		"description": "Server Universal Electronic Queue",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "User (без токена)",
+			"name": "User",
 			"item": [
 				{
-					"name": "Аутентификация",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					"name": "Гость",
+					"item": [
+						{
+							"name": "Аутентификация",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"access-token\", pm.response.json().data.tokens.access.token);"
+										],
+										"type": "text/javascript"
+									}
 								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/authenticate",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Забыл пароль",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test1@host.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/password/forgot",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"password",
+										"forgot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Регистрация",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\",\r\n    \"surname\": \"Кочергин\",\r\n    \"firstname\": \"Василий\",\r\n    \"lastname\": \"Леонидович\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/registration",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновить токена доступа",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjE0MjY0ODIxLCJleHAiOjE2MTQzNTEyMjF9.vQdBHClH5aIH-dyOWC22Utv-A4_MlvcqHi1D7EndZGA\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/refresh-token",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"refresh-token"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
 							}
 						},
-						"url": {
-							"raw": "{{api-link}}/users/authenticate",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Забыл пароль",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test1@host.com\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
 							}
-						},
-						"url": {
-							"raw": "{{api-link}}/users/password/forgot",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"password",
-								"forgot"
-							]
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "Регистрация",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\",\r\n    \"surname\": \"Кочергин\",\r\n    \"firstname\": \"Василий\",\r\n    \"lastname\": \"Леонидович\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					"name": "Пользователь",
+					"item": [
+						{
+							"name": "Получить профиль",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/users/info",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"info"
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "{{api-link}}/users/registration",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"registration"
-							]
+						{
+							"name": "Обновить профиль",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test2@host.com\",\r\n    \"password\": \"КрутойПароль2\",\r\n    \"surname\": \"Чайковский\",\r\n    \"firstname\": \"Пётр\",\r\n    \"lastname\": \"Васильевич\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/update",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"update"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Отозвать токена доступа",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/users/revoke-token",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"revoke-token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Выйти из аккаунта",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/logout/everywhere",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"logout",
+										"everywhere"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Удаление аккаунта",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/delete/",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"delete",
+										""
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "Обновить токена доступа",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/users/refresh-token",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"refresh-token"
-							]
-						}
-					},
-					"response": []
+					]
 				}
 			],
-			"auth": {
-				"type": "noauth"
-			},
 			"event": [
 				{
 					"listen": "prerequest",
@@ -144,146 +313,235 @@
 			]
 		},
 		{
-			"name": "User",
+			"name": "Queues",
 			"item": [
 				{
-					"name": "Получить профиль",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/users/info",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"info"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Обновить профиль",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test2@host.com\",\r\n    \"password\": \"КрутойПароль2\",\r\n    \"surname\": \"Чайковский\",\r\n    \"firstname\": \"Пётр\",\r\n    \"lastname\": \"Васильевич\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					"name": "Очередь",
+					"item": [
+						{
+							"name": "Создать очередь",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"test1name\",\r\n    \"description\": \"test1description\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/queues/create",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"create"
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "{{api-link}}/users/update",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"update"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Отозвать токена доступа",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{api-link}}/users/revoke-token",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"revoke-token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Выйти из аккаунта",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
+						{
+							"name": "Обновить очередь",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"test1newname\",\r\n    \"description\": \"test1newdescription\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/queues/update?queueId=9",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"update"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "9"
+										}
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "{{api-link}}/users/logout/everywhere",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"logout",
-								"everywhere"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Удаление аккаунта",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
+						{
+							"name": "Информация об очереди",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/info?queueId=9",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"info"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "9"
+										}
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "{{api-link}}/users/delete/",
-							"host": [
-								"{{api-link}}"
-							],
-							"path": [
-								"users",
-								"delete",
-								""
-							]
+						{
+							"name": "Удалить очередь",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/delete?queueId=9",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "9"
+										}
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
+					]
 				},
 				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
+					"name": "Позиции",
+					"item": [
+						{
+							"name": "Встать в очередь",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/entry?queueId=10",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"entry"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Покинуть очередь",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/leave?queueId=10",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"leave"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Список участников очереди",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/members?queueId=10",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"members"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Переместить участника очереди",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"memberId\": 8,\r\n    \"position\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/queues/members/move?queueId=10",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"members",
+										"move"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Расписание",
+					"item": []
 				}
 			]
 		}
@@ -293,7 +551,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "",
+				"value": "{{access-token}}",
 				"type": "string"
 			}
 		]
@@ -322,6 +580,10 @@
 		{
 			"key": "api-link",
 			"value": "http://localhost:3000/api/v2"
+		},
+		{
+			"key": "access-token",
+			"value": ""
 		}
 	]
 }

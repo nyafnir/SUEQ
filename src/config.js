@@ -75,4 +75,9 @@ module.exports = {
         ),
         accountRescueTimeout: parseInt(process.env.TOKEN_RESCUE_TIMEOUT_MS, 10),
     },
+    queues: {
+        owner: {
+            limit: parseInt(process.env.QUEUES_OWN_LIMIT, 10),
+        },
+    },
 };

@@ -8,24 +8,9 @@ const authorize = require('../middleware/authorize.middleware');
 const validate = require('../middleware/validate.middleware');
 const Response = require('../response');
 const config = require('../config');
+const letters = require('../utils/letters.mail');
 
 //#region Вспомогательные функции
-
-// Приведение секунд к виду: H ч? M мин? S сек
-const secondsFormattedHMS = (seconds) => {
-    if (seconds > 3600) {
-        const hours = Math.trunc(seconds / 3600);
-        const minutes = Math.trunc((seconds - hours * 3600) / 60);
-        if (minutes) {
-            return `${hours} ч ${minutes} мин`;
-        }
-        return `${hours} ч`;
-    }
-    if (seconds > 60) {
-        return `${Math.trunc(seconds / 60)} мин`;
-    }
-    return `${seconds} сек`;
-};
 
 const getRemoteClientIpAddress = (request) => {
     return (
@@ -173,16 +158,22 @@ const registrationSchema = (request, response, next) => {
             }),
         surname: Joi.string().min(3).max(100).required().messages({
             'any.required': 'Фамилия не указана!',
+            'string.min': 'Минимум {#limit} символа!',
+            'string.max': 'Максимум {#limit} символов!',
             'string.empty': 'Поле фамилии пустое!',
             'string.base': 'Фамилия должна быть указана в виде строки!',
         }),
         firstname: Joi.string().min(3).max(100).required().messages({
             'any.required': 'Имя не указано!',
+            'string.min': 'Минимум {#limit} символа!',
+            'string.max': 'Максимум {#limit} символов!',
             'string.empty': 'Поле имени пустое!',
             'string.base': 'Имя должно быть указано в виде строки!',
         }),
         lastname: Joi.string().min(3).max(100).required().messages({
             'any.required': 'Отчество не указано!',
+            'string.min': 'Минимум {#limit} символа!',
+            'string.max': 'Максимум {#limit} символов!',
             'string.empty': 'Поле отчества пустое!',
             'string.base': 'Отчество должно быть указано в виде строки!',
         }),
@@ -244,16 +235,22 @@ const updateSchema = (request, response, next) => {
             }),
         surname: Joi.string().min(3).max(100).messages({
             'any.required': 'Фамилия не указана!',
+            'string.min': 'Минимум {#limit} символа!',
+            'string.max': 'Максимум {#limit} символов!',
             'string.empty': 'Поле фамилии пустое!',
             'string.base': 'Фамилия должна быть указана в виде строки!',
         }),
         firstname: Joi.string().min(3).max(100).messages({
             'any.required': 'Имя не указано!',
+            'string.min': 'Минимум {#limit} символа!',
+            'string.max': 'Максимум {#limit} символов!',
             'string.empty': 'Поле имени пустое!',
             'string.base': 'Имя должно быть указано в виде строки!',
         }),
         lastname: Joi.string().min(3).max(100).messages({
             'any.required': 'Отчество не указано!',
+            'string.min': 'Минимум {#limit} символа!',
+            'string.max': 'Максимум {#limit} символов!',
             'string.empty': 'Поле отчества пустое!',
             'string.base': 'Отчество должно быть указано в виде строки!',
         }),
@@ -271,7 +268,7 @@ const updateSchema = (request, response, next) => {
 
 //#region Методы контроллера
 
-exports.forgotPassword = async (request, response, next) => {
+const forgotPassword = async (request, response, next) => {
     const postData = request.body;
 
     let user;
@@ -298,24 +295,14 @@ exports.forgotPassword = async (request, response, next) => {
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset/${user.id}/${token}`;
 
-    mail.send(
-        user.email,
-        `<h4>${user.firstname} ${user.lastname}</h4>
-        <p>Мы узнали, что вы потеряли свой пароль и соболезнуем об этом!</p>
-        <p>Но без паники! Вы можете сбросить пароль, если используете ссылку:</p>
-        <a href=${url}>${url}</a>
-        <p>Если вы не используете эту ссылку в течение ${secondsFormattedHMS(
-            config.tokens.passwordResetTimeout / 1000
-        )}, то она перестанет работать.</p>
-        <i>Возникли проблемы? Обратитесь в службу поддержки внутри приложения.</i>`
-    );
+    mail.send(user.email, letters.forgotPassword(url));
 
     return response
         .status(200)
         .send(new Response('Ссылка для сброса пароля отправлена на почту.'));
 };
 
-exports.resetPassword = async (request, response) => {
+const resetPassword = async (request, response, next) => {
     const getData = request.params;
 
     const user = await db.User.findByPk(getData.userId);
@@ -340,16 +327,12 @@ exports.resetPassword = async (request, response) => {
 
     await user.update({ passwordHash: hash, passwordSalt: salt });
 
-    mail.send(
-        user.email,
-        `<h1>Пароль сброшен!</h1><p>Новый пароль: ${password}</p>
-        <i>Рекомендуем поменять его на более сложный для безопасности аккаунта.</i>`
-    );
+    mail.send(user.email, letters.resetPassword(password));
 
     return response.status(200).send('Новый пароль отправлен на почту.');
 };
 
-exports.registration = async (request, response) => {
+const registration = async (request, response, next) => {
     const postData = request.body;
 
     let user = await db.User.findByEmail(postData.email).catch(() => null);
@@ -379,17 +362,7 @@ exports.registration = async (request, response) => {
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm/${user.id}/${token}`;
 
-    mail.send(
-        user.email,
-        `<h4>${user.firstname} ${user.lastname}</h4>
-        <p>Эта почта была использована для регистрации в нашей системе!</p>
-        <p>Чтобы активировать аккаунт используйте ссылку:</p>
-        <a href=${url}>${url}</a>
-        <p>Если вы не используете эту ссылку в течение ${secondsFormattedHMS(
-            config.tokens.emailConfirmedTimeout / 1000
-        )}, то она перестанет работать, а аккаунт будет удален.</p>
-        <i>Возникли проблемы? Обратитесь в службу поддержки внутри приложения.</i>`
-    );
+    mail.send(user.email, letters.registrationConfirm(url));
 
     return response
         .status(200)
@@ -400,7 +373,7 @@ exports.registration = async (request, response) => {
         );
 };
 
-exports.registrationConfirm = async (request, response) => {
+const registrationConfirm = async (request, response, next) => {
     const getData = request.params;
 
     const user = await db.User.findByPk(getData.userId);
@@ -417,14 +390,12 @@ exports.registrationConfirm = async (request, response) => {
 
     await user.update({ confirmed: true });
 
-    mail.send(user.email, `<h1>Аккаунт активирован!</h1>`);
-
     return response
         .status(200)
         .send('Почта подтверждена, теперь вы можете войти в аккаунт.');
 };
 
-exports.authenticate = async (request, response, next) => {
+const authenticate = async (request, response, next) => {
     const postData = request.body;
 
     let user;
@@ -483,7 +454,7 @@ exports.authenticate = async (request, response, next) => {
     );
 };
 
-exports.refreshToken = async (request, response, next) => {
+const refreshToken = async (request, response, next) => {
     const token = request.body.token || request.cookies.refreshToken;
 
     if (token == null) {
@@ -535,7 +506,7 @@ exports.refreshToken = async (request, response, next) => {
     );
 };
 
-exports.revokeToken = async (request, response, next) => {
+const revokeToken = async (request, response, next) => {
     const token = request.body.token || request.cookies.refreshToken;
 
     if (token == null) {
@@ -568,7 +539,7 @@ exports.revokeToken = async (request, response, next) => {
     return response.status(200).send(new Response('Токен отозван.'));
 };
 
-exports.info = async (request, response) => {
+const info = async (request, response, next) => {
     const user = await db.User.findByPk(request.user.id);
     return response
         .status(200)
@@ -581,7 +552,7 @@ exports.info = async (request, response) => {
         );
 };
 
-exports.update = async (request, response) => {
+const update = async (request, response, next) => {
     const user = request.user;
     const updateFields = request.body;
 
@@ -606,7 +577,7 @@ exports.update = async (request, response) => {
         );
 };
 
-exports.logoutEverywhere = async (request, response, next) => {
+const logoutEverywhere = async (request, response, next) => {
     const ipAddress = getRemoteClientIpAddress(request);
 
     for await (const refreshToken of request.user.refreshTokens) {
@@ -625,7 +596,7 @@ exports.logoutEverywhere = async (request, response, next) => {
         );
 };
 
-exports.delete = async (request, response, next) => {
+const deleteAccount = async (request, response, next) => {
     let user = request.user;
 
     let refreshToken;
@@ -649,30 +620,14 @@ exports.delete = async (request, response, next) => {
         `${config.tokens.accountRescueTimeout}ms`
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel/${user.id}/${token}`;
-    mail.send(
-        user.email,
-        `<h4>${user.firstname} ${user.lastname}</h4>
-        <p>Ваш аккаунт был поставлен в очередь на удаление!</p>
-        <p>Чтобы восстановить аккаунт используйте ссылку:</p>
-        <a href=${url}>${url}</a>
-        <p>Если вы не используете эту ссылку в течение ${secondsFormattedHMS(
-            config.tokens.accountRescueTimeout / 1000
-        )}, то она перестанет работать, а аккаунт будет безвозвратно удален.</p>
-        <i>Возникли проблемы? Обратитесь в службу поддержки внутри приложения.</i>`
-    );
+    mail.send(user.email, letters.deleteAccount(url));
 
     return response
         .status(200)
-        .send(
-            new Response(
-                `Аккаунт частично удален, полное удаление через ${secondsFormattedHMS(
-                    config.tokens.accountRescueTimeout / 1000
-                )}.`
-            )
-        );
+        .send(new Response(`Аккаунт в очереди на удаление, доступ закрыт.`));
 };
 
-exports.deleteCancel = async (request, response) => {
+const deleteAccountCancel = async (request, response, next) => {
     const getData = request.params;
 
     const user = await db.User.findByPk(getData.userId);
@@ -700,34 +655,34 @@ exports.deleteCancel = async (request, response) => {
 
 //#region Маршруты
 
-router.post('/password/forgot', forgotPasswordSchema, this.forgotPassword);
+router.post('/password/forgot', forgotPasswordSchema, forgotPassword);
 router.get(
     '/password/reset/:userId/:token',
     userIdAndTokenSchema,
-    this.resetPassword
+    resetPassword
 );
 
-router.post('/registration', registrationSchema, this.registration);
+router.post('/registration', registrationSchema, registration);
 router.get(
     '/registration/confirm/:userId/:token',
     userIdAndTokenSchema,
-    this.registrationConfirm
+    registrationConfirm
 );
 
-router.post('/authenticate', authenticateSchema, this.authenticate);
-router.delete('/logout/everywhere', authorize(), this.logoutEverywhere);
+router.post('/authenticate', authenticateSchema, authenticate);
+router.delete('/logout/everywhere', authorize(), logoutEverywhere);
 
-router.put('/refresh-token', tokenSchema, this.refreshToken);
-router.delete('/revoke-token', authorize(), tokenSchema, this.revokeToken);
+router.put('/refresh-token', tokenSchema, refreshToken);
+router.delete('/revoke-token', authorize(), tokenSchema, revokeToken);
 
-router.get('/info', authorize(), this.info);
-router.put('/update', authorize(), updateSchema, this.update);
+router.get('/info', authorize(), info);
+router.put('/update', authorize(), updateSchema, update);
 
-router.delete('/delete', authorize(), this.delete);
+router.delete('/delete', authorize(), deleteAccount);
 router.get(
     '/delete/cancel/:userId/:token',
     userIdAndTokenSchema,
-    this.deleteCancel
+    deleteAccountCancel
 );
 
 module.exports = router;

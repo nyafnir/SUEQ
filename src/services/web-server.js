@@ -44,6 +44,7 @@ const initialize = () => {
         });
 
         app.use('/api/v2/users', require('../controllers/users.controller'));
+        app.use('/api/v2/queues', require('../controllers/queues.controller'));
 
         //#endregion
 

@@ -161,7 +161,24 @@ exports.forgotPassword = (url) =>
         </span>
 
         <div class="form">
-            <a href="${url}"><input class="coolButton" type="submit" value="Сбросить пароль" /></a>
+            <a href="${url}"><input class="coolButton" type="submit" value="Новый пароль" /></a>
+        </div>
+`);
+
+exports.resetPassword = (password) =>
+    template(`
+        <span class="title">
+            <strong>
+                Пароль сброшен
+            </strong>
+        </span>
+
+        <span class="message">
+            Рекомендуем поменять его на более сложный для безопасности аккаунта!
+        </span>
+
+        <div class="form">
+            ${password}
         </div>
 `);
 
