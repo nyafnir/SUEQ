@@ -63,7 +63,7 @@ const initialize = () => {
         app.use(errorHandler);
 
         // Если искомого адреса не существует, то выдать ошибку с кодом 404
-        app.get('*', function (request, response) {
+        app.use('*', (request, response) => {
             response.status(404).send();
         });
 
