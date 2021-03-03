@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
                 allowNull: false,
                 get() {
                     const rest = [];
-                    let result = this.weekday;
+                    let result = this.getDataValue('weekday');
                     while (rest.length !== 7) {
                         result = Math.floor(result / 2);
                         rest.push(result % 2);
@@ -48,13 +48,13 @@ module.exports = (sequelize, Sequelize) => {
             },
             //  Дата начала действия записи расписания
             workFrom: {
-                type: Sequelize.DATE,
+                type: Sequelize.DATEONLY,
                 defaultValue: Sequelize.NOW,
                 allowNull: false,
             },
             // Дата окончания действия
             workTo: {
-                type: Sequelize.DATE,
+                type: Sequelize.DATEONLY,
                 defaultValue: '2077-01-01', // Предположим наше приложение проработает 56 лет. Удобнее, чем работать с null
                 allowNull: false,
             },

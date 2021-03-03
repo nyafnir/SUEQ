@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
             },
             // Конкретный день, конкретного года
             date: {
-                type: Sequelize.DATE,
+                type: Sequelize.DATEONLY,
                 allowNull: false,
             },
             // 1 - праздник, 0 - рабочий день

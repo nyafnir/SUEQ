@@ -4,7 +4,6 @@ const db = require('../models');
 const authorize = require('../middleware/authorize.middleware');
 const validate = require('../middleware/validate.middleware');
 const Response = require('../response');
-const e = require('express');
 const config = require('../config');
 
 //#region Схемы валидации
@@ -30,8 +29,7 @@ const createBodySchema = (request, response, next) => {
             'number.integer': 'ID очереди должен быть целочисленным!',
         }),
         startTime: Joi.string()
-            // eslint-disable-next-line no-useless-escape
-            .regex(/^([0-9]{2})\:([0-9]{2})$/)
+            .regex(config.regexs.timeonly)
             .required()
             .messages({
                 'any.required': 'Время открытия не указано!',
@@ -42,8 +40,7 @@ const createBodySchema = (request, response, next) => {
                     'Неправильно указано время открытия, используйте формат ЧЧ:ММ!',
             }),
         endTime: Joi.string()
-            // eslint-disable-next-line no-useless-escape
-            .regex(/^([0-9]{2})\:([0-9]{2})$/)
+            .regex(config.regexs.timeonly)
             .required()
             .messages({
                 'any.required': 'Время закрытия не указано!',
@@ -60,18 +57,16 @@ const createBodySchema = (request, response, next) => {
             'number.integer':
                 'Битовая маска рабочих дней должна быть целочисленной!',
         }),
-        workFrom: Joi.date().format('YYYY-MM-DD').messages({
-            'date.empty': 'Поле начало периода пустое!',
-            'date.base':
-                'Начало периода должно быть указано в виде даты в формате ГГГГ-ММ-ДД!',
-            'date.format':
+        workFrom: Joi.string().regex(config.regexs.dateonly).messages({
+            'string.empty': 'Поле начало периода пустое!',
+            'string.base': 'Начало периода должно быть указано в виде строки!',
+            'string.pattern':
                 'Ошибка форматирования, дата начала периода должна быть представлена в виде ГГГГ-ММ-ДД.',
         }),
-        workTo: Joi.date().format('YYYY-MM-DD').messages({
-            'date.empty': 'Поле конца периода пустое!',
-            'date.base':
-                'Конец периода должен быть указан в виде даты в формате ГГГГ-ММ-ДД!',
-            'date.format':
+        workTo: Joi.string().regex(config.regexs.dateonly).messages({
+            'string.empty': 'Поле конца периода пустое!',
+            'string.base': 'Конец периода должен быть указан в виде строки!',
+            'string.pattern':
                 'Ошибка форматирования, дата конца периода должна быть представлена в виде ГГГГ-ММ-ДД.',
         }),
     });
@@ -80,26 +75,20 @@ const createBodySchema = (request, response, next) => {
 
 const updateBodySchema = (request, response, next) => {
     const schema = Joi.object({
-        startTime: Joi.string()
-            // eslint-disable-next-line no-useless-escape
-            .regex(/^([0-9]{2})\:([0-9]{2})$/)
-            .messages({
-                'string.empty': 'Поле времени открытия пустое!',
-                'string.base':
-                    'Время открытия должно быть указано в виде времени в формате ЧЧ:ММ!',
-                'string.pattern':
-                    'Неправильно указано время открытия, используйте формат ЧЧ:ММ!',
-            }),
-        endTime: Joi.string()
-            // eslint-disable-next-line no-useless-escape
-            .regex(/^([0-9]{2})\:([0-9]{2})$/)
-            .messages({
-                'string.empty': 'Поле времени закрытия пустое!',
-                'string.base':
-                    'Время закрытия должно быть указано в виде времени в формате ЧЧ:ММ!',
-                'string.pattern':
-                    'Неправильно указано время закрытия, используйте формат ЧЧ:ММ!',
-            }),
+        startTime: Joi.string().regex(config.regexs.timeonly).messages({
+            'string.empty': 'Поле времени открытия пустое!',
+            'string.base':
+                'Время открытия должно быть указано в виде времени в формате ЧЧ:ММ!',
+            'string.pattern':
+                'Неправильно указано время открытия, используйте формат ЧЧ:ММ!',
+        }),
+        endTime: Joi.string().regex(config.regexs.timeonly).messages({
+            'string.empty': 'Поле времени закрытия пустое!',
+            'string.base':
+                'Время закрытия должно быть указано в виде времени в формате ЧЧ:ММ!',
+            'string.pattern':
+                'Неправильно указано время закрытия, используйте формат ЧЧ:ММ!',
+        }),
         weekday: Joi.number().integer().messages({
             'number.empty': 'Поле с битовой маской рабочих дней пустое!',
             'number.base':
@@ -107,18 +96,16 @@ const updateBodySchema = (request, response, next) => {
             'number.integer':
                 'Битовая маска рабочих дней должна быть целочисленной!',
         }),
-        workFrom: Joi.date().format('YYYY-MM-DD').messages({
-            'date.empty': 'Поле начало периода пустое!',
-            'date.base':
-                'Начало периода должно быть указано в виде даты в формате ГГГГ-ММ-ДД!',
-            'date.format':
+        workFrom: Joi.string().regex(config.regexs.dateonly).messages({
+            'string.empty': 'Поле начало периода пустое!',
+            'string.base': 'Начало периода должно быть указано в виде строки!',
+            'string.pattern':
                 'Ошибка форматирования, дата начала периода должна быть представлена в виде ГГГГ-ММ-ДД.',
         }),
-        workTo: Joi.date().format('YYYY-MM-DD').messages({
-            'date.empty': 'Поле конца периода пустое!',
-            'date.base':
-                'Конец периода должен быть указан в виде даты в формате ГГГГ-ММ-ДД!',
-            'date.format':
+        workTo: Joi.string().regex(config.regexs.dateonly).messages({
+            'string.empty': 'Поле конца периода пустое!',
+            'string.base': 'Конец периода должен быть указан в виде строки!',
+            'string.pattern':
                 'Ошибка форматирования, дата конца периода должна быть представлена в виде ГГГГ-ММ-ДД.',
         }),
     })
@@ -136,6 +123,8 @@ const updateBodySchema = (request, response, next) => {
 //#region Методы контроллера
 
 const create = async (request, response, next) => {
+    const postDate = request.body;
+
     const schedules = await db.Schedule.findAll({
         where: { queueId: postDate.queueId },
     });
@@ -149,7 +138,6 @@ const create = async (request, response, next) => {
             );
     }
 
-    const postDate = request.body;
     const schedule = await db.Schedule.create(postDate);
 
     return response

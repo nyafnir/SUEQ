@@ -29,10 +29,8 @@ const errorHandler = (error, request, response, next) => {
                 .send(
                     new Response(
                         'Неизвестная ошибка сервера, сообщите об этом в службу поддержки.',
-                        `Имя ошибки: ${
-                            error.name
-                        }. Время: ${Date.now().toString()}. Содержимое указано в data.`,
-                        error
+                        `Ошибка произошла: ${new Date()}. Содержимое в data.`,
+                        error.toString()
                     )
                 );
     }

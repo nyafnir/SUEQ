@@ -27,12 +27,11 @@ const createBodySchema = (request, response, next) => {
             'number.base': 'ID очереди должен быть в числовом формате!',
             'number.integer': 'ID очереди должен быть целочисленным!',
         }),
-        date: Joi.date().format('YYYY-MM-DD').required().messages({
+        date: Joi.string().regex(config.regexs.dateonly).required().messages({
             'any.required': 'Особый день не указан!',
-            'date.empty': 'Поле дня пустое!',
-            'date.base':
-                'День должен быть указан в виде даты в формате ГГГГ-ММ-ДД!',
-            'date.format':
+            'string.empty': 'Поле дня пустое!',
+            'string.base': 'День должен быть указан в виде строки!',
+            'string.pattern':
                 'Ошибка форматирования, день должен быть представлен в виде ГГГГ-ММ-ДД.',
         }),
         isHoliday: Joi.boolean().required().messages({
@@ -45,11 +44,10 @@ const createBodySchema = (request, response, next) => {
 
 const updateBodySchema = (request, response, next) => {
     const schema = Joi.object({
-        date: Joi.date().format('YYYY-MM-DD').messages({
-            'date.empty': 'Поле дня пустое!',
-            'date.base':
-                'День должен быть указан в виде даты в формате ГГГГ-ММ-ДД!',
-            'date.format':
+        date: Joi.string().regex(config.regexs.dateonly).messages({
+            'string.empty': 'Поле дня пустое!',
+            'string.base': 'День должен быть указан в виде строки!',
+            'string.pattern':
                 'Ошибка форматирования, день должен быть представлен в виде ГГГГ-ММ-ДД.',
         }),
         isHoliday: Joi.boolean().messages({
@@ -70,6 +68,8 @@ const updateBodySchema = (request, response, next) => {
 //#region Методы контроллера
 
 const create = async (request, response, next) => {
+    const postDate = request.body;
+
     const holidays = await db.Holiday.findAll({
         where: { queueId: postDate.queueId },
     });
@@ -83,7 +83,6 @@ const create = async (request, response, next) => {
             );
     }
 
-    const postDate = request.body;
     const holiday = await db.Holiday.create(postDate);
 
     return response
