@@ -179,12 +179,15 @@ const info = async (request, response, next) => {
     }
 
     queue.qrcode = await generateQrCodeQueue(queue.id);
+    queue.schedules = await db.Schedule.findAll({
+        where: { queueId: queue.id },
+    });
 
     return response
         .status(200)
         .send(
             new Response(
-                'Очередь обновлена!',
+                'Информация об очереди получена.',
                 'Обновленная информация об очереди в data.',
                 queue
             )

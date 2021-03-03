@@ -23,6 +23,9 @@ module.exports = (sequelize, Sequelize) => {
             qrcode: {
                 type: Sequelize.VIRTUAL,
             },
+            schedules: {
+                type: Sequelize.VIRTUAL,
+            },
         },
         {
             paranoid: false,

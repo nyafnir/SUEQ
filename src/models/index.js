@@ -1,5 +1,6 @@
 const { database } = require('../config.js');
 const Sequelize = require('sequelize');
+const { DATE } = require('sequelize');
 
 const sequelize = new Sequelize(
     database.credentials.database,
@@ -85,17 +86,39 @@ db.Holdiay.belongsTo(db.Queue, {
 //#region Методы между моделями
 
 db.Queue.prototype.isOpen = async function () {
-    const schedules = await db.Schedule.findAll({
-        where: { queueId: this.id },
+    const now = new Date();
+
+    const holiday = await db.Holdiay.findOne({
+        where: { date: { [Sequelize.Op.eq]: now } },
     });
 
-    // TODO: вычислить работает ли сегодня
-
-    if (schedules.length) {
-        return false;
+    if (holiday === null || holiday.isHoliday === false) {
+        const schedule = await db.Schedule.findOne({
+            where: {
+                queueId: this.id,
+                workFrom: {
+                    [Sequelize.Op.lte]: now, // <=
+                },
+                workTo: {
+                    [Sequelize.Op.gte]: now, // >=
+                },
+                startTime: {
+                    [Sequelize.Op.lte]: now, // <=
+                },
+                endTime: {
+                    [Sequelize.Op.gte]: now, // >=
+                },
+                [Sequelize.Op.and]: [
+                    Sequelize.literal(`\`weekday\` & ${1 << now.getDay()}`),
+                ],
+            },
+        });
+        if (schedule !== null) {
+            return true;
+        }
     }
 
-    return true;
+    return false;
 };
 
 //#endregion
