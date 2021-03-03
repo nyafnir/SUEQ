@@ -45,10 +45,27 @@ const initialize = () => {
 
         app.use('/api/v2/users', require('../controllers/users.controller'));
         app.use('/api/v2/queues', require('../controllers/queues.controller'));
+        app.use(
+            '/api/v2/positions',
+            require('../controllers/positions.controller')
+        );
+        app.use(
+            '/api/v2/schedules',
+            require('../controllers/schedules.controller')
+        );
+        app.use(
+            '/api/v2/holidays',
+            require('../controllers/holidays.controller')
+        );
 
         //#endregion
 
         app.use(errorHandler);
+
+        // Если искомого адреса не существует, то выдать ошибку с кодом 404
+        app.get('*', function (request, response) {
+            response.status(404).send();
+        });
 
         const webServer = httpServer
             .listen(server.port, server.address)

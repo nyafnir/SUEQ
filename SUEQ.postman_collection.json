@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "User",
+			"name": "Users",
 			"item": [
 				{
 					"name": "Гость",
@@ -316,232 +316,400 @@
 			"name": "Queues",
 			"item": [
 				{
-					"name": "Очередь",
-					"item": [
-						{
-							"name": "Создать очередь",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"test1name\",\r\n    \"description\": \"test1description\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{api-link}}/queues/create",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"create"
-									]
+					"name": "Создать очередь",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"test1name\",\r\n    \"description\": \"test1description\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							},
-							"response": []
+							}
 						},
-						{
-							"name": "Обновить очередь",
-							"request": {
-								"method": "PUT",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"test1newname\",\r\n    \"description\": \"test1newdescription\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{api-link}}/queues/update?queueId=9",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"update"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "9"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Информация об очереди",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-link}}/queues/info?queueId=9",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"info"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "9"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Удалить очередь",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{api-link}}/queues/delete?queueId=9",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"delete"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "9"
-										}
-									]
-								}
-							},
-							"response": []
+						"url": {
+							"raw": "{{api-link}}/queues/create",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"queues",
+								"create"
+							]
 						}
-					]
+					},
+					"response": []
 				},
 				{
-					"name": "Позиции",
-					"item": [
-						{
-							"name": "Встать в очередь",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{api-link}}/queues/entry?queueId=10",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"entry"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "10"
-										}
-									]
+					"name": "Информация об очереди",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/queues/info?queueId=11",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"queues",
+								"info"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "11"
 								}
-							},
-							"response": []
-						},
-						{
-							"name": "Покинуть очередь",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{api-link}}/queues/leave?queueId=10",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"leave"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "10"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Список участников очереди",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-link}}/queues/members?queueId=10",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"members"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "10"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Переместить участника очереди",
-							"request": {
-								"method": "PUT",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"memberId\": 8,\r\n    \"position\": 2\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{api-link}}/queues/members/move?queueId=10",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"queues",
-										"members",
-										"move"
-									],
-									"query": [
-										{
-											"key": "queueId",
-											"value": "10"
-										}
-									]
-								}
-							},
-							"response": []
+							]
 						}
-					]
+					},
+					"response": []
 				},
 				{
-					"name": "Расписание",
-					"item": []
+					"name": "Обновить очередь",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"test1newname\",\r\n    \"description\": \"test1newdescription\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/queues/update?queueId=9",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"queues",
+								"update"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить очередь",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/queues/delete?queueId=9",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"queues",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Positions",
+			"item": [
+				{
+					"name": "Встать в очередь",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/positions/entry?queueId=10",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"positions",
+								"entry"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Список участников очереди",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/positions/members?queueId=10",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"positions",
+								"members"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Переместить участника очереди",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"memberId\": 8,\r\n    \"position\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/positions/move?queueId=10",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"positions",
+								"move"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Покинуть очередь",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/positions/leave?queueId=10",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"positions",
+								"leave"
+							],
+							"query": [
+								{
+									"key": "queueId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Schedules",
+			"item": [
+				{
+					"name": "Создать расписание",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"queueId\": 10,\r\n    \"startTime\": \"13:00\",\r\n    \"endTime\": \"20:00\",\r\n    \"weekday\": 62\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/schedules/create",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"schedules",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменить расписание",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"queueId\": 10,\r\n    \"startTime\": \"16:00\",\r\n    \"endTime\": \"21:00\",\r\n    \"weekday\": 2,\r\n    \"workFrom\": \"2021-03-03\",\r\n    \"workTo\": \"2021-04-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/schedules/update?scheduleId=1",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"schedules",
+								"update"
+							],
+							"query": [
+								{
+									"key": "scheduleId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить расписание",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/schedules/delete?scheduleId=1",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"schedules",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "scheduleId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Holidays",
+			"item": [
+				{
+					"name": "Создать исключение расписания",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"queueId\": 10,\r\n    \"date\": \"2021-03-04\",\r\n    \"isHoliday\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/holidays/create",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"holidays",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменить исключение расписания",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"queueId\": 10,\r\n    \"date\": \"2021-03-08\",\r\n    \"isHoliday\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-link}}/holidays/update?holidayId=10",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"holidays",
+								"update"
+							],
+							"query": [
+								{
+									"key": "holidayId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить исключение расписания",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-link}}/holidays/delete?holidayId=1",
+							"host": [
+								"{{api-link}}"
+							],
+							"path": [
+								"holidays",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "holidayId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

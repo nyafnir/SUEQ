@@ -31,7 +31,7 @@ db.RefreshToken = require('./refreshtoken.model')(sequelize, Sequelize);
 db.Queue = require('./queue.model')(sequelize, Sequelize);
 db.Position = require('./position.model')(sequelize, Sequelize);
 db.Schedule = require('./schedule.model')(sequelize, Sequelize);
-db.Holdiay = require('./holiday.model')(sequelize, Sequelize);
+db.Holiday = require('./holiday.model')(sequelize, Sequelize);
 
 // Каждый пользователь может иметь много токенов
 db.User.hasMany(db.RefreshToken, {
@@ -77,7 +77,7 @@ db.Schedule.belongsTo(db.Queue, {
 db.Queue.hasMany(db.Queue, {
     foreignKey: 'queueId',
 });
-db.Holdiay.belongsTo(db.Queue, {
+db.Holiday.belongsTo(db.Queue, {
     foreignKey: 'queueId',
 });
 
@@ -88,7 +88,7 @@ db.Holdiay.belongsTo(db.Queue, {
 db.Queue.prototype.isOpen = async function () {
     const now = new Date();
 
-    const holiday = await db.Holdiay.findOne({
+    const holiday = await db.Holiday.findOne({
         where: { date: { [Sequelize.Op.eq]: now } },
     });
 

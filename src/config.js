@@ -77,7 +77,16 @@ module.exports = {
     },
     queues: {
         owner: {
-            limit: parseInt(process.env.QUEUES_OWN_LIMIT, 10),
+            limit: parseInt(process.env.QUEUES_OWNER_LIMIT, 10),
+        },
+        member: {
+            limit: parseInt(process.env.QUEUES_MEMBER_LIMIT, 10),
+        },
+        schedules: {
+            limit: parseInt(process.env.QUEUES_SCHEDULES_LIMIT, 10),
+        },
+        holidays: {
+            limit: parseInt(process.env.QUEUES_HOLIDAYS_LIMIT, 10),
         },
     },
 };

@@ -49,6 +49,7 @@ module.exports = (sequelize, Sequelize) => {
             //  Дата начала действия записи расписания
             workFrom: {
                 type: Sequelize.DATE,
+                defaultValue: Sequelize.NOW,
                 allowNull: false,
             },
             // Дата окончания действия
