@@ -1,10 +1,11 @@
 const dotenv = require('dotenv');
+
 dotenv.config(); // Загружаем файл .env в process.env
 
 module.exports = {
     server: {
-        address: process.env.ADDRESS,
-        port: parseInt(process.env.PORT, 10),
+        address: process.env.SERVER_ADDRESS,
+        port: parseInt(process.env.SERVER_PORT, 10),
         limit: {
             rate: {
                 windowMs: parseInt(process.env.LIMIT_RATE_WINDOW_MS, 10),
@@ -44,6 +45,10 @@ module.exports = {
                 10
             ),
         },
+        sequelize: {
+            force: process.env.SEQUELIZE_FORCE,
+            alter: process.env.SEQUELIZE_ALTER,
+        },
     },
     mail: {
         host: process.env.MAIL_HOST,
@@ -52,6 +57,13 @@ module.exports = {
         password: process.env.MAIL_PASSWORD,
         from: process.env.MAIL_FROM,
         subject: process.env.MAIL_SUBJECT,
+    },
+    middleware: {
+        validate: {
+            abortEarly: process.env.MIDDLEWARE_VALIDATE_ABORT_EARLY,
+            allowUnknown: process.env.MIDDLEWARE_VALIDATE_ALLOW_UNKNOWN,
+            stripUnknown: process.env.MIDDLEWARE_VALIDATE_STRIP_UNKNOWN,
+        },
     },
     hash: {
         saltRounds: parseInt(process.env.HASH_SALT_ROUNDS, 10),
@@ -65,36 +77,31 @@ module.exports = {
             secret: process.env.TOKEN_REFRESH_SECRET,
             life: parseInt(process.env.TOKEN_REFRESH_LIFE, 10),
         },
-        passwordResetTimeout: parseInt(
-            process.env.TOKEN_PASSWORD_RESET_TIMEOUT_MS,
-            10
-        ),
-        emailConfirmedTimeout: parseInt(
-            process.env.TOKEN_EMAIL_CONFIRMED_TIMEOUT_MS,
-            10
-        ),
-        accountRescueTimeout: parseInt(process.env.TOKEN_RESCUE_TIMEOUT_MS, 10),
+        passwordReset: {
+            life: parseInt(process.env.TOKEN_PASSWORD_RESET_TIMEOUT_MS, 10),
+        },
+        emailConfirm: {
+            life: parseInt(process.env.TOKEN_EMAIL_CONFIRM_TIMEOUT_MS, 10),
+        },
+        accountRescue: {
+            life: parseInt(process.env.TOKEN_RESCUE_TIMEOUT_MS, 10),
+        },
     },
     queues: {
-        owner: {
-            limit: parseInt(process.env.QUEUES_OWNER_LIMIT, 10),
-        },
-        member: {
-            limit: parseInt(process.env.QUEUES_MEMBER_LIMIT, 10),
-        },
-        schedules: {
-            limit: parseInt(process.env.QUEUES_SCHEDULES_LIMIT, 10),
-        },
-        holidays: {
-            limit: parseInt(process.env.QUEUES_HOLIDAYS_LIMIT, 10),
+        limits: {
+            owner: parseInt(process.env.QUEUES_OWNER_LIMIT, 10),
+            member: parseInt(process.env.QUEUES_MEMBER_LIMIT, 10),
+            schedules: parseInt(process.env.QUEUES_SCHEDULES_LIMIT, 10),
+            holidays: parseInt(process.env.QUEUES_HOLIDAYS_LIMIT, 10),
         },
     },
     regexs: {
-        // yyyy-mm-dd, yyyy mm dd, yyyy/mm/dd
-        // проверяет только что февраль содержит 29 дней. игнорирует високосные года
+        // Проверка: yyyy-mm-dd, yyyy mm dd, yyyy/mm/dd
+        // проверяет только что февраль содержит 29 дней и игнорирует високосные года
         // eslint-disable-next-line no-useless-escape
         dateonly: /^\d{4}[\-\/\s]?((((0[13578])|(1[02]))[\-\/\s]?(([0-2][0-9])|(3[01])))|(((0[469])|(11))[\-\/\s]?(([0-2][0-9])|(30)))|(02[\-\/\s]?[0-2][0-9]))$/,
+        // Проверка: HH:MM
         // eslint-disable-next-line no-useless-escape
-        timeonly: /^([0-9]{2})\:([0-9]{2})$/, // HH:MM
+        timeonly: /^([0-9]{2})\:([0-9]{2})$/,
     },
 };

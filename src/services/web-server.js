@@ -1,32 +1,33 @@
 const http = require('http');
 const express = require('express');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { server } = require('../config.js');
-const { homepage } = require('../../package.json');
-const log = require('../logger');
 const errorHandler = require('../handlers/error.handler');
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
+const { homepage } = require('../../package.json');
+const { server } = require('../config.js');
 const helmet = require('helmet');
+const log = require('../logger');
 
 let httpServer;
 
 const initialize = () => {
     return new Promise((resolve, reject) => {
         const app = express();
+
         httpServer = http.createServer(app);
 
         // Обработка content-type: application/json
-        app.use(bodyParser.json());
+        app.use(express.json());
+
         // Обработка куков
         app.use(cookieParser());
 
-        // Ограничение скорости за лёгкий спам запросами
+        // Ограничение скорости за спам запросами
         const speedLimiter = slowDown(server.limit.speed);
         app.use(speedLimiter);
 
-        // Блокировка за серьёзный спам запросами
+        // Блокировка за спам запросами
         const rateLimiter = rateLimit(server.limit.rate);
         app.use(rateLimiter);
 

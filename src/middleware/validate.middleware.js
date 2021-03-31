@@ -1,9 +1,7 @@
+const { middleware } = require('../config');
+
 module.exports = (target, next, schema) => {
-    const { error, value } = schema.validate(target, {
-        abortEarly: false, // Вернуть только первую найденную ошибку
-        allowUnknown: true, // Игнорировать поля не указанные в схеме
-        stripUnknown: true, // Удалять поля не указаные в схеме
-    });
+    const { error, value } = schema.validate(target, middleware.validate);
 
     if (error) {
         next({
