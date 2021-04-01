@@ -61,9 +61,15 @@ module.exports = {
     },
     middleware: {
         validate: {
-            abortEarly: process.env.MIDDLEWARE_VALIDATE_ABORT_EARLY,
-            allowUnknown: process.env.MIDDLEWARE_VALIDATE_ALLOW_UNKNOWN,
-            stripUnknown: process.env.MIDDLEWARE_VALIDATE_STRIP_UNKNOWN,
+            abortEarly:
+                process.env.MIDDLEWARE_VALIDATE_ABORT_EARLY.toLowerCase() ===
+                'true',
+            allowUnknown:
+                process.env.MIDDLEWARE_VALIDATE_ALLOW_UNKNOWN.toLowerCase() ===
+                'true',
+            stripUnknown:
+                process.env.MIDDLEWARE_VALIDATE_STRIP_UNKNOWN.toLowerCase() ===
+                'true',
         },
     },
     hash: {
