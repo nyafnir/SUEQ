@@ -1,6 +1,11 @@
 # SUEQ | Server Universal Electronic Queue
 
-REST API сервер на основе NodeJS: Express + Sequelize + nodemailer
+<p>
+<img src="https://img.shields.io/github/package-json/v/NyafiRawr/SUEQ" alt="GitHub package.json version" />
+<a href="https://github.com/NyafiRawr/SUEQ/pulls"><img src="https://img.shields.io/github/issues-pr/NyafiRawr/SUEQ" alt="GitHub pull requests" /></a>
+<p/>
+
+REST API сервер на основе NodeJS: Express + Sequelize + nodemailer + Socket.IO
 + Защита HTTP-заголовков (helmet)  
 + Защита от спам-запросов: ограничение скорости (express-slow-down) и временная блокировка (express-rate-limit)  
 + Красивое и удобное логгирование происходящего (pino)
@@ -17,11 +22,6 @@ REST API сервер на основе NodeJS: Express + Sequelize + nodemailer
 - GUI настроек для ОС Windows
 - Запуск в виде службы для ОС Windows
 - Автоудаление участников очереди по времени закрытия
-
-<p>
-<img src="https://img.shields.io/github/package-json/v/NyafiRawr/SUEQ" alt="GitHub package.json version" />
-<a href="https://github.com/NyafiRawr/SUEQ/pulls"><img src="https://img.shields.io/github/issues-pr/NyafiRawr/SUEQ" alt="GitHub pull requests" /></a>
-<p/>
 
 # Дополнительная информация
 
