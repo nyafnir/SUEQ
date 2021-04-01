@@ -20,7 +20,7 @@ const getRemoteClientIpAddress = (request) => {
 
 const generateToken = (payload, secret, expiresIn) => {
     return jwt.sign(payload, secret, {
-        expiresIn,
+        expiresIn: `${expiresIn}ms`,
         algorithm: 'HS256',
     });
 };
@@ -29,7 +29,7 @@ const generateAccessToken = (userId) => {
     return generateToken(
         { id: userId },
         config.tokens.access.secret,
-        `${config.tokens.access.life}ms`
+        config.tokens.access.life
     );
 };
 
@@ -39,7 +39,7 @@ const generateRefreshToken = (userId, ipAddress) => {
         token: generateToken(
             { id: userId },
             config.tokens.refresh.secret,
-            `${config.tokens.refresh.life}ms`
+            config.tokens.refresh.life
         ),
         expires: new Date(Date.now() + config.tokens.refresh.life),
         createdByIp: ipAddress,
@@ -291,7 +291,7 @@ const forgotPassword = async (request, response, next) => {
     const token = generateToken(
         { email: user.email, updatedAt: user.updatedAt, userId: user.id },
         user.passwordHash,
-        `${config.tokens.passwordResetTimeout}ms`
+        config.tokens.passwordReset.life
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset/${user.id}/${token}`;
 
@@ -358,7 +358,7 @@ const registration = async (request, response, next) => {
     const token = generateToken(
         { userId: user.id },
         user.passwordSalt,
-        `${config.tokens.emailConfirmedTimeout}ms`
+        config.tokens.emailConfirm.life
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm/${user.id}/${token}`;
 
@@ -617,7 +617,7 @@ const deleteAccount = async (request, response, next) => {
     const token = generateToken(
         { userId: user.id },
         user.passwordHash,
-        `${config.tokens.accountRescueTimeout}ms`
+        config.tokens.accountRescue.life
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel/${user.id}/${token}`;
     mail.send(user.email, letters.deleteAccount(url));
