@@ -79,6 +79,7 @@ module.exports = {
         access: {
             secret: process.env.TOKEN_ACCESS_SECRET,
             life: parseInt(process.env.TOKEN_ACCESS_LIFE, 10),
+            timeout: parseInt(process.env.TOKEN_ACCESS_TIMEOUT, 10),
         },
         refresh: {
             secret: process.env.TOKEN_REFRESH_SECRET,
