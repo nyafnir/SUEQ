@@ -15,6 +15,7 @@ const sequelize = new Sequelize(
             acquire: database.pool.acquire,
             idle: database.pool.idle,
         },
+        logging: database.sequelize.logging,
     }
 );
 

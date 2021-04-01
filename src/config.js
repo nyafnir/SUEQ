@@ -46,8 +46,9 @@ module.exports = {
             ),
         },
         sequelize: {
-            force: process.env.SEQUELIZE_FORCE,
-            alter: process.env.SEQUELIZE_ALTER,
+            force: process.env.SEQUELIZE_FORCE.toLowerCase() === 'true',
+            alter: process.env.SEQUELIZE_ALTER.toLowerCase() === 'true',
+            logging: process.env.SEQUELIZE_LOGGING.toLowerCase() === 'true',
         },
     },
     mail: {
