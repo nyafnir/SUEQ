@@ -13,7 +13,6 @@ const shutdown = async () => {
         log.info('Отключение от базы данных...');
         await db.sequelize.close();
     } catch (error) {
-        log.error('Обнаружена ошибка: ' + error);
         process.exit(1);
     }
 
@@ -25,19 +24,13 @@ const shutdown = async () => {
 const startup = async () => {
     log.info('Запуск сервера...');
 
-    try {
-        log.info('Инициализация главного модуля...');
-        await webServer.initialize();
+    log.info('Инициализация главного модуля...');
+    await webServer.initialize();
 
-        log.info(
-            `Соединение с базой данных ${database.credentials.database} по адресу: http://${database.credentials.host}:${database.credentials.port}`
-        );
-        await db.sequelize.sync(database.sequelize);
-    } catch (error) {
-        log.error(error);
-
-        shutdown();
-    }
+    log.info(
+        `Соединение с базой данных ${database.credentials.database} по адресу: http://${database.credentials.host}:${database.credentials.port}`
+    );
+    await db.sequelize.sync(database.sequelize);
 
     log.info('Сервер запущен!');
 };
@@ -59,7 +52,7 @@ process.on('SIGINT', () => {
 });
 
 process.on('uncaughtException', (err) => {
-    log.error('Непредвиденная ошибка: ' + err);
+    log.fatal(err);
 
     shutdown();
 });
