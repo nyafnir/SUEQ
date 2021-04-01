@@ -13,7 +13,7 @@ const shutdown = async () => {
         log.info('Отключение от базы данных...');
         await db.sequelize.close();
     } catch (error) {
-        log.error('Обнаружена ошибка: ' + error);
+        log.error(error);
         process.exit(1);
     }
 
@@ -56,8 +56,8 @@ process.on('SIGINT', () => {
     shutdown();
 });
 
-process.on('uncaughtException', (err) => {
-    log.error('Непредвиденная ошибка: ' + err);
+process.on('uncaughtException', (error) => {
+    log.error('Непредвиденная ошибка!\n' + error);
 
     shutdown();
 });
