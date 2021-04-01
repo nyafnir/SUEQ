@@ -1,4 +1,4 @@
-const webServer = require('./services/web-server.js');
+const webServer = require('./services/web-server');
 const { database } = require('./config');
 const db = require('./models');
 const log = require('./logger');
@@ -38,6 +38,8 @@ const startup = async () => {
 
         shutdown();
     }
+
+    log.info('Сервер запущен!');
 };
 
 startup();
