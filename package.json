@@ -36,8 +36,7 @@
     "pino-pretty": "^4.7.1",
     "qrcode": "^1.4.4",
     "sequelize": "^6.6.2",
-    "socket.io": "^4.0.1",
-    "socketio-jwt": "^4.6.2"
+    "socket.io": "^4.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
