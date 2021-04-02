@@ -1,5 +1,5 @@
 const webServer = require('./services/web-server');
-const { database } = require('./config');
+const config = require('./config');
 const db = require('./models');
 const log = require('./logger');
 
@@ -28,9 +28,9 @@ const startup = async () => {
     await webServer.initialize();
 
     log.info(
-        `Соединение с базой данных ${database.credentials.database} по адресу: http://${database.credentials.host}:${database.credentials.port}`
+        `Соединение с базой данных ${config.database.credentials.database} по адресу: http://${config.database.credentials.host}:${config.database.credentials.port}`
     );
-    await db.sequelize.sync(database.sequelize);
+    await db.sequelize.sync(config.database.sequelize);
 
     log.info('Сервер запущен!');
 };
