@@ -70,6 +70,34 @@ module.exports = {
             stripUnknown:
                 process.env.MIDDLEWARE_VALIDATE_STRIP_UNKNOWN.toLowerCase() ===
                 'true',
+            messages: {
+                ru: {
+                    'any.required': 'Поле {#label} не указано',
+                    'any.invalid': 'Поле {#label} неправильное',
+                    'string.min':
+                        'Поле {#label} должно содержать минимум {#limit} симв.',
+                    'string.max':
+                        'Поле {#label} может содержать максимум {#limit} симв.',
+                    'string.empty': 'Поле {#label} пустое',
+                    'string.base':
+                        'Поле {#label} должно быть указано в виде строки',
+                    'number.empty': 'Поле {#label} пустое!',
+                    'number.base':
+                        'Поле {#label} должно быть указано в виде числа',
+                    'number.integer': 'Поле {#label} должно быть целочисленным',
+                    'object.min': 'Должно быть указано хотя бы одно поле!',
+                    'email.invalid':
+                        'Указан не существующая почта в поле {#label}',
+                    'phoneNumber.invalid':
+                        'Указан не существующий номер телефона в поле {#label}',
+                    'array.unique':
+                        'В перечисленных значениях {#label} есть дубликаты',
+                },
+            },
+            errors: {
+                labels: false,
+                language: 'ru',
+            },
         },
     },
     hash: {
