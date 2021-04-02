@@ -65,5 +65,15 @@ module.exports = (sequelize, Sequelize) => {
         }
     );
 
+    //#region Методы класса
+
+    Model.findByQueueId = async (id) => {
+        return await Model.findAll({
+            where: { queueId: id },
+        });
+    };
+
+    //#endregion
+
     return Model;
 };

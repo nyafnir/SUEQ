@@ -1,11 +1,15 @@
-const Joi = require('joi');
 const router = require('express').Router();
 const db = require('../models');
 const authorize = require('../middleware/authorize.middleware');
-const validate = require('../middleware/validate.middleware');
 const Response = require('../response');
 const config = require('../config');
 const qrcode = require('qrcode');
+const {
+    queueIdSchema,
+    createQueueSchema,
+    updateQueueSchema,
+} = require('../utils/schems.joi');
+const { io } = require('../services/web-socket');
 
 //#region Вспомогательные функции
 
@@ -17,88 +21,19 @@ const generateQrCodeQueue = async (queueId) => {
 
 //#endregion
 
-//#region Схемы валидации
-
-const createBodySchema = (request, response, next) => {
-    const schema = Joi.object({
-        name: Joi.string().min(3).max(100).required().messages({
-            'any.required': 'Фамилия не указана!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле фамилии пустое!',
-            'string.base': 'Фамилия должна быть указана в виде строки!',
-        }),
-        description: Joi.string().min(3).max(2000).required().messages({
-            'any.required': 'Имя не указано!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле имени пустое!',
-            'string.base': 'Имя должно быть указано в виде строки!',
-        }),
-    });
-    validate(request.body, next, schema);
-};
-
-const queueIdQuerySchema = (request, response, next) => {
-    const schema = Joi.object({
-        queueId: Joi.number().integer().required().messages({
-            'any.required': 'ID очереди не указан!',
-            'number.empty': 'Поле ID очереди пустое!',
-            'number.base': 'ID очереди должен быть в числовом формате!',
-            'number.integer': 'ID очереди должен быть целочисленным!',
-        }),
-    });
-    validate(request.query, next, schema);
-};
-
-const updateBodySchema = (request, response, next) => {
-    const schema = Joi.object({
-        name: Joi.string().min(3).max(100).messages({
-            'any.required': 'Фамилия не указана!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле фамилии пустое!',
-            'string.base': 'Фамилия должна быть указана в виде строки!',
-        }),
-        description: Joi.string().min(3).max(2000).messages({
-            'any.required': 'Имя не указано!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле имени пустое!',
-            'string.base': 'Имя должно быть указано в виде строки!',
-        }),
-    })
-        .min(1) // Не даёт отправить {}
-        .required() // Не даёт отправить undefined
-        .messages({
-            'object.min':
-                'Для обновления должно быть указано хотя бы одно поле!',
-        });
-    validate(request.body, next, schema);
-};
-
-const scheduleBodySchema = (request, response, next) => {
-    const schema = Joi.object();
-    validate(request.body, next, schema);
-};
-
-//#endregion
-
 //#region Методы контроллера
 
 const create = async (request, response, next) => {
     const user = request.user;
 
-    const queues = await db.Queue.findAll({
-        where: { ownerId: user.id },
-    });
+    const queues = await db.Queue.findByOwnerId(user.id);
 
-    if (queues.length > config.queues.owner.limit) {
+    if (queues.length > config.queues.limits.owner) {
         return response
             .status(400)
             .send(
                 new Response(
-                    `Запрещено иметь больше ${config.queues.owner.limit} очередей.`
+                    `Запрещено иметь во владении очередей больше, чем ${config.queues.limits.owner}.`
                 )
             );
     }
@@ -125,23 +60,20 @@ const create = async (request, response, next) => {
 };
 
 const update = async (request, response, next) => {
-    const user = request.user;
     const queueId = request.query.queueId;
+    const user = request.user;
 
-    let queue = await db.Queue.findByPk(queueId);
+    let queue = await db.Queue.findByQueueId(queueId);
 
-    if (queue === null) {
-        return response.status(404).send(new Response('Очередь не найдена.'));
-    } else if (user.id !== queue.ownerId) {
-        return response
-            .status(400)
-            .send(new Response('Вы не являетесь владельцем этой очереди.'));
-    }
+    queue.checkOwnerId(user.id);
 
     const updateFields = request.body;
+
     queue = await queue.update(updateFields);
 
     queue.qrcode = await generateQrCodeQueue(queue.id);
+
+    io.of('/').in(`queues/${queue.id}`).emit('QUEUE_UPDATE', queue);
 
     return response
         .status(200)
@@ -157,16 +89,13 @@ const update = async (request, response, next) => {
 const info = async (request, response, next) => {
     const queueId = request.query.queueId;
 
-    const queue = await db.Queue.findByPk(queueId);
-
-    if (queue === null) {
-        return response.status(404).send(new Response('Очередь не найдена.'));
-    }
+    const queue = await db.Queue.findByQueueId(queueId);
 
     queue.qrcode = await generateQrCodeQueue(queue.id);
-    queue.schedules = await db.Schedule.findAll({
-        where: { queueId: queue.id },
-    });
+
+    queue.schedules = await db.Schedule.findByQueueId(queue.id);
+
+    queue.holidays = await db.Holiday.findByQueueId(queue.id);
 
     return response
         .status(200)
@@ -180,18 +109,16 @@ const info = async (request, response, next) => {
 };
 
 const remove = async (request, response, next) => {
-    const user = request.user;
     const queueId = request.query.queueId;
+    const user = request.user;
 
-    let queue = await db.Queue.findByPk(queueId);
+    let queue = await db.Queue.findByQueueId(queueId);
 
-    if (queue === null) {
-        return response.status(404).send(new Response('Очередь не найдена.'));
-    } else if (user.id !== queue.ownerId) {
-        return response
-            .status(400)
-            .send(new Response('Вы не являетесь владельцем этой очереди.'));
-    }
+    queue.checkOwnerId(user.id);
+
+    const room = `queues/${queue.id}`;
+    io.of('/').in(room).emit('QUEUE_REMOVE', queue);
+    io.sockets.clients(room).forEach((client) => client.leave(room));
 
     await queue.destroy();
 
@@ -202,16 +129,33 @@ const remove = async (request, response, next) => {
 
 //#region Маршруты
 
-router.post('/create', authorize(), createBodySchema, create);
+router.post(
+    '/create',
+    authorize(),
+    (request, response, next) =>
+        createQueueSchema(request.body, response, next),
+    create
+);
 router.put(
     '/update',
     authorize(),
-    queueIdQuerySchema,
-    updateBodySchema,
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    (request, response, next) =>
+        updateQueueSchema(request.body, response, next),
     update
 );
-router.get('/info', authorize(), queueIdQuerySchema, info);
-router.delete('/delete', authorize(), queueIdQuerySchema, remove);
+router.get(
+    '/info',
+    authorize(),
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    info
+);
+router.delete(
+    '/delete',
+    authorize(),
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    remove
+);
 
 module.exports = router;
 
