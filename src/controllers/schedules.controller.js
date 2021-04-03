@@ -128,12 +128,12 @@ const create = async (request, response, next) => {
     const schedules = await db.Schedule.findAll({
         where: { queueId: postDate.queueId },
     });
-    if (schedules.length > config.queues.schedules.limit) {
+    if (schedules.length > config.queues.limits.schedules) {
         return response
             .status(400)
             .send(
                 new Response(
-                    `Очередь не может иметь больше ${config.queues.schedules.limit} расписаний.`
+                    `Очередь не может иметь больше ${config.queues.limits.schedules} расписаний.`
                 )
             );
     }

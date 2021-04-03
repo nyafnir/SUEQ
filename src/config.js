@@ -81,6 +81,7 @@ module.exports = {
                     'string.empty': 'Поле {#label} пустое',
                     'string.base':
                         'Поле {#label} должно быть указано в виде строки',
+                    'string.pattern.base': 'Поле {#label} неправильное',
                     'number.empty': 'Поле {#label} пустое!',
                     'number.base':
                         'Поле {#label} должно быть указано в виде числа',
@@ -107,7 +108,6 @@ module.exports = {
         access: {
             secret: process.env.TOKEN_ACCESS_SECRET,
             life: parseInt(process.env.TOKEN_ACCESS_LIFE, 10),
-            timeout: parseInt(process.env.TOKEN_ACCESS_TIMEOUT, 10),
         },
         refresh: {
             secret: process.env.TOKEN_REFRESH_SECRET,

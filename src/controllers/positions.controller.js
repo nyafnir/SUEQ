@@ -61,12 +61,12 @@ const entry = async (request, response, next) => {
     const positions = await db.Position.findAll({
         where: { userId: user.id },
     });
-    if (positions.length > config.queues.member.limit) {
+    if (positions.length > config.queues.limits.member) {
         return response
             .status(400)
             .send(
                 new Response(
-                    `Вы не можете стоять в более чем ${config.queues.member.limit} очередей одновременно.`
+                    `Вы не можете стоять в более чем ${config.queues.limits.member} очередей одновременно.`
                 )
             );
     }

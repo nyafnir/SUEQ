@@ -9,7 +9,6 @@ const {
     createQueueSchema,
     updateQueueSchema,
 } = require('../utils/schems.joi');
-const { io } = require('../services/web-socket');
 
 //#region Вспомогательные функции
 
@@ -73,8 +72,6 @@ const update = async (request, response, next) => {
 
     queue.qrcode = await generateQrCodeQueue(queue.id);
 
-    io.of('/').in(`queues/${queue.id}`).emit('QUEUE_UPDATE', queue);
-
     return response
         .status(200)
         .send(
@@ -115,10 +112,6 @@ const remove = async (request, response, next) => {
     let queue = await db.Queue.findByQueueId(queueId);
 
     queue.checkOwnerId(user.id);
-
-    const room = `queues/${queue.id}`;
-    io.of('/').in(room).emit('QUEUE_REMOVE', queue);
-    io.sockets.clients(room).forEach((client) => client.leave(room));
 
     await queue.destroy();
 

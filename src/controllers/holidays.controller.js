@@ -73,12 +73,12 @@ const create = async (request, response, next) => {
     const holidays = await db.Holiday.findAll({
         where: { queueId: postDate.queueId },
     });
-    if (holidays.length > config.queues.holidays.limit) {
+    if (holidays.length > config.queues.limits.holidays) {
         return response
             .status(400)
             .send(
                 new Response(
-                    `Очередь не может иметь больше ${config.queues.holidays.limit} особых дней.`
+                    `Очередь не может иметь больше ${config.queues.limits.holidays} особых дней.`
                 )
             );
     }

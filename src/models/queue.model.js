@@ -1,3 +1,5 @@
+const { io } = require('../services/web-socket');
+
 module.exports = (sequelize, Sequelize) => {
     const Model = sequelize.define(
         'queue',
@@ -65,6 +67,20 @@ module.exports = (sequelize, Sequelize) => {
 
         return result;
     };
+
+    //#endregion
+
+    //#region Вебхуки
+
+    Model.addHook('afterUpdate', (queue, options) => {
+        io.of('/').in(`queues/${queue.id}`).emit('QUEUE_UPDATE', queue);
+    });
+
+    Model.addHook('beforeDestroy', (queue, options) => {
+        const room = `queues/${queue.id}`;
+        io.of('/').in(room).emit('QUEUE_REMOVE', queue);
+        io.sockets.clients(room).forEach((client) => client.leave(room));
+    });
 
     //#endregion
 

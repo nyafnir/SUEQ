@@ -1,5 +1,6 @@
 const Response = require('../response');
 const config = require('../config');
+const { io } = require('../services/web-socket');
 
 module.exports = (sequelize, Sequelize) => {
     const Model = sequelize.define(
@@ -64,11 +65,39 @@ module.exports = (sequelize, Sequelize) => {
         });
 
         if (result === null) {
-            throw new Response('Пользователь с такой почтой не найден.');
+            throw new Response('Пользователя с такой почтой не существует.');
         }
 
         return result;
     };
+
+    Model.findByUserId = async (id) => {
+        const result = await Model.findOne({
+            where: { id },
+        });
+
+        if (result === null) {
+            throw new Response('Такого пользователя не существует.');
+        }
+
+        return result;
+    };
+
+    //#endregion
+
+    //#region Вебхуки
+
+    Model.addHook('afterUpdate', (user, options) => {
+        // Сообщаем во все очереди где есть этот пользователь обновленную информацию
+        // io.of('/').in(`queues/${queue.id}`).emit('USER_UPDATE', user);
+    });
+
+    Model.addHook('beforeDestroy', (user, options) => {
+        // выкидываем всех из комнат этого владельца и сообщаем им об этом
+        // const room = `queues/${queue.id}`;
+        // io.of('/').in(room).emit('USER_REMOVE', user);
+        // io.sockets.clients(room).forEach((client) => client.leave(room));
+    });
 
     //#endregion
 
@@ -79,7 +108,7 @@ module.exports = (sequelize, Sequelize) => {
             EVERY ${config.database.events.accountNotRescueCheck / 1000} SECOND
         DO 
             DELETE FROM ueq.users WHERE deletedAt < DATE_SUB(NOW(), INTERVAL ${
-                config.tokens.accountRescueTimeout / 1000
+                config.tokens.accountRescue.life / 1000
             } SECOND)
     `;
 
@@ -88,7 +117,7 @@ module.exports = (sequelize, Sequelize) => {
             EVERY ${config.database.events.emailNotConfirmCheck / 1000} SECOND
         DO 
             DELETE FROM ueq.users WHERE confirmed = false AND createdAt < DATE_SUB(NOW(), INTERVAL ${
-                config.tokens.emailConfirmedTimeout / 1000
+                config.tokens.emailConfirm.life / 1000
             } SECOND)
         `;
 
