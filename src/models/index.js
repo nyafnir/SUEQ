@@ -147,6 +147,32 @@ db.User.addHook('beforeDestroy', async (user, options) => {
     }
 });
 
+const closeQueueOnTime = async (queueId) => {
+    const queue = await db.Queue.findByQueueId(queueId);
+    if (queue.isOpen() === false) {
+        const room = `queues/${queueId}`;
+        io.of('/').in(room).emit('QUEUE_CLOSED', { queueId });
+        io.sockets.clients(room).forEach((client) => client.leave(room));
+    }
+};
+
+db.Schedule.addHook('afterCreate', async (schedule, options) => {
+    const room = `queues/${schedule.queueId}`;
+    io.of('/').in(room).emit('QUEUE_SCHEDULE_CREATE', schedule);
+});
+
+db.Schedule.addHook('afterUpdate', async (schedule, options) => {
+    const room = `queues/${schedule.queueId}`;
+    io.of('/').in(room).emit('QUEUE_SCHEDULE_UPDATE', schedule);
+    await closeQueueOnTime(schedule.queueId);
+});
+
+db.Schedule.addHook('beforeDestroy', async (schedule, options) => {
+    const room = `queues/${schedule.queueId}`;
+    io.of('/').in(room).emit('QUEUE_SCHEDULE_DELETED', schedule);
+    await closeQueueOnTime(schedule.queueId);
+});
+
 //#endregion
 
 module.exports = db;

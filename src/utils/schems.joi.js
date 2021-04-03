@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const config = require('../config');
 const validate = require('../middleware/validate.middleware');
 
 //#region Queues
@@ -109,6 +110,51 @@ const updateUserSchema = (target, response, next) => {
 
 //#endregion
 
+//#region Schedules
+
+const schedule = {
+    id: Joi.number().integer(),
+    startTime: Joi.string().regex(config.regexs.timeonly),
+    endTime: Joi.string().regex(config.regexs.timeonly),
+    weekday: Joi.number().integer(),
+    workFrom: Joi.string().regex(config.regexs.dateonly),
+    workTo: Joi.string().regex(config.regexs.dateonly),
+};
+
+const scheduleIdSchema = (target, response, next) => {
+    const schema = Joi.object({
+        scheduleId: schedule.id.required(),
+    });
+    validate(target, next, schema);
+};
+
+const createScheduleSchema = (target, response, next) => {
+    const schema = Joi.object({
+        queueId: schedule.id.required(),
+        startTime: queue.startTime.required(),
+        endTime: queue.endTime.required(),
+        weekday: queue.weekday.required(),
+        workFrom: queue.workFrom.required(),
+        workTo: queue.workTo.required(),
+    });
+    validate(target, next, schema);
+};
+
+const updateScheduleSchema = (target, response, next) => {
+    const schema = Joi.object({
+        startTime: queue.startTime,
+        endTime: queue.endTime,
+        weekday: queue.weekday,
+        workFrom: queue.workFrom,
+        workTo: queue.workTo,
+    })
+        .min(1) // Не даёт отправить {}
+        .required(); // Не даёт отправить undefined;
+    validate(target, next, schema);
+};
+
+//#endregion
+
 module.exports = {
     // Queues
     queueIdSchema,
@@ -121,4 +167,8 @@ module.exports = {
     tokenSchema,
     userIdAndTokenSchema,
     forgotPasswordUserSchema,
+    // Schedules
+    scheduleIdSchema,
+    createScheduleSchema,
+    updateScheduleSchema,
 };
