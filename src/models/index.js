@@ -46,7 +46,7 @@ db.User.hasMany(db.RefreshToken, {
     foreignKey: 'userId',
 });
 db.RefreshToken.belongsTo(db.User, {
-    foreignKey: 'userId',
+    foreignKey: 'id',
 });
 
 // Каждый пользовать может владеть множеством очередей
@@ -54,7 +54,7 @@ db.User.hasMany(db.Queue, {
     foreignKey: 'ownerId',
 });
 db.Queue.belongsTo(db.User, {
-    foreignKey: 'ownerId',
+    foreignKey: 'id',
 });
 
 // Каждый пользовать может стоять во множестве очередей
@@ -62,7 +62,7 @@ db.User.hasMany(db.Position, {
     foreignKey: 'userId',
 });
 db.Position.belongsTo(db.User, {
-    foreignKey: 'userId',
+    foreignKey: 'id',
 });
 
 // Каждая очередь имеет участников
@@ -70,23 +70,23 @@ db.Queue.hasMany(db.Position, {
     foreignKey: 'queueId',
 });
 db.Position.belongsTo(db.Queue, {
-    foreignKey: 'queueId',
+    foreignKey: 'id',
 });
 
 // Каждая очередь имеет расписания работы
-db.Queue.hasMany(db.Queue, {
+db.Queue.hasMany(db.Schedule, {
     foreignKey: 'queueId',
 });
 db.Schedule.belongsTo(db.Queue, {
-    foreignKey: 'queueId',
+    foreignKey: 'id',
 });
 
 // Каждая очередь имеет выходные дни
-db.Queue.hasMany(db.Queue, {
+db.Queue.hasMany(db.Holiday, {
     foreignKey: 'queueId',
 });
 db.Holiday.belongsTo(db.Queue, {
-    foreignKey: 'queueId',
+    foreignKey: 'id',
 });
 
 //#endregion

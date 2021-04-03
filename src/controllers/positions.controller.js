@@ -10,7 +10,7 @@ const { queueIdSchema, movePositionSchema } = require('../utils/schems.joi');
 const entry = async (request, response, next) => {
     const user = request.user;
 
-    const queue = await db.Queue.findByQueueId(request.params.queueId);
+    const queue = await db.Queue.findByQueueId(request.query.queueId);
 
     if (queue.isOpen() === false) {
         return response
@@ -57,7 +57,7 @@ const entry = async (request, response, next) => {
 
 const leave = async (request, response, next) => {
     const position = request.user.positions.find(
-        (position) => request.params.queueId === position.queueId
+        (position) => request.query.queueId === position.queueId
     );
 
     if (position === null) {
@@ -94,7 +94,7 @@ const list = async (request, response, next) => {
 };
 
 const move = async (request, response, next) => {
-    const queue = await db.Queue.findByQueueId(request.params.queueId);
+    const queue = await db.Queue.findByQueueId(request.query.queueId);
 
     queue.checkOwnerId(request.user.id);
 
@@ -165,28 +165,28 @@ const move = async (request, response, next) => {
 router.post(
     '/entry',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     entry
 );
 
 router.delete(
     '/leave',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     leave
 );
 
 router.get(
     '/list',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     list
 );
 
 router.put(
     '/move',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     (request, response, next) =>
         movePositionSchema(request.body, response, next),
     move

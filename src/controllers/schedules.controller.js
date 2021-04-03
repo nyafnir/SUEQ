@@ -40,9 +40,7 @@ const create = async (request, response, next) => {
 };
 
 const update = async (request, response, next) => {
-    let schedule = await db.Schedule.findByScheduleId(
-        request.params.scheduleId
-    );
+    let schedule = await db.Schedule.findByScheduleId(request.query.scheduleId);
 
     const queue = await db.Queue.findByPk(schedule.queueId);
     queue.checkOwnerId(request.user.id);
@@ -61,9 +59,7 @@ const update = async (request, response, next) => {
 };
 
 const remove = async (request, response, next) => {
-    let schedule = await db.Schedule.findByScheduleId(
-        request.params.scheduleId
-    );
+    let schedule = await db.Schedule.findByScheduleId(request.query.scheduleId);
 
     const queue = await db.Queue.findByPk(schedule.queueId);
     queue.checkOwnerId(request.user.id);
@@ -89,7 +85,7 @@ router.put(
     '/update',
     authorize(),
     (request, response, next) =>
-        scheduleIdSchema(request.params, response, next),
+        scheduleIdSchema(request.query, response, next),
     (request, response, next) =>
         updateScheduleSchema(request.body, response, next),
     update
@@ -99,7 +95,7 @@ router.delete(
     '/delete',
     authorize(),
     (request, response, next) =>
-        scheduleIdSchema(request.params, response, next),
+        scheduleIdSchema(request.query, response, next),
     remove
 );
 

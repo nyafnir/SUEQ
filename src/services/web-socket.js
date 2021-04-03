@@ -13,8 +13,6 @@ const events = {
     // Users
     USER_UPDATE: 'USER_UPDATE',
     USER_DELETED: 'USER_DELETED',
-    USER_ONLINE: 'USER_ONLINE',
-    USER_OFFLINE: 'USER_OFFLINE',
     // Schedules
     QUEUE_SCHEDULE_CREATE: 'QUEUE_SCHEDULE_CREATE',
     QUEUE_SCHEDULE_UPDATE: 'QUEUE_SCHEDULE_UPDATE',
@@ -37,7 +35,10 @@ const sendEventByQueueId = (queueId, event, data) => {
 
 const kickAllByQueueId = (queueId) => {
     const room = getPathRoomByQueueId(queueId);
-    io.sockets.clients(room).forEach((client) => client.leave(room));
+    const usersInRoom = io.of('/').in(room).clients;
+    if (usersInRoom !== undefined) {
+        usersInRoom.forEach((client) => client.leave(room));
+    }
 };
 
 const initialize = async (httpServer) => {

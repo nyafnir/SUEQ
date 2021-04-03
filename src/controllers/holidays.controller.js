@@ -79,8 +79,7 @@ router.post(
 router.put(
     '/update',
     authorize(),
-    (request, response, next) =>
-        holidayIdSchema(request.params, response, next),
+    (request, response, next) => holidayIdSchema(request.query, response, next),
     (request, response, next) =>
         updateHolidaySchema(request.body, response, next),
     update
@@ -88,8 +87,7 @@ router.put(
 router.delete(
     '/delete',
     authorize(),
-    (request, response, next) =>
-        holidayIdSchema(request.params, response, next),
+    (request, response, next) => holidayIdSchema(request.query, response, next),
     remove
 );
 

@@ -1,3 +1,4 @@
+const Response = require('../response');
 const {
     sendEventByQueueId,
     kickAllByQueueId,
@@ -29,24 +30,6 @@ module.exports = (sequelize, Sequelize) => {
             qrcode: {
                 type: Sequelize.VIRTUAL,
             },
-            schedules: {
-                references: {
-                    model: 'schedules',
-                    key: 'id',
-                },
-            },
-            holidays: {
-                references: {
-                    model: 'holidays',
-                    key: 'id',
-                },
-            },
-            positions: {
-                references: {
-                    model: 'positions',
-                    key: 'id',
-                },
-            },
         },
         {
             paranoid: false,
@@ -71,11 +54,15 @@ module.exports = (sequelize, Sequelize) => {
     Model.findByOwnerId = async (id) => {
         return await Model.findAll({
             where: { ownerId: id },
+            include: [{ all: true, nested: true }],
         });
     };
 
     Model.findByQueueId = async (id) => {
-        const result = await Model.findByPk(id);
+        const result = await Model.findOne({
+            where: { id },
+            include: [{ all: true, nested: true }],
+        });
 
         if (result === null) {
             throw new Response('Такой очереди не существует.');

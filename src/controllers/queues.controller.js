@@ -79,7 +79,7 @@ const update = async (request, response, next) => {
 };
 
 const info = async (request, response, next) => {
-    const queue = await db.Queue.findByQueueId(request.params.queueId);
+    const queue = await db.Queue.findByQueueId(request.query.queueId);
 
     queue.qrcode = await generateQrCodeQueue(queue.id);
 
@@ -95,7 +95,7 @@ const info = async (request, response, next) => {
 };
 
 const remove = async (request, response, next) => {
-    const queue = await db.Queue.findByQueueId(request.params.queueId);
+    const queue = await db.Queue.findByQueueId(request.query.queueId);
 
     queue.checkOwnerId(request.user.id);
 
@@ -118,7 +118,7 @@ router.post(
 router.put(
     '/update',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     (request, response, next) =>
         updateQueueSchema(request.body, response, next),
     update
@@ -126,13 +126,13 @@ router.put(
 router.get(
     '/info',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     info
 );
 router.delete(
     '/delete',
     authorize(),
-    (request, response, next) => queueIdSchema(request.params, response, next),
+    (request, response, next) => queueIdSchema(request.query, response, next),
     remove
 );
 

@@ -100,7 +100,7 @@ const forgotPassword = async (request, response, next) => {
 };
 
 const resetPassword = async (request, response, next) => {
-    const getData = request.params;
+    const getData = request.query;
 
     const user = await db.User.findByUserId(getData.userId);
 
@@ -177,7 +177,7 @@ const registration = async (request, response, next) => {
 };
 
 const registrationConfirm = async (request, response, next) => {
-    const getData = request.params;
+    const getData = request.query;
 
     const user = await db.User.findByUserId(getData.userId);
 
@@ -397,7 +397,7 @@ const deleteAccount = async (request, response, next) => {
 };
 
 const deleteAccountCancel = async (request, response, next) => {
-    const getData = request.params;
+    const getData = request.query;
 
     const user = await db.User.findOne({
         where: {
@@ -438,7 +438,7 @@ router.post(
 router.get(
     '/password/reset',
     (request, response, next) =>
-        userIdAndTokenSchema(request.params, response, next),
+        userIdAndTokenSchema(request.query, response, next),
     resetPassword
 );
 
@@ -452,7 +452,7 @@ router.post(
 router.get(
     '/registration/confirm',
     (request, response, next) =>
-        userIdAndTokenSchema(request.params, response, next),
+        userIdAndTokenSchema(request.query, response, next),
     registrationConfirm
 );
 
@@ -465,14 +465,14 @@ router.post(
 
 router.put(
     '/refresh-token',
-    (request, response, next) => tokenSchema(request.params, response, next),
+    (request, response, next) => tokenSchema(request.query, response, next),
     refreshToken
 );
 
 router.delete(
     '/revoke-token',
     authorize(),
-    (request, response, next) => tokenSchema(request.params, response, next),
+    (request, response, next) => tokenSchema(request.query, response, next),
     revokeRefreshToken
 );
 
@@ -491,7 +491,7 @@ router.delete('/delete', authorize(), deleteAccount);
 
 router.get(
     '/delete/cancel',
-    (request, response, next) => tokenSchema(request.params, response, next),
+    (request, response, next) => tokenSchema(request.query, response, next),
     deleteAccountCancel
 );
 

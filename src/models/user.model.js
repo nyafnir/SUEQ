@@ -40,24 +40,6 @@ module.exports = (sequelize, Sequelize) => {
                 defaultValue: false,
                 allowNull: false,
             },
-            queues: {
-                references: {
-                    model: 'queues',
-                    key: 'id',
-                },
-            },
-            positions: {
-                references: {
-                    model: 'positions',
-                    key: 'id',
-                },
-            },
-            refreshTokens: {
-                references: {
-                    model: 'refreshtokens',
-                    key: 'id',
-                },
-            },
         },
         {
             paranoid: true,
@@ -68,8 +50,16 @@ module.exports = (sequelize, Sequelize) => {
     //#region Методы объекта
 
     Model.prototype.getWithoutSecrets = function () {
-        const { id, email, firstname, surname, lastname } = this;
-        return { id, email, firstname, surname, lastname };
+        const {
+            id,
+            email,
+            firstname,
+            surname,
+            lastname,
+            queues,
+            positions,
+        } = this;
+        return { id, email, firstname, surname, lastname, queues, positions };
     };
 
     //#endregion
@@ -79,6 +69,7 @@ module.exports = (sequelize, Sequelize) => {
     Model.findByEmail = async (email) => {
         const result = await Model.findOne({
             where: { email },
+            include: [{ all: true, nested: true }],
         });
 
         if (result === null) {
@@ -91,6 +82,7 @@ module.exports = (sequelize, Sequelize) => {
     Model.findByUserId = async (id) => {
         const result = await Model.findOne({
             where: { id },
+            include: [{ all: true, nested: true }],
         });
 
         if (result === null) {
