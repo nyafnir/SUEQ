@@ -16,10 +16,6 @@ module.exports = () => {
                     .send(new Response('Доступ запрещен.'));
             }
 
-            request.user.refreshTokens = await db.RefreshToken.findAllByUserId(
-                request.user.id
-            );
-
             next();
         },
     ];
