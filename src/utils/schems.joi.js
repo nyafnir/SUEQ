@@ -155,6 +155,42 @@ const updateScheduleSchema = (target, response, next) => {
 
 //#endregion
 
+//#region Holidays
+
+const holiday = {
+    id: Joi.number().integer(),
+    date: Joi.string().regex(config.regexs.dateonly),
+    isHoliday: Joi.boolean(),
+};
+
+const holidayIdSchema = (target, response, next) => {
+    const schema = Joi.object({
+        holidayId: holiday.id.required(),
+    });
+    validate(target, next, schema);
+};
+
+const createHolidaySchema = (target, response, next) => {
+    const schema = Joi.object({
+        queueId: queue.id.required(),
+        date: holiday.date.required(),
+        isHoliday: holiday.isHoliday.required(),
+    });
+    validate(target, next, schema);
+};
+
+const updateHolidaySchema = (target, response, next) => {
+    const schema = Joi.object({
+        ate: holiday.date,
+        isHoliday: holiday.isHoliday,
+    })
+        .min(1) // Не даёт отправить {}
+        .required(); // Не даёт отправить undefined
+    validate(target, next, schema);
+};
+
+//#endregion
+
 module.exports = {
     // Queues
     queueIdSchema,
@@ -171,4 +207,8 @@ module.exports = {
     scheduleIdSchema,
     createScheduleSchema,
     updateScheduleSchema,
+    // Holidays
+    holidayIdSchema,
+    createHolidaySchema,
+    updateHolidaySchema,
 };

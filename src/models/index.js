@@ -173,6 +173,23 @@ db.Schedule.addHook('beforeDestroy', async (schedule, options) => {
     await closeQueueOnTime(schedule.queueId);
 });
 
+db.Holiday.addHook('afterCreate', async (holiday, options) => {
+    const room = `queues/${holiday.queueId}`;
+    io.of('/').in(room).emit('QUEUE_HOLIDAY_CREATE', holiday);
+});
+
+db.Holiday.addHook('afterUpdate', async (holiday, options) => {
+    const room = `queues/${holiday.queueId}`;
+    io.of('/').in(room).emit('QUEUE_HOLIDAY_UPDATE', holiday);
+    await closeQueueOnTime(holiday.queueId);
+});
+
+db.Holiday.addHook('beforeDestroy', async (holiday, options) => {
+    const room = `queues/${holiday.queueId}`;
+    io.of('/').in(room).emit('QUEUE_HOLIDAY_DELETED', holiday);
+    await closeQueueOnTime(holiday.queueId);
+});
+
 //#endregion
 
 module.exports = db;

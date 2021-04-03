@@ -68,9 +68,7 @@ module.exports = (sequelize, Sequelize) => {
     //#region Методы класса
 
     Model.findByScheduleId = async (id) => {
-        const result = await Model.findOne({
-            where: { queueId: id },
-        });
+        const result = await Model.findByPk(id);
 
         if (result === null) {
             throw new Response('Такого расписания не существует.');
