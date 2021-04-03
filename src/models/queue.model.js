@@ -78,7 +78,7 @@ module.exports = (sequelize, Sequelize) => {
 
     Model.addHook('beforeDestroy', (queue, options) => {
         const room = `queues/${queue.id}`;
-        io.of('/').in(room).emit('QUEUE_REMOVE', queue);
+        io.of('/').in(room).emit('QUEUE_DELETED', queue);
         io.sockets.clients(room).forEach((client) => client.leave(room));
     });
 

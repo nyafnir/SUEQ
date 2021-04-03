@@ -1,6 +1,6 @@
 const { database } = require('../config.js');
 const Sequelize = require('sequelize');
-
+const { io } = require('../services/web-socket');
 const sequelize = new Sequelize(
     database.credentials.database,
     database.credentials.user,
@@ -24,7 +24,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-//#region Обрабатываемые модели и их связи
+//#region Обрабатываемые модели
 
 db.User = require('./user.model')(sequelize, Sequelize);
 db.RefreshToken = require('./refreshtoken.model')(sequelize, Sequelize);
@@ -32,6 +32,10 @@ db.Queue = require('./queue.model')(sequelize, Sequelize);
 db.Position = require('./position.model')(sequelize, Sequelize);
 db.Schedule = require('./schedule.model')(sequelize, Sequelize);
 db.Holiday = require('./holiday.model')(sequelize, Sequelize);
+
+//#endregion
+
+//#region Связи моделей
 
 // Каждый пользователь может иметь много токенов
 db.User.hasMany(db.RefreshToken, {
@@ -73,7 +77,7 @@ db.Schedule.belongsTo(db.Queue, {
     foreignKey: 'queueId',
 });
 
-// Каждая очередь имеет не рабочие дни
+// Каждая очередь имеет выходные дни
 db.Queue.hasMany(db.Queue, {
     foreignKey: 'queueId',
 });
@@ -120,6 +124,28 @@ db.Queue.prototype.isOpen = async function () {
 
     return false;
 };
+
+//#endregion
+
+//#region Вебхуки между моделями
+
+db.User.addHook('afterUpdate', async (user, options) => {
+    const positions = await db.Positions.findAllByUserId(user.id);
+    for (const position of positions) {
+        io.of('/')
+            .in(`queues/${position.queueId}`)
+            .emit('USER_UPDATE', user.getWithoutSecrets());
+    }
+});
+
+db.User.addHook('beforeDestroy', async (user, options) => {
+    const queues = await db.Queues.findAllByUserId(user.id);
+    for (const queue of queues) {
+        const room = `queues/${queue.id}`;
+        io.of('/').in(room).emit('USER_DELETED', user.getWithoutSecrets());
+        io.sockets.clients(room).forEach((client) => client.leave(room));
+    }
+});
 
 //#endregion
 

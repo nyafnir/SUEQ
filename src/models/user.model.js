@@ -1,6 +1,5 @@
 const Response = require('../response');
 const config = require('../config');
-const { io } = require('../services/web-socket');
 
 module.exports = (sequelize, Sequelize) => {
     const Model = sequelize.define(
@@ -82,22 +81,6 @@ module.exports = (sequelize, Sequelize) => {
 
         return result;
     };
-
-    //#endregion
-
-    //#region Вебхуки
-
-    Model.addHook('afterUpdate', (user, options) => {
-        // Сообщаем во все очереди где есть этот пользователь обновленную информацию
-        // io.of('/').in(`queues/${queue.id}`).emit('USER_UPDATE', user);
-    });
-
-    Model.addHook('beforeDestroy', (user, options) => {
-        // выкидываем всех из комнат этого владельца и сообщаем им об этом
-        // const room = `queues/${queue.id}`;
-        // io.of('/').in(room).emit('USER_REMOVE', user);
-        // io.sockets.clients(room).forEach((client) => client.leave(room));
-    });
 
     //#endregion
 
