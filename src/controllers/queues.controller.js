@@ -25,9 +25,7 @@ const generateQrCodeQueue = async (queueId) => {
 const create = async (request, response, next) => {
     const user = request.user;
 
-    const queues = await db.Queue.findByOwnerId(user.id);
-
-    if (queues.length > config.queues.limits.owner) {
+    if (user.queues.length > config.queues.limits.owner) {
         return response
             .status(400)
             .send(
@@ -59,12 +57,9 @@ const create = async (request, response, next) => {
 };
 
 const update = async (request, response, next) => {
-    const queueId = request.query.queueId;
-    const user = request.user;
+    let queue = await db.Queue.findByQueueId(request.query.queueId);
 
-    let queue = await db.Queue.findByQueueId(queueId);
-
-    queue.checkOwnerId(user.id);
+    queue.checkOwnerId(request.user.id);
 
     const updateFields = request.body;
 
@@ -84,15 +79,9 @@ const update = async (request, response, next) => {
 };
 
 const info = async (request, response, next) => {
-    const queueId = request.query.queueId;
-
-    const queue = await db.Queue.findByQueueId(queueId);
+    const queue = await db.Queue.findByQueueId(request.params.queueId);
 
     queue.qrcode = await generateQrCodeQueue(queue.id);
-
-    queue.schedules = await db.Schedule.findByQueueId(queue.id);
-
-    queue.holidays = await db.Holiday.findByQueueId(queue.id);
 
     return response
         .status(200)
@@ -106,12 +95,9 @@ const info = async (request, response, next) => {
 };
 
 const remove = async (request, response, next) => {
-    const queueId = request.query.queueId;
-    const user = request.user;
+    const queue = await db.Queue.findByQueueId(request.params.queueId);
 
-    let queue = await db.Queue.findByQueueId(queueId);
-
-    queue.checkOwnerId(user.id);
+    queue.checkOwnerId(request.user.id);
 
     await queue.destroy();
 
@@ -132,7 +118,7 @@ router.post(
 router.put(
     '/update',
     authorize(),
-    (request, response, next) => queueIdSchema(request.query, response, next),
+    (request, response, next) => queueIdSchema(request.params, response, next),
     (request, response, next) =>
         updateQueueSchema(request.body, response, next),
     update
@@ -140,13 +126,13 @@ router.put(
 router.get(
     '/info',
     authorize(),
-    (request, response, next) => queueIdSchema(request.query, response, next),
+    (request, response, next) => queueIdSchema(request.params, response, next),
     info
 );
 router.delete(
     '/delete',
     authorize(),
-    (request, response, next) => queueIdSchema(request.query, response, next),
+    (request, response, next) => queueIdSchema(request.params, response, next),
     remove
 );
 

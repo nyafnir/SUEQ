@@ -191,6 +191,23 @@ const updateHolidaySchema = (target, response, next) => {
 
 //#endregion
 
+//#region Positions
+
+const position = {
+    memberId: Joi.number().integer(),
+    position: Joi.number().integer(),
+};
+
+const movePositionSchema = (target, response, next) => {
+    const schema = Joi.object({
+        position: position.position.required(),
+        memberId: position.memberIdrequired(),
+    });
+    validate(target, next, schema);
+};
+
+//#endregion
+
 module.exports = {
     // Queues
     queueIdSchema,
@@ -211,4 +228,6 @@ module.exports = {
     holidayIdSchema,
     createHolidaySchema,
     updateHolidaySchema,
+    // Positions
+    movePositionSchema,
 };

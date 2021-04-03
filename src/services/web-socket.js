@@ -1,8 +1,44 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
+const events = {
+    // Positions
+    QUEUE_MEMBER_ENTRY: 'QUEUE_MEMBER_ENTRY',
+    QUEUE_MEMBER_MOVE: 'QUEUE_MEMBER_MOVE',
+    QUEUE_MEMBER_LEAVE: 'QUEUE_MEMBER_LEAVE',
+    // Queues
+    QUEUE_UPDATE: 'QUEUE_UPDATE',
+    QUEUE_DELETED: 'QUEUE_DELETED',
+    QUEUE_CLOSED: 'QUEUE_CLOSED',
+    // Users
+    USER_UPDATE: 'USER_UPDATE',
+    USER_DELETED: 'USER_DELETED',
+    USER_ONLINE: 'USER_ONLINE',
+    USER_OFFLINE: 'USER_OFFLINE',
+    // Schedules
+    QUEUE_SCHEDULE_CREATE: 'QUEUE_SCHEDULE_CREATE',
+    QUEUE_SCHEDULE_UPDATE: 'QUEUE_SCHEDULE_UPDATE',
+    QUEUE_SCHEDULE_DELETED: 'QUEUE_SCHEDULE_DELETED',
+    // Holidays
+    QUEUE_HOLIDAY_CREATE: 'QUEUE_HOLIDAY_CREATE',
+    QUEUE_HOLIDAY_UPDATE: 'QUEUE_HOLIDAY_UPDATE',
+    QUEUE_HOLIDAY_DELETED: 'QUEUE_HOLIDAY_DELETED',
+};
+
 let io;
-const clients = [];
+
+const getPathRoomByQueueId = (queueId) => {
+    return `queues/${queueId}`;
+};
+
+const sendEventByQueueId = (queueId, event, data) => {
+    io.of('/').in(getPathRoomByQueueId(queueId)).emit(event, data);
+};
+
+const kickAllByQueueId = (queueId) => {
+    const room = getPathRoomByQueueId(queueId);
+    io.sockets.clients(room).forEach((client) => client.leave(room));
+};
 
 const initialize = async (httpServer) => {
     io = require('socket.io')(httpServer);
@@ -23,16 +59,12 @@ const initialize = async (httpServer) => {
         } else {
             next(new Error('Не указан токен доступа.'));
         }
-    }).on('connection', function (client) {
-        clients.push(client.id);
-        // console.log(client.payload.id);
-        client.on('disconnect', (client) => {
-            clients.splice(clients.indexOf(client.id), 1);
-        });
     });
 };
 
 module.exports = {
-    io,
+    sendEventByQueueId,
+    kickAllByQueueId,
+    events,
     initialize,
 };

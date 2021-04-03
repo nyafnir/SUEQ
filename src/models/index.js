@@ -1,6 +1,10 @@
 const { database } = require('../config.js');
 const Sequelize = require('sequelize');
-const { io } = require('../services/web-socket');
+const {
+    sendEventByQueueId,
+    kickAllByQueueId,
+    events,
+} = require('../services/web-socket');
 const sequelize = new Sequelize(
     database.credentials.database,
     database.credentials.user,
@@ -130,63 +134,67 @@ db.Queue.prototype.isOpen = async function () {
 //#region Вебхуки между моделями
 
 db.User.addHook('afterUpdate', async (user, options) => {
-    const positions = await db.Positions.findAllByUserId(user.id);
-    for (const position of positions) {
-        io.of('/')
-            .in(`queues/${position.queueId}`)
-            .emit('USER_UPDATE', user.getWithoutSecrets());
+    for (const position of user.positions) {
+        sendEventByQueueId(
+            position.queueId,
+            events.USER_UPDATE,
+            user.getWithoutSecrets()
+        );
     }
 });
 
 db.User.addHook('beforeDestroy', async (user, options) => {
-    const queues = await db.Queues.findAllByUserId(user.id);
-    for (const queue of queues) {
-        const room = `queues/${queue.id}`;
-        io.of('/').in(room).emit('USER_DELETED', user.getWithoutSecrets());
-        io.sockets.clients(room).forEach((client) => client.leave(room));
+    for (const queue of user.queues) {
+        sendEventByQueueId(queue.id, events.QUEUE_DELETED, queue);
+        kickAllByQueueId(queue.id);
     }
 });
 
 const closeQueueOnTime = async (queueId) => {
     const queue = await db.Queue.findByQueueId(queueId);
     if (queue.isOpen() === false) {
-        const room = `queues/${queueId}`;
-        io.of('/').in(room).emit('QUEUE_CLOSED', { queueId });
-        io.sockets.clients(room).forEach((client) => client.leave(room));
+        sendEventByQueueId(queue.id, events.QUEUE_CLOSED, queue);
+        kickAllByQueueId(queue.id);
     }
 };
 
 db.Schedule.addHook('afterCreate', async (schedule, options) => {
-    const room = `queues/${schedule.queueId}`;
-    io.of('/').in(room).emit('QUEUE_SCHEDULE_CREATE', schedule);
+    sendEventByQueueId(
+        schedule.queueId,
+        events.QUEUE_SCHEDULE_CREATE,
+        schedule
+    );
 });
 
 db.Schedule.addHook('afterUpdate', async (schedule, options) => {
-    const room = `queues/${schedule.queueId}`;
-    io.of('/').in(room).emit('QUEUE_SCHEDULE_UPDATE', schedule);
-    await closeQueueOnTime(schedule.queueId);
+    sendEventByQueueId(
+        schedule.queueId,
+        events.QUEUE_SCHEDULE_UPDATE,
+        schedule
+    );
 });
 
-db.Schedule.addHook('beforeDestroy', async (schedule, options) => {
-    const room = `queues/${schedule.queueId}`;
-    io.of('/').in(room).emit('QUEUE_SCHEDULE_DELETED', schedule);
+db.Schedule.addHook('afterDestroy', async (schedule, options) => {
+    sendEventByQueueId(
+        schedule.queueId,
+        events.QUEUE_SCHEDULE_DELETED,
+        schedule
+    );
     await closeQueueOnTime(schedule.queueId);
 });
 
 db.Holiday.addHook('afterCreate', async (holiday, options) => {
-    const room = `queues/${holiday.queueId}`;
-    io.of('/').in(room).emit('QUEUE_HOLIDAY_CREATE', holiday);
-});
-
-db.Holiday.addHook('afterUpdate', async (holiday, options) => {
-    const room = `queues/${holiday.queueId}`;
-    io.of('/').in(room).emit('QUEUE_HOLIDAY_UPDATE', holiday);
+    sendEventByQueueId(holiday.queueId, events.QUEUE_HOLIDAY_CREATE, holiday);
     await closeQueueOnTime(holiday.queueId);
 });
 
-db.Holiday.addHook('beforeDestroy', async (holiday, options) => {
-    const room = `queues/${holiday.queueId}`;
-    io.of('/').in(room).emit('QUEUE_HOLIDAY_DELETED', holiday);
+db.Holiday.addHook('afterUpdate', async (holiday, options) => {
+    sendEventByQueueId(holiday.queueId, events.QUEUE_HOLIDAY_UPDATE, holiday);
+    await closeQueueOnTime(holiday.queueId);
+});
+
+db.Holiday.addHook('afterDestroy', async (holiday, options) => {
+    sendEventByQueueId(holiday.queueId, events.QUEUE_HOLIDAY_DELETED, holiday);
     await closeQueueOnTime(holiday.queueId);
 });
 

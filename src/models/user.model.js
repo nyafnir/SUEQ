@@ -40,6 +40,24 @@ module.exports = (sequelize, Sequelize) => {
                 defaultValue: false,
                 allowNull: false,
             },
+            queues: {
+                references: {
+                    model: 'queues',
+                    key: 'id',
+                },
+            },
+            positions: {
+                references: {
+                    model: 'positions',
+                    key: 'id',
+                },
+            },
+            refreshTokens: {
+                references: {
+                    model: 'refreshtokens',
+                    key: 'id',
+                },
+            },
         },
         {
             paranoid: true,

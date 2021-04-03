@@ -38,7 +38,7 @@ const create = async (request, response, next) => {
 const update = async (request, response, next) => {
     let holiday = await db.Holiday.findByHolidayId(request.query.holidayId);
 
-    const queue = await db.Queue.findByPk(holiday.queueId);
+    const queue = await db.Queue.findByQueueId(holiday.queueId);
     queue.checkOwnerId(request.user.id);
 
     holiday = await holiday.update(request.body);
@@ -57,7 +57,7 @@ const update = async (request, response, next) => {
 const remove = async (request, response, next) => {
     let holiday = await db.Holiday.findByHolidayId(request.query.holidayId);
 
-    const queue = await db.Queue.findByPk(holiday.queueId);
+    const queue = await db.Queue.findByQueueId(holiday.queueId);
     queue.checkOwnerId(request.user.id);
 
     await holiday.destroy();

@@ -73,16 +73,14 @@ const generateHash = async (data, saltOrRounds) => {
 //#region Методы контроллера
 
 const forgotPassword = async (request, response, next) => {
-    const postData = request.body;
-
-    const user = await db.User.findByEmail(postData.email);
+    const user = await db.User.findByEmail(request.body.email);
 
     if (user.confirmed === false) {
         return response
             .status(400)
             .send(
                 new Response(
-                    'Вы не подтвердили свой почтовый адрес, сбросить пароль невозможно.'
+                    'Вы не подтвердили свой почтовый адрес, сбросить пароль невозможно, дождитесь удаления аккаунта и создайте новый.'
                 )
             );
     }
@@ -359,11 +357,7 @@ const revokeRefreshToken = async (request, response, next) => {
 const revokeRefreshTokens = async (request, response, next) => {
     const ipAddress = getRemoteClientIpAddress(request);
 
-    const refreshTokens = await db.refreshToken.findAllByUserId(
-        request.user.id
-    );
-
-    for await (const refreshToken of refreshTokens) {
+    for await (const refreshToken of request.user.refreshTokens) {
         await refreshToken.revoke(ipAddress).catch(() => null);
     }
 

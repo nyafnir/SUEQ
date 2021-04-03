@@ -1,4 +1,8 @@
-const { io } = require('../services/web-socket');
+const {
+    sendEventByQueueId,
+    kickAllByQueueId,
+    events,
+} = require('../services/web-socket');
 
 module.exports = (sequelize, Sequelize) => {
     const Model = sequelize.define(
@@ -26,10 +30,22 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.VIRTUAL,
             },
             schedules: {
-                type: Sequelize.VIRTUAL,
+                references: {
+                    model: 'schedules',
+                    key: 'id',
+                },
             },
             holidays: {
-                type: Sequelize.VIRTUAL,
+                references: {
+                    model: 'holidays',
+                    key: 'id',
+                },
+            },
+            positions: {
+                references: {
+                    model: 'positions',
+                    key: 'id',
+                },
             },
         },
         {
@@ -73,13 +89,12 @@ module.exports = (sequelize, Sequelize) => {
     //#region Вебхуки
 
     Model.addHook('afterUpdate', (queue, options) => {
-        io.of('/').in(`queues/${queue.id}`).emit('QUEUE_UPDATE', queue);
+        sendEventByQueueId(queue.id, events.QUEUE_UPDATE, queue);
     });
 
     Model.addHook('beforeDestroy', (queue, options) => {
-        const room = `queues/${queue.id}`;
-        io.of('/').in(room).emit('QUEUE_DELETED', queue);
-        io.sockets.clients(room).forEach((client) => client.leave(room));
+        sendEventByQueueId(queue.id, events.QUEUE_DELETED, queue);
+        kickAllByQueueId(queue.id);
     });
 
     //#endregion
