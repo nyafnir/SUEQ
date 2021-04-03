@@ -89,7 +89,7 @@ const forgotPassword = async (request, response, next) => {
 
     const token = generateToken(
         { userId: user.id, email: user.email, updatedAt: user.updatedAt },
-        user.passwordHash,
+        config.tokens.passwordReset.secret,
         config.tokens.passwordReset.life
     );
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset?userid=${user.id}&token=${token}`;
@@ -106,7 +106,10 @@ const resetPassword = async (request, response, next) => {
 
     const user = await db.User.findByUserId(getData.userId);
 
-    const payload = getPayloadFromToken(getData.token, user.passwordHash);
+    const payload = getPayloadFromToken(
+        getData.token,
+        config.tokens.resetPassword.secret
+    );
 
     if (payload.userId !== user.id) {
         return response
@@ -158,7 +161,7 @@ const registration = async (request, response, next) => {
 
     const token = generateToken(
         { userId: user.id },
-        user.passwordSalt,
+        config.tokens.registrationConfirm.secret,
         config.tokens.emailConfirm.life
     );
 
@@ -186,7 +189,16 @@ const registrationConfirm = async (request, response, next) => {
             .send(new Response('Почта уже была подтверждена.'));
     }
 
-    getPayloadFromToken(getData.token, user.passwordSalt);
+    const payload = getPayloadFromToken(
+        getData.token,
+        config.tokens.registrationConfirm.secret
+    );
+
+    if (payload.userId !== user.id) {
+        return response
+            .status(400)
+            .send(new Response('Это токен другого пользователя.'));
+    }
 
     await user.update({ confirmed: true });
 
@@ -374,7 +386,7 @@ const deleteAccount = async (request, response, next) => {
 
     const token = generateToken(
         { userId: user.id },
-        user.passwordHash,
+        config.tokens.accountRescue.secret,
         config.tokens.accountRescue.life
     );
 
@@ -400,7 +412,10 @@ const deleteAccountCancel = async (request, response, next) => {
         paranoid: false,
     });
 
-    const payload = getPayloadFromToken(getData.token, user.passwordHash);
+    const payload = getPayloadFromToken(
+        getData.token,
+        config.tokens.accountRescue.secret
+    );
 
     if (payload.userId !== user.id) {
         return response

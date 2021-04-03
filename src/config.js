@@ -114,13 +114,16 @@ module.exports = {
             life: parseInt(process.env.TOKEN_REFRESH_LIFE, 10),
         },
         passwordReset: {
+            secret: process.env.TOKEN_PASSWORD_RESET_SECRET,
             life: parseInt(process.env.TOKEN_PASSWORD_RESET_TIMEOUT_MS, 10),
         },
         emailConfirm: {
+            secret: process.env.TOKEN_EMAIL_CONFIRM_SECRET,
             life: parseInt(process.env.TOKEN_EMAIL_CONFIRM_TIMEOUT_MS, 10),
         },
         accountRescue: {
-            life: parseInt(process.env.TOKEN_RESCUE_TIMEOUT_MS, 10),
+            secret: process.env.TOKEN_ACCOUNT_RESCUE_SECRET,
+            life: parseInt(process.env.TOKEN_ACCOUNT_RESCUE_TIMEOUT_MS, 10),
         },
     },
     queues: {
