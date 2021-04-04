@@ -14,9 +14,10 @@ const {
 const create = async (request, response, next) => {
     const postDate = request.body;
 
-    const holidays = await db.Holiday.findAllByQueueId(postDate.queueId);
+    const queue = await db.Queue.findByQueueId(postDate.queueId);
+    queue.checkOwnerId(request.user.id);
 
-    if (holidays.length > config.queues.limits.holidays) {
+    if (queue.holidays.length > config.queues.limits.holidays) {
         return response
             .status(400)
             .send(
@@ -74,7 +75,9 @@ router.post(
     authorize(),
     (request, response, next) =>
         createHolidaySchema(request.body, response, next),
-    create
+    async (request, response, next) => {
+        await create(request, response, next).catch(next);
+    }
 );
 router.put(
     '/update',
@@ -82,13 +85,17 @@ router.put(
     (request, response, next) => holidayIdSchema(request.query, response, next),
     (request, response, next) =>
         updateHolidaySchema(request.body, response, next),
-    update
+    async (request, response, next) => {
+        await update(request, response, next).catch(next);
+    }
 );
 router.delete(
     '/delete',
     authorize(),
     (request, response, next) => holidayIdSchema(request.query, response, next),
-    remove
+    async (request, response, next) => {
+        await remove(request, response, next).catch(next);
+    }
 );
 
 module.exports = router;

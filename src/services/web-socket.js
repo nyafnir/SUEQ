@@ -1,27 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-
-const events = {
-    // Positions
-    QUEUE_MEMBER_ENTRY: 'QUEUE_MEMBER_ENTRY',
-    QUEUE_MEMBER_MOVE: 'QUEUE_MEMBER_MOVE',
-    QUEUE_MEMBER_LEAVE: 'QUEUE_MEMBER_LEAVE',
-    // Queues
-    QUEUE_UPDATE: 'QUEUE_UPDATE',
-    QUEUE_DELETED: 'QUEUE_DELETED',
-    QUEUE_CLOSED: 'QUEUE_CLOSED',
-    // Users
-    USER_UPDATE: 'USER_UPDATE',
-    USER_DELETED: 'USER_DELETED',
-    // Schedules
-    QUEUE_SCHEDULE_CREATE: 'QUEUE_SCHEDULE_CREATE',
-    QUEUE_SCHEDULE_UPDATE: 'QUEUE_SCHEDULE_UPDATE',
-    QUEUE_SCHEDULE_DELETED: 'QUEUE_SCHEDULE_DELETED',
-    // Holidays
-    QUEUE_HOLIDAY_CREATE: 'QUEUE_HOLIDAY_CREATE',
-    QUEUE_HOLIDAY_UPDATE: 'QUEUE_HOLIDAY_UPDATE',
-    QUEUE_HOLIDAY_DELETED: 'QUEUE_HOLIDAY_DELETED',
-};
+const events = require('../utils/events.sio');
 
 let io;
 
@@ -41,6 +20,21 @@ const kickAllByQueueId = (queueId) => {
     }
 };
 
+class Message {
+    constructor(code = 200, event = events.MESSAGE, data = null) {
+        this.code = code;
+        this.operation = event;
+        this.data = data;
+    }
+    Message() {
+        return {
+            code: this.code,
+            operation: this.operation,
+            data: this.data,
+        };
+    }
+}
+
 const initialize = async (httpServer) => {
     io = require('socket.io')(httpServer);
 
@@ -51,15 +45,38 @@ const initialize = async (httpServer) => {
                 config.tokens.access.secret,
                 (err, decoded) => {
                     if (err) {
-                        return next(new Error('Неправильный токен.'));
+                        return next(new Error(`Ошибка токена: ${err}`));
                     }
                     socket.payload = decoded;
                     next();
                 }
             );
         } else {
-            next(new Error('Не указан токен доступа.'));
+            return next(new Error('Не указан токен доступа.'));
         }
+    }).on('connection', (client) => {
+        client.on(events.QUEUE_SUBSCRIBE, (data) => {
+            try {
+                client.join(getPathRoomByQueueId(data.queueId));
+            } catch {
+                return client.emit(
+                    events.MESSAGE,
+                    new Message(
+                        404,
+                        events.QUEUE_SUBSCRIBE,
+                        `Комнаты с QID: ${data.queueId} не существует.`
+                    )
+                );
+            }
+            client.emit(
+                events.MESSAGE,
+                new Message(
+                    200,
+                    events.QUEUE_SUBSCRIBE,
+                    `UID: ${client.payload.id} присоединен к комнате с QID: ${data.queueId}.`
+                )
+            );
+        });
     });
 };
 

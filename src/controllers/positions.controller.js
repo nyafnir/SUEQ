@@ -42,7 +42,7 @@ const entry = async (request, response, next) => {
     const position = await db.Position.create({
         queueId: queue.id,
         userId: user.id,
-        position: queue.positions.length + 1,
+        place: queue.positions.length + 1,
     });
 
     return response
@@ -85,54 +85,45 @@ const move = async (request, response, next) => {
 
     const putData = request.body;
 
-    const members = queue.positions;
+    let members = queue.positions;
 
     if (members.length === 0) {
         return response
             .status(404)
             .send(new Response('Очередь пуста или её не существует.'));
-    } else if (putData.position > members.length) {
+    } else if (putData.place > members.length) {
         return response
             .status(400)
             .send(new Response('Выход за предел очереди.'));
     }
 
-    members.sort((a, b) => a.position - b.position);
-
-    const currentPositionIndex = members.findIndex(
-        (member) => member.userId === putData.memberId
+    const oldPositionIndex = members.findIndex(
+        (position) => position.userId === putData.userId
     );
 
-    if (currentPositionIndex === -1) {
+    if (oldPositionIndex === -1) {
         return response
             .status(404)
-            .send(new Response('Пользователя с таким ID в очереди нет.'));
-    } else if (currentPositionIndex + 1 === putData.position) {
+            .send(new Response('Такого пользователя в очереди нет.'));
+    } else if (members[oldPositionIndex].place === putData.place) {
         return response
             .status(400)
-            .send(
-                new Response('Пользователь с таким ID уже стоит на этом месте.')
-            );
+            .send(new Response('Пользователь уже стоит на этом месте.'));
     }
 
-    const newPositionIndex = putData.position - 1;
-    if (newPositionIndex > currentPositionIndex) {
-        for (let i = currentPositionIndex + 1; i <= newPositionIndex; i += 1) {
-            members[i].position += 1;
-        }
-    } else {
-        for (let i = currentPositionIndex - 1; i >= newPositionIndex; i -= 1) {
-            members[i].position -= 1;
-        }
+    const moveMember = members.splice(oldPositionIndex, 1).shift();
+    members.sort((a, b) => a.place - b.place);
+    const head = members.splice(0, putData.place);
+    members = [...head, moveMember, ...members];
+    for (let i = 0; i < members.length; i += 1) {
+        members[i].place = i + 1;
+        await members[i].save();
     }
 
-    members[currentPositionIndex].position = putData.position;
-
-    for await (const member of members) {
-        await member.save();
-    }
-
-    sendEventByQueueId(queue.id, events.QUEUE_MEMBER_MOVE, members);
+    sendEventByQueueId(queue.id, events.QUEUE_MEMBER_MOVE, {
+        position: moveMember,
+        members,
+    });
 
     return response
         .status(200)
@@ -147,10 +138,10 @@ const move = async (request, response, next) => {
 
 const leave = async (request, response, next) => {
     const position = request.user.positions.find(
-        (position) => request.query.queueId === position.queueId
+        (position) => request.query.queueId == position.queueId
     );
 
-    if (position === null) {
+    if (position === undefined) {
         return response
             .status(404)
             .send(new Response('Вас нет в этой очереди.'));
@@ -169,21 +160,27 @@ router.post(
     '/entry',
     authorize(),
     (request, response, next) => queueIdSchema(request.query, response, next),
-    entry
+    async (request, response, next) => {
+        await entry(request, response, next).catch(next);
+    }
 );
 
 router.delete(
     '/leave',
     authorize(),
     (request, response, next) => queueIdSchema(request.query, response, next),
-    leave
+    async (request, response, next) => {
+        await leave(request, response, next).catch(next);
+    }
 );
 
 router.get(
     '/list',
     authorize(),
     (request, response, next) => queueIdSchema(request.query, response, next),
-    list
+    async (request, response, next) => {
+        await list(request, response, next).catch(next);
+    }
 );
 
 router.put(
@@ -192,7 +189,9 @@ router.put(
     (request, response, next) => queueIdSchema(request.query, response, next),
     (request, response, next) =>
         movePositionSchema(request.body, response, next),
-    move
+    async (request, response, next) => {
+        await move(request, response, next).catch(next);
+    }
 );
 
 module.exports = router;

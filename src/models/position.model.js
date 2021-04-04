@@ -18,7 +18,7 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.INTEGER,
                 allowNull: false,
             },
-            position: {
+            place: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
             },

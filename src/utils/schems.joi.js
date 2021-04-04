@@ -130,23 +130,23 @@ const scheduleIdSchema = (target, response, next) => {
 
 const createScheduleSchema = (target, response, next) => {
     const schema = Joi.object({
-        queueId: schedule.id.required(),
-        startTime: queue.startTime.required(),
-        endTime: queue.endTime.required(),
-        weekday: queue.weekday.required(),
-        workFrom: queue.workFrom.required(),
-        workTo: queue.workTo.required(),
+        queueId: queue.id.required(),
+        startTime: schedule.startTime.required(),
+        endTime: schedule.endTime.required(),
+        weekday: schedule.weekday.required(),
+        workFrom: schedule.workFrom.required(),
+        workTo: schedule.workTo.required(),
     });
     validate(target, next, schema);
 };
 
 const updateScheduleSchema = (target, response, next) => {
     const schema = Joi.object({
-        startTime: queue.startTime,
-        endTime: queue.endTime,
-        weekday: queue.weekday,
-        workFrom: queue.workFrom,
-        workTo: queue.workTo,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        weekday: schedule.weekday,
+        workFrom: schedule.workFrom,
+        workTo: schedule.workTo,
     })
         .min(1) // Не даёт отправить {}
         .required(); // Не даёт отправить undefined;
@@ -181,7 +181,7 @@ const createHolidaySchema = (target, response, next) => {
 
 const updateHolidaySchema = (target, response, next) => {
     const schema = Joi.object({
-        ate: holiday.date,
+        date: holiday.date,
         isHoliday: holiday.isHoliday,
     })
         .min(1) // Не даёт отправить {}
@@ -194,14 +194,14 @@ const updateHolidaySchema = (target, response, next) => {
 //#region Positions
 
 const position = {
-    memberId: Joi.number().integer(),
-    position: Joi.number().integer(),
+    userId: Joi.number().integer(),
+    place: Joi.number().integer(),
 };
 
 const movePositionSchema = (target, response, next) => {
     const schema = Joi.object({
-        position: position.position.required(),
-        memberId: position.memberIdrequired(),
+        place: position.place.required(),
+        userId: position.userId.required(),
     });
     validate(target, next, schema);
 };

@@ -113,7 +113,9 @@ router.post(
     authorize(),
     (request, response, next) =>
         createQueueSchema(request.body, response, next),
-    create
+    async (request, response, next) => {
+        await create(request, response, next).catch(next);
+    }
 );
 router.put(
     '/update',
@@ -121,19 +123,25 @@ router.put(
     (request, response, next) => queueIdSchema(request.query, response, next),
     (request, response, next) =>
         updateQueueSchema(request.body, response, next),
-    update
+    async (request, response, next) => {
+        await update(request, response, next).catch(next);
+    }
 );
 router.get(
     '/info',
     authorize(),
     (request, response, next) => queueIdSchema(request.query, response, next),
-    info
+    async (request, response, next) => {
+        await info(request, response, next).catch(next);
+    }
 );
 router.delete(
     '/delete',
     authorize(),
     (request, response, next) => queueIdSchema(request.query, response, next),
-    remove
+    async (request, response, next) => {
+        await remove(request, response, next).catch(next);
+    }
 );
 
 module.exports = router;

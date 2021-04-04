@@ -14,9 +14,10 @@ const {
 const create = async (request, response, next) => {
     const postDate = request.body;
 
-    const schedules = await db.Schedule.findAllByQueueId(postDate.queueId);
+    const queue = await db.Queue.findByQueueId(postDate.queueId);
+    queue.checkOwnerId(request.user.id);
 
-    if (schedules.length > config.queues.limits.schedules) {
+    if (queue.schedules.length > config.queues.limits.schedules) {
         return response
             .status(400)
             .send(
@@ -42,7 +43,7 @@ const create = async (request, response, next) => {
 const update = async (request, response, next) => {
     let schedule = await db.Schedule.findByScheduleId(request.query.scheduleId);
 
-    const queue = await db.Queue.findByPk(schedule.queueId);
+    const queue = await db.Queue.findByQueueId(schedule.queueId);
     queue.checkOwnerId(request.user.id);
 
     schedule = await schedule.update(request.body);
@@ -61,7 +62,7 @@ const update = async (request, response, next) => {
 const remove = async (request, response, next) => {
     let schedule = await db.Schedule.findByScheduleId(request.query.scheduleId);
 
-    const queue = await db.Queue.findByPk(schedule.queueId);
+    const queue = await db.Queue.findByQueueId(schedule.queueId);
     queue.checkOwnerId(request.user.id);
 
     await schedule.destroy();
@@ -78,7 +79,9 @@ router.post(
     authorize(),
     (request, response, next) =>
         createScheduleSchema(request.body, response, next),
-    create
+    async (request, response, next) => {
+        await create(request, response, next).catch(next);
+    }
 );
 
 router.put(
@@ -88,7 +91,9 @@ router.put(
         scheduleIdSchema(request.query, response, next),
     (request, response, next) =>
         updateScheduleSchema(request.body, response, next),
-    update
+    async (request, response, next) => {
+        await update(request, response, next).catch(next);
+    }
 );
 
 router.delete(
@@ -96,7 +101,9 @@ router.delete(
     authorize(),
     (request, response, next) =>
         scheduleIdSchema(request.query, response, next),
-    remove
+    async (request, response, next) => {
+        await remove(request, response, next).catch(next);
+    }
 );
 
 module.exports = router;

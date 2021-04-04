@@ -159,7 +159,7 @@ const registration = async (request, response, next) => {
 
     const token = generateToken(
         { userId: user.id },
-        config.tokens.registrationConfirm.secret,
+        config.tokens.emailConfirm.secret,
         config.tokens.emailConfirm.life
     );
 
@@ -432,59 +432,83 @@ router.post(
     '/password/forgot',
     (request, response, next) =>
         forgotPasswordUserSchema(request.body, response, next),
-    forgotPassword
+    async (request, response, next) => {
+        await forgotPassword(request, response, next).catch(next);
+    }
 );
 
 router.get(
     '/password/reset',
     (request, response, next) =>
         userIdAndTokenSchema(request.query, response, next),
-    resetPassword
+    async (request, response, next) => {
+        await resetPassword(request, response, next).catch(next);
+    }
 );
 
 router.post(
     '/registration',
     (request, response, next) =>
         registrationUserSchema(request.body, response, next),
-    registration
+    async (request, response, next) => {
+        await registration(request, response, next).catch(next);
+    }
 );
 
 router.get(
     '/registration/confirm',
     (request, response, next) =>
         userIdAndTokenSchema(request.query, response, next),
-    registrationConfirm
+    async (request, response, next) => {
+        await registrationConfirm(request, response, next).catch(next);
+    }
 );
 
 router.post(
     '/authenticate',
     (request, response, next) =>
         authenticateUserSchema(request.body, response, next),
-    authenticate
+    async (request, response, next) => {
+        await authenticate(request, response, next).catch(next);
+    }
 );
 
 router.put(
     '/refresh-token',
     (request, response, next) => tokenSchema(request.query, response, next),
-    refreshToken
+    async (request, response, next) => {
+        await refreshToken(request, response, next).catch(next);
+    }
 );
 
 router.delete(
     '/revoke-token',
     authorize(),
     (request, response, next) => tokenSchema(request.query, response, next),
-    revokeRefreshToken
+    async (request, response, next) => {
+        await revokeRefreshToken(request, response, next).catch(next);
+    }
 );
 
-router.delete('/revoke-tokens', authorize(), revokeRefreshTokens);
+router.delete(
+    '/revoke-tokens',
+    authorize(),
+    async (request, response, next) => {
+        await revokeRefreshTokens(request, response, next).catch(next);
+    }
+);
 
-router.get('/info', authorize(), info);
+router.get('/info', authorize(), async (request, response, next) => {
+    await info(request, response, next).catch(next);
+});
 
 router.put(
     '/update',
     authorize(),
     (request, response, next) => updateUserSchema(request.body, response, next),
-    update
+    async (request, response, next) => {
+        await update(request, response, next).catch(next);
+    }
 );
 
 router.delete('/delete', authorize(), deleteAccount);
@@ -492,7 +516,9 @@ router.delete('/delete', authorize(), deleteAccount);
 router.get(
     '/delete/cancel',
     (request, response, next) => tokenSchema(request.query, response, next),
-    deleteAccountCancel
+    async (request, response, next) => {
+        await deleteAccountCancel(request, response, next).catch(next);
+    }
 );
 
 module.exports = router;

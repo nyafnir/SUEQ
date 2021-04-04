@@ -40,7 +40,7 @@ module.exports = (sequelize, Sequelize) => {
     //#region Методы объекта
 
     Model.prototype.checkOwnerId = function (id) {
-        if (id !== this.ownerId) {
+        if (id != this.ownerId) {
             throw new Response('Управлять очередью может только её владелец.');
         }
 
