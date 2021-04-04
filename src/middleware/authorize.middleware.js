@@ -8,7 +8,7 @@ module.exports = () => {
         exjwt({ secret: tokens.access.secret, algorithms: ['HS256'] }),
         async (request, response, next) => {
             try {
-                request.user = await db.User.findByUserId(request.user.id);
+                request.user = await db.User.findByUserId(request.user.userId);
             } catch {
                 return response
                     .status(401)

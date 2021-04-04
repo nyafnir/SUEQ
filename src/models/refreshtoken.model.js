@@ -43,7 +43,7 @@ module.exports = (sequelize, Sequelize) => {
             },
         },
         {
-            paranoid: false,
+            paranoid: true,
             timestamps: true,
         }
     );
@@ -89,17 +89,20 @@ module.exports = (sequelize, Sequelize) => {
         return result;
     };
 
-    Model.findOneByUserId = async (userId) => {
+    Model.findOneByUserId = async (id) => {
         return await Model.findOne({
-            where: { userId },
+            where: { userId: id },
             order: [['createdAt', 'DESC']],
         });
     };
 
-    Model.findAllByUserId = async (userId) => {
-        return await Model.findAll({
-            where: { userId },
+    Model.revokeAllActive = async (userId, ipAddress) => {
+        const refreshTokens = await Model.findAll({
+            where: { userId, revoked: null },
         });
+        for await (const refreshToken of refreshTokens) {
+            await refreshToken.revoke(ipAddress);
+        }
     };
 
     //#endregion

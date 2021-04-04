@@ -1,3 +1,5 @@
+const Response = require('../response');
+
 module.exports = (sequelize, Sequelize) => {
     const Model = sequelize.define(
         'holiday',

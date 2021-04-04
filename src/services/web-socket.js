@@ -73,7 +73,7 @@ const initialize = async (httpServer) => {
                 new Message(
                     200,
                     events.QUEUE_SUBSCRIBE,
-                    `UID: ${client.payload.id} присоединен к комнате с QID: ${data.queueId}.`
+                    `UID: ${client.payload.userId} присоединен к комнате с QID: ${data.queueId}.`
                 )
             );
         });

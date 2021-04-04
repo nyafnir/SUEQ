@@ -1,3 +1,4 @@
+const Response = require('../response');
 const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 module.exports = (sequelize, Sequelize) => {

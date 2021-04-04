@@ -33,7 +33,7 @@ const generateToken = (payload, secret, expiresIn) => {
 
 const generateAccessToken = (userId) => {
     return generateToken(
-        { id: userId },
+        { userId },
         config.tokens.access.secret,
         config.tokens.access.life
     );
@@ -276,7 +276,7 @@ const info = async (request, response, next) => {
 const update = async (request, response, next) => {
     const updateFields = request.body;
 
-    if (updateFields.password !== null) {
+    if (updateFields.password != null) {
         updateFields.passwordSalt = await generateSalt();
         updateFields.passwordHash = await generateHash(
             updateFields.password,
@@ -300,7 +300,7 @@ const update = async (request, response, next) => {
 };
 
 const refreshToken = async (request, response, next) => {
-    const token = request.body.token;
+    const token = request.query.token;
 
     const oldRefreshToken = await db.RefreshToken.findByToken(token);
 
@@ -339,13 +339,9 @@ const refreshToken = async (request, response, next) => {
 };
 
 const revokeRefreshToken = async (request, response, next) => {
-    const token = request.body.token;
+    const token = request.query.token;
 
     const refreshToken = await db.RefreshToken.findByToken(token);
-
-    if (request.user.id !== refreshToken.userId) {
-        return response.status(400).send(new Response('Это не ваш токен.'));
-    }
 
     const ipAddress = getRemoteClientIpAddress(request);
 
@@ -355,20 +351,14 @@ const revokeRefreshToken = async (request, response, next) => {
 };
 
 const revokeRefreshTokens = async (request, response, next) => {
+    const refreshToken = await db.RefreshToken.findByToken(request.query.token);
+
     const ipAddress = getRemoteClientIpAddress(request);
+    await db.RefreshToken.revokeAllActive(refreshToken.userId, ipAddress);
 
-    for await (const refreshToken of request.user.refreshTokens) {
-        await refreshToken.revoke(ipAddress).catch(() => null);
-    }
-
-    response
+    return response
         .status(200)
-        .send(
-            new Response(
-                'Все токены обновления отозваны.',
-                'Все токены обновления отозваны, но токены доступа всё ещё работают.'
-            )
-        );
+        .send(new Response('Все токены обновления отозваны.'));
 };
 
 const deleteAccount = async (request, response, next) => {
@@ -376,7 +366,7 @@ const deleteAccount = async (request, response, next) => {
 
     // Фиксируем последний IP, который вызывал удаление аккаунта
     const ipAddress = getRemoteClientIpAddress(request);
-    await refreshToken.revoke(ipAddress);
+    await db.RefreshToken.revokeAllActive(user.id, ipAddress);
 
     const token = generateToken(
         { userId: user.id },
@@ -482,7 +472,7 @@ router.put(
 );
 
 router.delete(
-    '/revoke-token',
+    '/revoke-refresh-token',
     authorize(),
     (request, response, next) => tokenSchema(request.query, response, next),
     async (request, response, next) => {
@@ -491,8 +481,8 @@ router.delete(
 );
 
 router.delete(
-    '/revoke-tokens',
-    authorize(),
+    '/revoke-refresh-tokens',
+    (request, response, next) => tokenSchema(request.query, response, next),
     async (request, response, next) => {
         await revokeRefreshTokens(request, response, next).catch(next);
     }
@@ -511,7 +501,9 @@ router.put(
     }
 );
 
-router.delete('/delete', authorize(), deleteAccount);
+router.delete('/delete', authorize(), async (request, response, next) => {
+    await deleteAccount(request, response, next).catch(next);
+});
 
 router.get(
     '/delete/cancel',

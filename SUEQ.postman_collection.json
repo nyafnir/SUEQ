@@ -13,6 +13,146 @@
 					"name": "Гость",
 					"item": [
 						{
+							"name": "Регистрация",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\",\r\n    \"surname\": \"Кочергин\",\r\n    \"firstname\": \"Василий\",\r\n    \"lastname\": \"Леонидович\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/users/registration",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"users",
+										"registration"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Регистрация",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\",\r\n    \"surname\": \"Кочергин\",\r\n    \"firstname\": \"Василий\",\r\n    \"lastname\": \"Леонидович\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/registration",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"registration"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1999"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 01 Apr 2021 09:49:25 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617292159"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "318"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"13e-2rNn/zD9VXn8yO5gWSvyR/zbnZ0\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Регистрация завершена! Ссылка для активации аккаунта отправлена на почту.\",\n    \"devMessage\": \"Регистрация завершена! Ссылка для активации аккаунта отправлена на почту.\",\n    \"data\": null\n}"
+								}
+							]
+						},
+						{
 							"name": "Аутентификация",
 							"event": [
 								{
@@ -51,7 +191,335 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Такой почты нет",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/authenticate",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"authenticate"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1999"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 01 Apr 2021 05:16:11 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617275614"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "186"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"ba-FaEyiyB0dMql1LXk3maq/vBQIAo\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Пользователь с такой почтой не найден.\",\n    \"devMessage\": \"Пользователь с такой почтой не найден.\",\n    \"data\": null\n}"
+								},
+								{
+									"name": "Не стоит и не имеет очередей",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/authenticate",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"authenticate"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1998"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 11:15:52 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617556471"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "732"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"2dc-T3dnD6iuMR5Q0HeHisK96BBkd7g\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Выполнен вход в систему.\",\n    \"devMessage\": \"В data публичный объект user и объект с токенами.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"email\": \"test1@host.com\",\n            \"firstname\": \"Василий\",\n            \"surname\": \"Кочергин\",\n            \"lastname\": \"Леонидович\",\n            \"queues\": [],\n            \"positions\": []\n        },\n        \"tokens\": {\n            \"access\": {\n                \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM0OTUyLCJleHAiOjE2MTc1MzU4NTJ9.NV9Z_Rpd8dNS03cA01F84eVZPOdVWIa27pVi4A_EydM\",\n                \"expires\": \"2021-04-04T11:30:52.640Z\"\n            },\n            \"refresh\": {\n                \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM0OTUyLCJleHAiOjE2MTc2MjEzNTJ9.F0EOYcULu-dWswv4dafaiRsTNx6Kii29swfXTKZ_zuc\",\n                \"expires\": \"2021-04-05T11:15:52.634Z\"\n            }\n        }\n    }\n}"
+								},
+								{
+									"name": "Есть очередь и стоит в очереди",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/authenticate",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"authenticate"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1999"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 11:32:54 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617557540"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1352"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"548-622/5sDqwavecCWP6zehOGq5cRc\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Выполнен вход в систему.\",\n    \"devMessage\": \"В data публичный объект user и объект с токенами.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"email\": \"test1@host.com\",\n            \"firstname\": \"Василий\",\n            \"surname\": \"Кочергин\",\n            \"lastname\": \"Леонидович\",\n            \"queues\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"test1name\",\n                    \"description\": \"test1description\",\n                    \"ownerId\": 1,\n                    \"createdAt\": \"2021-04-04T11:17:16.000Z\",\n                    \"updatedAt\": \"2021-04-04T11:17:16.000Z\",\n                    \"positions\": [\n                        {\n                            \"id\": 1,\n                            \"queueId\": 1,\n                            \"userId\": 1,\n                            \"place\": 1,\n                            \"createdAt\": \"2021-04-04T11:18:31.000Z\",\n                            \"updatedAt\": \"2021-04-04T11:18:31.000Z\"\n                        }\n                    ],\n                    \"schedules\": [],\n                    \"holidays\": []\n                }\n            ],\n            \"positions\": [\n                {\n                    \"id\": 1,\n                    \"queueId\": 1,\n                    \"userId\": 1,\n                    \"place\": 1,\n                    \"createdAt\": \"2021-04-04T11:18:31.000Z\",\n                    \"updatedAt\": \"2021-04-04T11:18:31.000Z\",\n                    \"queue\": {\n                        \"id\": 1,\n                        \"name\": \"test1name\",\n                        \"description\": \"test1description\",\n                        \"ownerId\": 1,\n                        \"createdAt\": \"2021-04-04T11:17:16.000Z\",\n                        \"updatedAt\": \"2021-04-04T11:17:16.000Z\",\n                        \"schedules\": [],\n                        \"holidays\": []\n                    }\n                }\n            ]\n        },\n        \"tokens\": {\n            \"access\": {\n                \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM1OTc0LCJleHAiOjE2MTc1MzY4NzR9.Ak3yPqFQtXAdKKSSRgtgkbWsv3NOARJNrbgWxqhok8s\",\n                \"expires\": \"2021-04-04T11:47:54.277Z\"\n            },\n            \"refresh\": {\n                \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM1OTc0LCJleHAiOjE2MTc2MjIzNzR9.XLo-lgE6F2j1eBMCS9d9WhANpIy64yjv9HlwunX13-A\",\n                \"expires\": \"2021-04-05T11:32:54.263Z\"\n            }\n        }\n    }\n}"
+								}
+							]
 						},
 						{
 							"name": "Забыл пароль",
@@ -85,43 +553,13 @@
 							"response": []
 						},
 						{
-							"name": "Регистрация",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"test1@host.com\",\r\n    \"password\": \"КрутойПароль1\",\r\n    \"surname\": \"Кочергин\",\r\n    \"firstname\": \"Василий\",\r\n    \"lastname\": \"Леонидович\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{api-link}}/users/registration",
-									"host": [
-										"{{api-link}}"
-									],
-									"path": [
-										"users",
-										"registration"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Обновить токена доступа",
 							"request": {
 								"method": "PUT",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjE0MjY0ODIxLCJleHAiOjE2MTQzNTEyMjF9.vQdBHClH5aIH-dyOWC22Utv-A4_MlvcqHi1D7EndZGA\"\r\n}",
+									"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNjE3MjcwNTk4LCJleHAiOjE2MTczNTY5OTh9.YynMoIg_IIHqzNj0EDo5TuiZnwO9Qm0hKVfsFGs0_xU\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -139,7 +577,121 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Обновить токена доступа",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNjE3MjcwNTk4LCJleHAiOjE2MTczNTY5OTh9.YynMoIg_IIHqzNj0EDo5TuiZnwO9Qm0hKVfsFGs0_xU\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/refresh-token",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"refresh-token"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1997"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 01 Apr 2021 12:26:01 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617301475"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNjE3Mjc5OTYxLCJleHAiOjE2MTczNjYzNjF9.R1TFqYST0tuygf5EveC5UBjpnmyKZXK6geehW2Pgqi4; Path=/; Expires=Fri, 02 Apr 2021 12:26:01 GMT; HttpOnly"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "699"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"2bb-FNG/oto4Gz72Q3yzH9hfX0Yt3+Y\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Вход в систему обновлен.\",\n    \"devMessage\": \"В data объект user и объект с новыми токенами.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 5,\n            \"email\": \"test1@host.com\",\n            \"firstname\": \"Василий\",\n            \"surname\": \"Кочергин\",\n            \"lastname\": \"Леонидович\"\n        },\n        \"tokens\": {\n            \"access\": {\n                \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNjE3Mjc5OTYxLCJleHAiOjE2MTcyODA4NjF9.OaPeM9RWtJOKmMNgRLxpUw5ZUv2uuqNmJ052VjO--UQ\",\n                \"expires\": \"2021-04-01T12:41:01.060Z\"\n            },\n            \"refresh\": {\n                \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNjE3Mjc5OTYxLCJleHAiOjE2MTczNjYzNjF9.R1TFqYST0tuygf5EveC5UBjpnmyKZXK6geehW2Pgqi4\",\n                \"expires\": \"2021-04-02T12:26:01.039Z\"\n            }\n        }\n    }\n}"
+								}
+							]
 						}
 					],
 					"auth": {
@@ -185,7 +737,108 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Получить профиль",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{api-link}}/users/info",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"info"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1998"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 14:41:01 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617568846"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1276"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4fc-hNTOLma4WywbAmJ2yhs3WCKK4U4\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Данные о пользователе получены.\",\n    \"devMessage\": \"Публичные данные о пользователе указаны в data.\",\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"test1@host.com\",\n        \"firstname\": \"Василий\",\n        \"surname\": \"Кочергин\",\n        \"lastname\": \"Леонидович\",\n        \"queues\": [\n            {\n                \"id\": 1,\n                \"name\": \"test1newname\",\n                \"description\": \"test1newdescription\",\n                \"ownerId\": 1,\n                \"createdAt\": \"2021-04-04T11:17:16.000Z\",\n                \"updatedAt\": \"2021-04-04T13:51:32.000Z\",\n                \"positions\": [\n                    {\n                        \"id\": 3,\n                        \"queueId\": 1,\n                        \"userId\": 2,\n                        \"place\": 2,\n                        \"createdAt\": \"2021-04-04T11:49:33.000Z\",\n                        \"updatedAt\": \"2021-04-04T11:49:33.000Z\"\n                    },\n                    {\n                        \"id\": 5,\n                        \"queueId\": 1,\n                        \"userId\": 1,\n                        \"place\": 2,\n                        \"createdAt\": \"2021-04-04T13:51:26.000Z\",\n                        \"updatedAt\": \"2021-04-04T13:51:26.000Z\"\n                    }\n                ],\n                \"schedules\": [\n                    {\n                        \"weekday\": [\n                            \"Пн\",\n                            \"Вт\",\n                            \"Ср\",\n                            \"Чт\",\n                            \"Пт\"\n                        ],\n                        \"id\": 1,\n                        \"queueId\": 1,\n                        \"startTime\": \"13:00:00\",\n                        \"endTime\": \"20:00:00\",\n                        \"workFrom\": \"2021-04-04\",\n                        \"workTo\": \"2021-05-04\",\n                        \"createdAt\": \"2021-04-04T14:08:00.000Z\",\n                        \"updatedAt\": \"2021-04-04T14:08:00.000Z\"\n                    }\n                ],\n                \"holidays\": [\n                    {\n                        \"id\": 2,\n                        \"queueId\": 1,\n                        \"date\": \"2021-03-04\",\n                        \"isHoliday\": true,\n                        \"createdAt\": \"2021-04-04T14:05:19.000Z\",\n                        \"updatedAt\": \"2021-04-04T14:05:19.000Z\"\n                    }\n                ]\n            }\n        ],\n        \"positions\": [\n            {\n                \"id\": 5,\n                \"queueId\": 1,\n                \"userId\": 1,\n                \"place\": 2,\n                \"createdAt\": \"2021-04-04T13:51:26.000Z\",\n                \"updatedAt\": \"2021-04-04T13:51:26.000Z\",\n                \"queue\": null\n            }\n        ]\n    }\n}"
+								}
+							]
 						},
 						{
 							"name": "Обновить профиль",
@@ -212,29 +865,255 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Обновить профиль",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n\r\n    \"firstname\": \"Пётр\"\r\n\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/update",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"update"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1999"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 14:43:29 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617569004"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1272"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4f8-iUpKJvPyOoIymTcrTWrH6jOehsM\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Данные о пользователе обновлены.\",\n    \"devMessage\": \"Публичные данные о пользователе указаны в data.\",\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"test1@host.com\",\n        \"firstname\": \"Пётр\",\n        \"surname\": \"Кочергин\",\n        \"lastname\": \"Леонидович\",\n        \"queues\": [\n            {\n                \"id\": 1,\n                \"name\": \"test1newname\",\n                \"description\": \"test1newdescription\",\n                \"ownerId\": 1,\n                \"createdAt\": \"2021-04-04T11:17:16.000Z\",\n                \"updatedAt\": \"2021-04-04T13:51:32.000Z\",\n                \"positions\": [\n                    {\n                        \"id\": 3,\n                        \"queueId\": 1,\n                        \"userId\": 2,\n                        \"place\": 2,\n                        \"createdAt\": \"2021-04-04T11:49:33.000Z\",\n                        \"updatedAt\": \"2021-04-04T11:49:33.000Z\"\n                    },\n                    {\n                        \"id\": 5,\n                        \"queueId\": 1,\n                        \"userId\": 1,\n                        \"place\": 2,\n                        \"createdAt\": \"2021-04-04T13:51:26.000Z\",\n                        \"updatedAt\": \"2021-04-04T13:51:26.000Z\"\n                    }\n                ],\n                \"schedules\": [\n                    {\n                        \"weekday\": [\n                            \"Пн\",\n                            \"Вт\",\n                            \"Ср\",\n                            \"Чт\",\n                            \"Пт\"\n                        ],\n                        \"id\": 1,\n                        \"queueId\": 1,\n                        \"startTime\": \"13:00:00\",\n                        \"endTime\": \"20:00:00\",\n                        \"workFrom\": \"2021-04-04\",\n                        \"workTo\": \"2021-05-04\",\n                        \"createdAt\": \"2021-04-04T14:08:00.000Z\",\n                        \"updatedAt\": \"2021-04-04T14:08:00.000Z\"\n                    }\n                ],\n                \"holidays\": [\n                    {\n                        \"id\": 2,\n                        \"queueId\": 1,\n                        \"date\": \"2021-03-04\",\n                        \"isHoliday\": true,\n                        \"createdAt\": \"2021-04-04T14:05:19.000Z\",\n                        \"updatedAt\": \"2021-04-04T14:05:19.000Z\"\n                    }\n                ]\n            }\n        ],\n        \"positions\": [\n            {\n                \"id\": 5,\n                \"queueId\": 1,\n                \"userId\": 1,\n                \"place\": 2,\n                \"createdAt\": \"2021-04-04T13:51:26.000Z\",\n                \"updatedAt\": \"2021-04-04T13:51:26.000Z\",\n                \"queue\": null\n            }\n        ]\n    }\n}"
+								}
+							]
 						},
 						{
-							"name": "Отозвать токена доступа",
+							"name": "Отозвать токена обновления",
 							"request": {
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{api-link}}/users/revoke-token",
+									"raw": "{{api-link}}/users/revoke-refresh-token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ3NzM3LCJleHAiOjE2MTc2MzQxMzd9.OzT1kpFpuAldZdg8H2sevfKjZ1qAhlfg8WP0tP2IMwY",
 									"host": [
 										"{{api-link}}"
 									],
 									"path": [
 										"users",
-										"revoke-token"
+										"revoke-refresh-token"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ3NzM3LCJleHAiOjE2MTc2MzQxMzd9.OzT1kpFpuAldZdg8H2sevfKjZ1qAhlfg8WP0tP2IMwY"
+										}
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Отозвать токена доступа",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{api-link}}/users/revoke-refresh-token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ3NzM3LCJleHAiOjE2MTc2MzQxMzd9.OzT1kpFpuAldZdg8H2sevfKjZ1qAhlfg8WP0tP2IMwY",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"revoke-refresh-token"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ3NzM3LCJleHAiOjE2MTc2MzQxMzd9.OzT1kpFpuAldZdg8H2sevfKjZ1qAhlfg8WP0tP2IMwY"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1999"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 14:49:26 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617569364"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "98"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"62-114vrHXX8LZgS2i8qo/ekGuZ5Fw\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Токен отозван.\",\n    \"devMessage\": \"Токен отозван.\",\n    \"data\": null\n}"
+								}
+							]
 						},
 						{
-							"name": "Выйти из аккаунта",
+							"name": "Отозвать все токены обновления",
 							"request": {
+								"auth": {
+									"type": "noauth"
+								},
 								"method": "DELETE",
 								"header": [],
 								"body": {
@@ -247,18 +1126,139 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-link}}/users/logout/everywhere",
+									"raw": "{{api-link}}/users/revoke-refresh-tokens?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ4OTI4LCJleHAiOjE2MTc2MzUzMjh9.JWYggyppd9VCHIEtYLLDEG4VH0ijMF3BmDJjly-vTeQ",
 									"host": [
 										"{{api-link}}"
 									],
 									"path": [
 										"users",
-										"logout",
-										"everywhere"
+										"revoke-refresh-tokens"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ4OTI4LCJleHAiOjE2MTc2MzUzMjh9.JWYggyppd9VCHIEtYLLDEG4VH0ijMF3BmDJjly-vTeQ"
+										}
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Отозвать все токены обновления",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/revoke-refresh-tokens?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ4OTI4LCJleHAiOjE2MTc2MzUzMjh9.JWYggyppd9VCHIEtYLLDEG4VH0ijMF3BmDJjly-vTeQ",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"revoke-refresh-tokens"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ4OTI4LCJleHAiOjE2MTc2MzUzMjh9.JWYggyppd9VCHIEtYLLDEG4VH0ijMF3BmDJjly-vTeQ"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1999"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 15:15:57 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617570955"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "162"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"a2-P3vu6N20sTZbep+NJcivTrDP38Q\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Все токены обновления отозваны.\",\n    \"devMessage\": \"Все токены обновления отозваны.\",\n    \"data\": null\n}"
+								}
+							]
 						},
 						{
 							"name": "Удаление аккаунта",
@@ -275,18 +1275,127 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-link}}/users/delete/",
+									"raw": "{{api-link}}/users/delete",
 									"host": [
 										"{{api-link}}"
 									],
 									"path": [
 										"users",
-										"delete",
-										""
+										"delete"
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "Удаление аккаунта",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-link}}/users/delete",
+											"host": [
+												"{{api-link}}"
+											],
+											"path": [
+												"users",
+												"delete"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-RateLimit-Limit",
+											"value": "2000"
+										},
+										{
+											"key": "X-RateLimit-Remaining",
+											"value": "1996"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Apr 2021 15:26:47 GMT"
+										},
+										{
+											"key": "X-RateLimit-Reset",
+											"value": "1617571590"
+										},
+										{
+											"key": "Content-Security-Policy",
+											"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+										},
+										{
+											"key": "X-DNS-Prefetch-Control",
+											"value": "off"
+										},
+										{
+											"key": "Expect-CT",
+											"value": "max-age=0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Strict-Transport-Security",
+											"value": "max-age=15552000; includeSubDomains"
+										},
+										{
+											"key": "X-Download-Options",
+											"value": "noopen"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-Permitted-Cross-Domain-Policies",
+											"value": "none"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "no-referrer"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "248"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"f8-XbKvnyHVs/GmKI7J6FWpGtDuMJI\""
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"userMessage\": \"Аккаунт поставлен в очередь на удаление, доступ закрыт.\",\n    \"devMessage\": \"Аккаунт поставлен в очередь на удаление, доступ закрыт.\",\n    \"data\": null\n}"
+								}
+							]
 						}
 					]
 				}
@@ -340,7 +1449,117 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Создать очередь",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"test1name\",\r\n    \"description\": \"test1description\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/queues/create",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"create"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1996"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 11:17:16 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617556471"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "2081"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"821-MNw+sIlS003abLGfWKx3QKEAy5Q\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Очередь создана!\",\n    \"devMessage\": \"Информация об очереди в data.\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"test1name\",\n        \"description\": \"test1description\",\n        \"ownerId\": 1,\n        \"updatedAt\": \"2021-04-04T11:17:16.938Z\",\n        \"createdAt\": \"2021-04-04T11:17:16.938Z\",\n        \"qrcode\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATsSURBVO3BQW4kSRIEQdNA/f/Lujz6KYBEOtnkrIngl1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6RmAnKjZgIyqZmATGpugExqJiBPqJmA/CQ1b5xULTqpWnRSteiTZWo2AXlCzY2aGzUTkEnNDZBJzSY1m4BsOqladFK16KRq0SffDMgTap5QMwG5UTMBeQLIpOYGyKRmAjKpeQLIE2q+00nVopOqRSdViz7544BMaiYgE5BJzQTkRs0E5EbNBGRS819yUrXopGrRSdWiT/44NTdqboBMaiYgE5BJzQRkAnIDZFLzl51ULTqpWnRSteiTb6bmJwF5Qs0E5EbNjZobIJOaN9T8JidVi06qFp1ULfpkGZCfBGRSMwGZ1ExAJjUTkBsgk5oJyKRmAjKpuQHym51ULTqpWnRSteiTl9T8Zmo2AZnUTEAmNW+o+UtOqhadVC06qVr0yUtAJjUTkBs1E5An1ExAbtQ8oeYNIG8AmdTcAJnUTEBu1LxxUrXopGrRSdUi/JJFQCY1N0Bu1LwBZJOaCcgbaiYgb6h5Asik5o2TqkUnVYtOqhZ98hKQGyCTmhs1E5BJzQTkDTXfSc0NkEnNBORGzQ2QGzWbTqoWnVQtOqla9MkyNU+omYBMaiYgk5oJyKRmAnID5EbNpOYGyI2aN4DcqLkBMql546Rq0UnVopOqRfglLwC5UTMBuVEzAblRswnIpGYCMqmZgNyomYBMat4AcqPmO51ULTqpWnRSteiTl9RMQG7U3ACZ1NwAuVEzAblR8wSQSc0NkCeATGpu1NwAuVHzxknVopOqRSdViz75ZdRMQCY1b6i5ATKpmdTcAHlCzQRkUjMBmdRMQP6lk6pFJ1WLTqoW4Ze8AGRSMwF5Qs0TQCY1E5BJzRNAnlCzCcikZgIyqbkBMqnZdFK16KRq0UnVok9eUvOEmgnIDZAngExqJiCTmifUTEBugExqboBMaiYgv9lJ1aKTqkUnVYs+WQZkk5oJyI2aCcgbaiYgk5p/Sc0NkJ90UrXopGrRSdWiT14CMqmZgNyomYDcqJmAPKHmBsgTQG7U3ADZBORGzXc6qVp0UrXopGrRJy+peQLIpOZGzY2aCcikZgIyqXlCzQTkCSBPAHlCzQTkJ51ULTqpWnRSteiTZUAmNTdAJjUTkDeATGr+S4D8JidVi06qFp1ULcIv+cOA3Kj5TkAmNTdAbtQ8AWSTmjdOqhadVC06qVr0yUtAfpKaJ4A8oWYCMqn5SUAmNU+omYBMajadVC06qVp0UrXok2VqNgF5Qs0EZFJzA+QJNd9JzRNqbtRMQCY1b5xULTqpWnRSteiTbwbkCTVPqLlRMwG5UXMD5A01E5AJyCYgP+mkatFJ1aKTqkWf/HFAbtRMaiYgE5BJzRNqnlAzAZnUTEBugExqboBsOqladFK16KRq0Sf/Z4BMam6ATGpugPwkNROQf+mkatFJ1aKTqkWffDM130nNBGQCMqm5ATKpmYBMaiY1N0Bu1HwnIJOaTSdVi06qFp1ULfpkGZCfBOQnqZmATGomIJOaCcgTaiYgk5p/6aRq0UnVopOqRfglVUtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRf8DIYxNPbxcAjwAAAAASUVORK5CYII=\"\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "Информация об очереди",
@@ -348,7 +1567,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/queues/info?queueId=11",
+							"raw": "{{api-link}}/queues/info?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
@@ -359,12 +1578,225 @@
 							"query": [
 								{
 									"key": "queueId",
-									"value": "11"
+									"value": "1"
 								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Информация об очереди",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/info?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"info"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1990"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 14:08:13 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617566701"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "5913"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1719-XLVx/nmDuoIguixBlWviZZuoNA4\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Информация об очереди получена.\",\n    \"devMessage\": \"Обновленная информация об очереди в data.\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"test1newname\",\n        \"description\": \"test1newdescription\",\n        \"ownerId\": 1,\n        \"createdAt\": \"2021-04-04T11:17:16.000Z\",\n        \"updatedAt\": \"2021-04-04T13:51:32.000Z\",\n        \"user\": {\n            \"id\": 1,\n            \"firstname\": \"Василий\",\n            \"surname\": \"Кочергин\",\n            \"lastname\": \"Леонидович\",\n            \"email\": \"test1@host.com\",\n            \"passwordHash\": \"$2b$10$r4Tzryledx6Sb0Iu5ULF/.TlQaku122Hv/5zYkW2GamISUqqI/Clu\",\n            \"passwordSalt\": \"$2b$10$r4Tzryledx6Sb0Iu5ULF/.\",\n            \"confirmed\": true,\n            \"createdAt\": \"2021-04-04T11:14:56.000Z\",\n            \"updatedAt\": \"2021-04-04T11:14:56.000Z\",\n            \"deletedAt\": null,\n            \"refreshtokens\": [\n                {\n                    \"id\": 1,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM0OTUyLCJleHAiOjE2MTc2MjEzNTJ9.F0EOYcULu-dWswv4dafaiRsTNx6Kii29swfXTKZ_zuc\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T11:15:52.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T11:15:52.000Z\",\n                    \"updatedAt\": \"2021-04-04T11:15:52.000Z\"\n                },\n                {\n                    \"id\": 2,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM1OTc0LCJleHAiOjE2MTc2MjIzNzR9.XLo-lgE6F2j1eBMCS9d9WhANpIy64yjv9HlwunX13-A\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T11:32:54.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T11:32:54.000Z\",\n                    \"updatedAt\": \"2021-04-04T11:32:54.000Z\"\n                },\n                {\n                    \"id\": 4,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTM5MzUzLCJleHAiOjE2MTc2MjU3NTN9.4vXEAsA0i3mpeCH6VYkA__xAwvdXJWFfQaM6VOP6y5M\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T12:29:13.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T12:29:13.000Z\",\n                    \"updatedAt\": \"2021-04-04T12:29:13.000Z\"\n                },\n                {\n                    \"id\": 5,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQyMTc1LCJleHAiOjE2MTc2Mjg1NzV9.auT0VZVkyFh8pXntlN0mt7IAsfJgHV8pq8gWFHnl6aY\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T13:16:15.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T13:16:15.000Z\",\n                    \"updatedAt\": \"2021-04-04T13:16:15.000Z\"\n                },\n                {\n                    \"id\": 6,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQyMjgyLCJleHAiOjE2MTc2Mjg2ODJ9.bRaRvqNhfU2L4utwwvD1z3ijq8M2sI-L9u07DRHDba4\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T13:18:02.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T13:18:02.000Z\",\n                    \"updatedAt\": \"2021-04-04T13:18:02.000Z\"\n                },\n                {\n                    \"id\": 7,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ0MDY1LCJleHAiOjE2MTc2MzA0NjV9.jWvLsma2Yly0RYve3fk-zofDz4zUyUUHsYzTcO3F7yY\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T13:47:45.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T13:47:45.000Z\",\n                    \"updatedAt\": \"2021-04-04T13:47:45.000Z\"\n                },\n                {\n                    \"id\": 8,\n                    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjE3NTQ1MTE0LCJleHAiOjE2MTc2MzE1MTR9.QrYQ12OqQ8n-WmS_03xv31_f9RZfXAFjBRudQOp61ho\",\n                    \"userId\": 1,\n                    \"createdByIp\": \"127.0.0.1\",\n                    \"expires\": \"2021-04-05T14:05:14.000Z\",\n                    \"revoked\": null,\n                    \"revokedByIp\": null,\n                    \"replacedByTokenId\": null,\n                    \"createdAt\": \"2021-04-04T14:05:14.000Z\",\n                    \"updatedAt\": \"2021-04-04T14:05:14.000Z\"\n                }\n            ],\n            \"positions\": [\n                {\n                    \"id\": 5,\n                    \"queueId\": 1,\n                    \"userId\": 1,\n                    \"place\": 2,\n                    \"createdAt\": \"2021-04-04T13:51:26.000Z\",\n                    \"updatedAt\": \"2021-04-04T13:51:26.000Z\"\n                }\n            ]\n        },\n        \"positions\": [\n            {\n                \"id\": 3,\n                \"queueId\": 1,\n                \"userId\": 2,\n                \"place\": 2,\n                \"createdAt\": \"2021-04-04T11:49:33.000Z\",\n                \"updatedAt\": \"2021-04-04T11:49:33.000Z\",\n                \"user\": null\n            },\n            {\n                \"id\": 5,\n                \"queueId\": 1,\n                \"userId\": 1,\n                \"place\": 2,\n                \"createdAt\": \"2021-04-04T13:51:26.000Z\",\n                \"updatedAt\": \"2021-04-04T13:51:26.000Z\",\n                \"user\": null\n            }\n        ],\n        \"schedules\": [\n            {\n                \"weekday\": [\n                    \"Пн\",\n                    \"Вт\",\n                    \"Ср\",\n                    \"Чт\",\n                    \"Пт\"\n                ],\n                \"id\": 1,\n                \"queueId\": 1,\n                \"startTime\": \"13:00:00\",\n                \"endTime\": \"20:00:00\",\n                \"workFrom\": \"2021-04-04\",\n                \"workTo\": \"2021-05-04\",\n                \"createdAt\": \"2021-04-04T14:08:00.000Z\",\n                \"updatedAt\": \"2021-04-04T14:08:00.000Z\"\n            }\n        ],\n        \"holidays\": [\n            {\n                \"id\": 2,\n                \"queueId\": 1,\n                \"date\": \"2021-03-04\",\n                \"isHoliday\": true,\n                \"createdAt\": \"2021-04-04T14:05:19.000Z\",\n                \"updatedAt\": \"2021-04-04T14:05:19.000Z\"\n            }\n        ],\n        \"qrcode\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATsSURBVO3BQW4kSRIEQdNA/f/Lujz6KYBEOtnkrIngl1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6RmAnKjZgIyqZmATGpugExqJiBPqJmA/CQ1b5xULTqpWnRSteiTZWo2AXlCzY2aGzUTkEnNDZBJzSY1m4BsOqladFK16KRq0SffDMgTap5QMwG5UTMBeQLIpOYGyKRmAjKpeQLIE2q+00nVopOqRSdViz7544BMaiYgE5BJzQTkRs0E5EbNBGRS819yUrXopGrRSdWiT/44NTdqboBMaiYgE5BJzQRkAnIDZFLzl51ULTqpWnRSteiTb6bmJwF5Qs0E5EbNjZobIJOaN9T8JidVi06qFp1ULfpkGZCfBGRSMwGZ1ExAJjUTkBsgk5oJyKRmAjKpuQHym51ULTqpWnRSteiTl9T8Zmo2AZnUTEAmNW+o+UtOqhadVC06qVr0yUtAJjUTkBs1E5An1ExAbtQ8oeYNIG8AmdTcAJnUTEBu1LxxUrXopGrRSdUi/JJFQCY1N0Bu1LwBZJOaCcgbaiYgb6h5Asik5o2TqkUnVYtOqhZ98hKQGyCTmhs1E5BJzQTkDTXfSc0NkEnNBORGzQ2QGzWbTqoWnVQtOqla9MkyNU+omYBMaiYgk5oJyKRmAnID5EbNpOYGyI2aN4DcqLkBMql546Rq0UnVopOqRfglLwC5UTMBuVEzAblRswnIpGYCMqmZgNyomYBMat4AcqPmO51ULTqpWnRSteiTl9RMQG7U3ACZ1NwAuVEzAblR8wSQSc0NkCeATGpu1NwAuVHzxknVopOqRSdViz75ZdRMQCY1b6i5ATKpmdTcAHlCzQRkUjMBmdRMQP6lk6pFJ1WLTqoW4Ze8AGRSMwF5Qs0TQCY1E5BJzRNAnlCzCcikZgIyqbkBMqnZdFK16KRq0UnVok9eUvOEmgnIDZAngExqJiCTmifUTEBugExqboBMaiYgv9lJ1aKTqkUnVYs+WQZkk5oJyI2aCcgbaiYgk5p/Sc0NkJ90UrXopGrRSdWiT14CMqmZgNyomYDcqJmAPKHmBsgTQG7U3ADZBORGzXc6qVp0UrXopGrRJy+peQLIpOZGzY2aCcikZgIyqXlCzQTkCSBPAHlCzQTkJ51ULTqpWnRSteiTZUAmNTdAJjUTkDeATGr+S4D8JidVi06qFp1ULcIv+cOA3Kj5TkAmNTdAbtQ8AWSTmjdOqhadVC06qVr0yUtAfpKaJ4A8oWYCMqn5SUAmNU+omYBMajadVC06qVp0UrXok2VqNgF5Qs0EZFJzA+QJNd9JzRNqbtRMQCY1b5xULTqpWnRSteiTbwbkCTVPqLlRMwG5UXMD5A01E5AJyCYgP+mkatFJ1aKTqkWf/HFAbtRMaiYgE5BJzRNqnlAzAZnUTEBugExqboBsOqladFK16KRq0Sf/Z4BMam6ATGpugPwkNROQf+mkatFJ1aKTqkWffDM130nNBGQCMqm5ATKpmYBMaiY1N0Bu1HwnIJOaTSdVi06qFp1ULfpkGZCfBOQnqZmATGomIJOaCcgTaiYgk5p/6aRq0UnVopOqRfglVUtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRf8DIYxNPbxcAjwAAAAASUVORK5CYII=\"\n    }\n}"
+						},
+						{
+							"name": "Информация об очереди",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/info?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"info"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1999"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Apr 2021 20:06:27 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617415586"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "2176"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"880-7wyfMmK5XxLHKyZTpdwdUsnPjg8\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Информация об очереди получена.\",\n    \"devMessage\": \"Обновленная информация об очереди в data.\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"test1name\",\n        \"description\": \"test1description\",\n        \"ownerId\": 5,\n        \"createdAt\": \"2021-04-02T20:05:35.000Z\",\n        \"updatedAt\": \"2021-04-02T20:05:35.000Z\",\n        \"queueId\": null,\n        \"qrcode\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATsSURBVO3BQW4kSRIEQdNA/f/Lujz6KYBEOtnkrIngl1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6RmAnKjZgIyqZmATGpugExqJiBPqJmA/CQ1b5xULTqpWnRSteiTZWo2AXlCzY2aGzUTkEnNDZBJzSY1m4BsOqladFK16KRq0SffDMgTap5QMwG5UTMBeQLIpOYGyKRmAjKpeQLIE2q+00nVopOqRSdViz7544BMaiYgE5BJzQTkRs0E5EbNBGRS819yUrXopGrRSdWiT/44NTdqboBMaiYgE5BJzQRkAnIDZFLzl51ULTqpWnRSteiTb6bmJwF5Qs0E5EbNjZobIJOaN9T8JidVi06qFp1ULfpkGZCfBGRSMwGZ1ExAJjUTkBsgk5oJyKRmAjKpuQHym51ULTqpWnRSteiTl9T8Zmo2AZnUTEAmNW+o+UtOqhadVC06qVr0yUtAJjUTkBs1E5An1ExAbtQ8oeYNIG8AmdTcAJnUTEBu1LxxUrXopGrRSdUi/JJFQCY1N0Bu1LwBZJOaCcgbaiYgb6h5Asik5o2TqkUnVYtOqhZ98hKQGyCTmhs1E5BJzQTkDTXfSc0NkEnNBORGzQ2QGzWbTqoWnVQtOqla9MkyNU+omYBMaiYgk5oJyKRmAnID5EbNpOYGyI2aN4DcqLkBMql546Rq0UnVopOqRfglLwC5UTMBuVEzAblRswnIpGYCMqmZgNyomYBMat4AcqPmO51ULTqpWnRSteiTl9RMQG7U3ACZ1NwAuVEzAblR8wSQSc0NkCeATGpu1NwAuVHzxknVopOqRSdViz75ZdRMQCY1b6i5ATKpmdTcAHlCzQRkUjMBmdRMQP6lk6pFJ1WLTqoW4Ze8AGRSMwF5Qs0TQCY1E5BJzRNAnlCzCcikZgIyqbkBMqnZdFK16KRq0UnVok9eUvOEmgnIDZAngExqJiCTmifUTEBugExqboBMaiYgv9lJ1aKTqkUnVYs+WQZkk5oJyI2aCcgbaiYgk5p/Sc0NkJ90UrXopGrRSdWiT14CMqmZgNyomYDcqJmAPKHmBsgTQG7U3ADZBORGzXc6qVp0UrXopGrRJy+peQLIpOZGzY2aCcikZgIyqXlCzQTkCSBPAHlCzQTkJ51ULTqpWnRSteiTZUAmNTdAJjUTkDeATGr+S4D8JidVi06qFp1ULcIv+cOA3Kj5TkAmNTdAbtQ8AWSTmjdOqhadVC06qVr0yUtAfpKaJ4A8oWYCMqn5SUAmNU+omYBMajadVC06qVp0UrXok2VqNgF5Qs0EZFJzA+QJNd9JzRNqbtRMQCY1b5xULTqpWnRSteiTbwbkCTVPqLlRMwG5UXMD5A01E5AJyCYgP+mkatFJ1aKTqkWf/HFAbtRMaiYgE5BJzRNqnlAzAZnUTEBugExqboBsOqladFK16KRq0Sf/Z4BMam6ATGpugPwkNROQf+mkatFJ1aKTqkWffDM130nNBGQCMqm5ATKpmYBMaiY1N0Bu1HwnIJOaTSdVi06qFp1ULfpkGZCfBOQnqZmATGomIJOaCcgTaiYgk5p/6aRq0UnVopOqRfglVUtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRf8DIYxNPbxcAjwAAAAASUVORK5CYII=\",\n        \"schedules\": [],\n        \"holidays\": []\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "Обновить очередь",
@@ -381,7 +1813,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/queues/update?queueId=9",
+							"raw": "{{api-link}}/queues/update?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
@@ -392,7 +1824,7 @@
 							"query": [
 								{
 									"key": "queueId",
-									"value": "9"
+									"value": "1"
 								}
 							]
 						}
@@ -405,7 +1837,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/queues/delete?queueId=9",
+							"raw": "{{api-link}}/queues/delete?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
@@ -416,12 +1848,119 @@
 							"query": [
 								{
 									"key": "queueId",
-									"value": "9"
+									"value": "1"
 								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Удалить очередь",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/queues/delete?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"queues",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1997"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Apr 2021 20:07:40 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617415586"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "106"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"6a-7axyFAbfDQ83S6CEE9EM2k6IdvM\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Очередь удалена.\",\n    \"devMessage\": \"Очередь удалена.\",\n    \"data\": null\n}"
+						}
+					]
 				}
 			]
 		},
@@ -434,7 +1973,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/positions/entry?queueId=12",
+							"raw": "{{api-link}}/positions/entry?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
@@ -445,12 +1984,119 @@
 							"query": [
 								{
 									"key": "queueId",
-									"value": "12"
+									"value": "1"
 								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Встать в очередь",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/positions/entry?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"positions",
+										"entry"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1999"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 11:18:31 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617556705"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "281"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"119-KNIvjCrKEd/vDsUqVcJw6OU/jv0\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Вы встали в очередь!\",\n    \"devMessage\": \"В data указана информация о позициях в очереди.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"queueId\": 1,\n            \"userId\": 1,\n            \"place\": 1,\n            \"updatedAt\": \"2021-04-04T11:18:31.554Z\",\n            \"createdAt\": \"2021-04-04T11:18:31.554Z\"\n        }\n    ]\n}"
+						}
+					]
 				},
 				{
 					"name": "Список участников очереди",
@@ -458,23 +2104,130 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/positions/members?queueId=10",
+							"raw": "{{api-link}}/positions/list?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
 							"path": [
 								"positions",
-								"members"
+								"list"
 							],
 							"query": [
 								{
 									"key": "queueId",
-									"value": "10"
+									"value": "1"
 								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Список участников очереди",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/positions/list?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"positions",
+										"list"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1999"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 11:39:35 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617557967"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "349"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"15d-BNaEetCvZ501D/x1chnn8P7VYj8\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Получена информация об участниках очереди и их позициях.\",\n    \"devMessage\": \"В data указана информация о позициях в очереди.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"queueId\": 1,\n            \"userId\": 1,\n            \"place\": 1,\n            \"createdAt\": \"2021-04-04T11:18:31.000Z\",\n            \"updatedAt\": \"2021-04-04T11:18:31.000Z\"\n        }\n    ]\n}"
+						}
+					]
 				},
 				{
 					"name": "Переместить участника очереди",
@@ -483,7 +2236,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"memberId\": 8,\r\n    \"position\": 2\r\n}",
+							"raw": "{\r\n    \"userId\": 2,\r\n    \"place\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -491,7 +2244,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-link}}/positions/move?queueId=10",
+							"raw": "{{api-link}}/positions/move?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
@@ -502,12 +2255,128 @@
 							"query": [
 								{
 									"key": "queueId",
-									"value": "10"
+									"value": "1"
 								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Переместить участника очереди",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": 2,\r\n    \"place\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/positions/move?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"positions",
+										"move"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1997"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 13:27:29 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617564343"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1192"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4a8-TKdnk7UYnsiwvy10DRH3DaAdhQI\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Участник перемещен.\",\n    \"devMessage\": \"В data указана обновленная информация о позициях в очереди.\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"queueId\": 1,\n            \"userId\": 1,\n            \"place\": 1,\n            \"createdAt\": \"2021-04-04T11:47:24.000Z\",\n            \"updatedAt\": \"2021-04-04T11:47:24.000Z\",\n            \"user\": {\n                \"id\": 2,\n                \"firstname\": \"Василий\",\n                \"surname\": \"Кочергин\",\n                \"lastname\": \"Леонидович\",\n                \"email\": \"test2@host.com\",\n                \"passwordHash\": \"$2b$10$J33wIaC6FyoU2Jp.lRREtuGvgT39AseJL0eZWgjJ72MYdDJc5K.Ru\",\n                \"passwordSalt\": \"$2b$10$J33wIaC6FyoU2Jp.lRREtu\",\n                \"confirmed\": true,\n                \"createdAt\": \"2021-04-04T11:48:21.000Z\",\n                \"updatedAt\": \"2021-04-04T11:48:21.000Z\",\n                \"deletedAt\": null,\n                \"refreshtokens\": [\n                    {\n                        \"id\": 3,\n                        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjE3NTM2OTMxLCJleHAiOjE2MTc2MjMzMzF9.PKnnAWuf624jLSR4ViSOFDy2hZ2SWGe-qHuZoEd_S1A\",\n                        \"userId\": 2,\n                        \"createdByIp\": \"127.0.0.1\",\n                        \"expires\": \"2021-04-05T11:48:51.000Z\",\n                        \"revoked\": null,\n                        \"revokedByIp\": null,\n                        \"replacedByTokenId\": null,\n                        \"createdAt\": \"2021-04-04T11:48:51.000Z\",\n                        \"updatedAt\": \"2021-04-04T11:48:51.000Z\"\n                    }\n                ]\n            }\n        },\n        {\n            \"id\": 3,\n            \"queueId\": 1,\n            \"userId\": 2,\n            \"place\": 2,\n            \"createdAt\": \"2021-04-04T11:49:33.000Z\",\n            \"updatedAt\": \"2021-04-04T11:49:33.000Z\",\n            \"user\": null\n        }\n    ]\n}"
+						}
+					]
 				},
 				{
 					"name": "Покинуть очередь",
@@ -515,7 +2384,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api-link}}/positions/leave?queueId=12",
+							"raw": "{{api-link}}/positions/leave?queueId=1",
 							"host": [
 								"{{api-link}}"
 							],
@@ -526,12 +2395,119 @@
 							"query": [
 								{
 									"key": "queueId",
-									"value": "12"
+									"value": "1"
 								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Покинуть очередь",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-link}}/positions/leave?queueId=1",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"positions",
+										"leave"
+									],
+									"query": [
+										{
+											"key": "queueId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1999"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 11:47:04 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617558424"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "120"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"78-C6KY9sM8eb3mbV22ob4D+6BBdXY\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Вы покинули очередь.\",\n    \"devMessage\": \"Вы покинули очередь.\",\n    \"data\": null\n}"
+						}
+					]
 				}
 			]
 		},
@@ -545,7 +2521,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"queueId\": 12,\r\n    \"startTime\": \"13:00\",\r\n    \"endTime\": \"20:00\",\r\n    \"weekday\": 62\r\n}",
+							"raw": "{\r\n    \"queueId\": 1,\r\n    \"workFrom\": \"2021-04-04\",\r\n    \"workTo\": \"2021-05-04\",\r\n    \"startTime\": \"13:00\",\r\n    \"endTime\": \"20:00\",\r\n    \"weekday\": 62\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -563,7 +2539,117 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Создать расписание",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"queueId\": 1,\r\n    \"workFrom\": \"2021-04-04\",\r\n    \"workTo\": \"2021-05-04\",\r\n    \"startTime\": \"13:00\",\r\n    \"endTime\": \"20:00\",\r\n    \"weekday\": 62\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/schedules/create",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"schedules",
+										"create"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1991"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 14:08:00 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617566701"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "354"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"162-p4GeYGgTF3ThEd/vgY45mh3gM5w\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Расписание добавлено.\",\n    \"devMessage\": \"Расписание указано в data\",\n    \"data\": {\n        \"weekday\": [\n            \"Пн\",\n            \"Вт\",\n            \"Ср\",\n            \"Чт\",\n            \"Пт\"\n        ],\n        \"id\": 1,\n        \"queueId\": 1,\n        \"workFrom\": \"2021-04-04\",\n        \"workTo\": \"2021-05-04\",\n        \"startTime\": \"13:00\",\n        \"endTime\": \"20:00\",\n        \"updatedAt\": \"2021-04-04T14:08:00.265Z\",\n        \"createdAt\": \"2021-04-04T14:08:00.265Z\"\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "Изменить расписание",
@@ -634,7 +2720,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"queueId\": 10,\r\n    \"date\": \"2021-03-04\",\r\n    \"isHoliday\": true\r\n}",
+							"raw": "{\r\n    \"queueId\": 1,\r\n    \"date\": \"2021-03-04\",\r\n    \"isHoliday\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -652,7 +2738,117 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Создать исключение расписания",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"queueId\": 1,\r\n    \"date\": \"2021-03-04\",\r\n    \"isHoliday\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-link}}/holidays/create",
+									"host": [
+										"{{api-link}}"
+									],
+									"path": [
+										"holidays",
+										"create"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "2000"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "1996"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Apr 2021 14:05:19 GMT"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1617566701"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+								},
+								{
+									"key": "X-DNS-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Permitted-Cross-Domain-Policies",
+									"value": "none"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "245"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"f5-gkjuXKGuaJxnpUHaiX6hzu9WWXU\""
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userMessage\": \"Особый день добавлен.\",\n    \"devMessage\": \"Особый день в data\",\n    \"data\": {\n        \"id\": 2,\n        \"queueId\": 1,\n        \"date\": \"2021-03-04\",\n        \"isHoliday\": true,\n        \"updatedAt\": \"2021-04-04T14:05:19.067Z\",\n        \"createdAt\": \"2021-04-04T14:05:19.067Z\"\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "Изменить исключение расписания",

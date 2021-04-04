@@ -22,7 +22,7 @@ const send = (to, html) => {
         },
         (error) => {
             if (error) {
-                log.error('При отправке письма произошла ошибка!\n' + error);
+                log.error('При отправке письма произошла ошибка! ' + error);
             }
         }
     );
