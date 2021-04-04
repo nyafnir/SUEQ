@@ -1,14 +1,20 @@
-const Joi = require('joi');
+const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const router = require('express').Router();
 const db = require('../models');
 const mail = require('../services/mail');
+const letters = require('../utils/letters.mail');
 const authorize = require('../middleware/authorize.middleware');
-const validate = require('../middleware/validate.middleware');
 const Response = require('../response');
 const config = require('../config');
-const letters = require('../utils/letters.mail');
+const {
+    registrationUserSchema,
+    authenticateUserSchema,
+    updateUserSchema,
+    tokenSchema,
+    userIdAndTokenSchema,
+    forgotPasswordUserSchema,
+} = require('../utils/schems.joi');
 
 //#region Вспомогательные функции
 
@@ -20,7 +26,7 @@ const getRemoteClientIpAddress = (request) => {
 
 const generateToken = (payload, secret, expiresIn) => {
     return jwt.sign(payload, secret, {
-        expiresIn,
+        expiresIn: `${expiresIn}ms`,
         algorithm: 'HS256',
     });
 };
@@ -29,7 +35,7 @@ const generateAccessToken = (userId) => {
     return generateToken(
         { id: userId },
         config.tokens.access.secret,
-        `${config.tokens.access.life}ms`
+        config.tokens.access.life
     );
 };
 
@@ -39,7 +45,7 @@ const generateRefreshToken = (userId, ipAddress) => {
         token: generateToken(
             { id: userId },
             config.tokens.refresh.secret,
-            `${config.tokens.refresh.life}ms`
+            config.tokens.refresh.life
         ),
         expires: new Date(Date.now() + config.tokens.refresh.life),
         createdByIp: ipAddress,
@@ -49,8 +55,8 @@ const generateRefreshToken = (userId, ipAddress) => {
 const getPayloadFromToken = (token, secret) => {
     try {
         return jwt.verify(token, secret);
-    } catch {
-        throw new Response('Токен не действителен.');
+    } catch (error) {
+        throw new Response('Токен не действителен.', error);
     }
 };
 
@@ -62,238 +68,29 @@ const generateHash = async (data, saltOrRounds) => {
     return await bcrypt.hash(data, saltOrRounds);
 };
 
-const recordRefreshTokenInCookie = (response, token) => {
-    response.cookie('refreshToken', token, {
-        httpOnly: true,
-        secure: false,
-        expires: new Date(Date.now() + config.tokens.refresh.life),
-    });
-};
-
-const removeRefreshTokenFromCookie = (response) => {
-    response.clearCookie('refreshToken');
-};
-
-//#endregion
-
-//#region Схемы валидации
-
-const forgotPasswordSchema = (request, response, next) => {
-    const schema = Joi.object({
-        email: Joi.string()
-            .email({
-                minDomainSegments: 2,
-                tlds: { allow: ['com', 'net'] },
-            })
-            .required()
-            .messages({
-                'any.required': 'Почта не указана!',
-                'string.empty': 'Поле почты пустое!',
-                'string.base': 'Почта должна быть указана в виде строки!',
-                'string.email':
-                    'Указанной почты не существует или она запрещена нашими правилами!',
-            }),
-    });
-    validate(request.body, next, schema);
-};
-
-const userIdAndTokenSchema = (request, response, next) => {
-    const schema = Joi.object({
-        userId: Joi.number().integer().required().messages({
-            'any.required': 'ID пользователя не указан!',
-            'number.empty': 'Поле ID пользователя пустое!',
-            'number.base': 'ID пользователя должен быть в числовом формате!',
-            'number.integer': 'ID пользователя должен быть целочисленным!',
-        }),
-        token: Joi.string()
-            .pattern(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
-            .required()
-            .messages({
-                'any.required': 'Токен не указан!',
-                'string.empty': 'Поле токена пустое!',
-                'string.base': 'Токен должен быть в формате строки!',
-                'string.pattern.base': 'Некорректный токен!',
-            }),
-    });
-    validate(request.params, next, schema);
-};
-
-const tokenSchema = (request, response, next) => {
-    const schema = Joi.object({
-        token: Joi.string()
-            .empty('')
-            .pattern(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
-            .messages({
-                'string.base': 'Токен должен быть в формате строки!',
-                'string.pattern.base': 'Некорректный токен!',
-            }),
-    });
-    validate(request.params, next, schema);
-};
-
-const registrationSchema = (request, response, next) => {
-    const schema = Joi.object({
-        email: Joi.string()
-            .email({
-                minDomainSegments: 2,
-                tlds: { allow: ['com', 'net'] },
-            })
-            .required()
-            .messages({
-                'any.required': 'Почта не указана!',
-                'string.empty': 'Поле почты пустое!',
-                'string.base': 'Почта должна быть указана в виде строки!',
-                'string.email':
-                    'Указанной почты не существует или она запрещена нашими правилами!',
-            }),
-        password: Joi.string()
-            .pattern(new RegExp('^[a-zA-ZА-Яа-яё0-9]{6,256}$'))
-            .required()
-            .messages({
-                'any.required': 'Пароль не указан!',
-                'string.empty': 'Поле пароля пустое!',
-                'string.base': 'Пароль должен быть указан в виде строки!',
-                'string.pattern.base':
-                    'Пароль может содержать в себе английские и русские буквы, цифры и быть длинной от 6 до 256 символов!',
-            }),
-        surname: Joi.string().min(3).max(100).required().messages({
-            'any.required': 'Фамилия не указана!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле фамилии пустое!',
-            'string.base': 'Фамилия должна быть указана в виде строки!',
-        }),
-        firstname: Joi.string().min(3).max(100).required().messages({
-            'any.required': 'Имя не указано!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле имени пустое!',
-            'string.base': 'Имя должно быть указано в виде строки!',
-        }),
-        lastname: Joi.string().min(3).max(100).required().messages({
-            'any.required': 'Отчество не указано!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле отчества пустое!',
-            'string.base': 'Отчество должно быть указано в виде строки!',
-        }),
-    });
-    validate(request.body, next, schema);
-};
-
-const authenticateSchema = (request, response, next) => {
-    const schema = Joi.object({
-        email: Joi.string()
-            .email({
-                minDomainSegments: 2,
-                tlds: { allow: ['com', 'net'] },
-            })
-            .required()
-            .messages({
-                'any.required': 'Почта не указана!',
-                'string.empty': 'Поле почты пустое!',
-                'string.base': 'Почта должна быть указана в виде строки!',
-                'string.email':
-                    'Указанной почты не существует или она запрещена нашими правилами!',
-            }),
-        password: Joi.string()
-            .pattern(new RegExp('^[a-zA-ZА-Яа-яё0-9]{6,256}$'))
-            .required()
-            .messages({
-                'any.required': 'Пароль не указан!',
-                'string.empty': 'Поле пароля пустое!',
-                'string.base': 'Пароль должен быть указан в виде строки!',
-                'string.pattern.base':
-                    'Пароль может содержать в себе английские и русские буквы, цифры и быть длинной от 6 до 256 символов!',
-            }),
-    });
-    validate(request.body, next, schema);
-};
-
-const updateSchema = (request, response, next) => {
-    const schema = Joi.object({
-        email: Joi.string()
-            .email({
-                minDomainSegments: 2,
-                tlds: { allow: ['com', 'net'] },
-            })
-            .messages({
-                'any.required': 'Почта не указана!',
-                'string.empty': 'Поле почты пустое!',
-                'string.base': 'Почта должна быть указана в виде строки!',
-                'string.email':
-                    'Указанной почты не существует или она запрещена нашими правилами!',
-            }),
-        password: Joi.string()
-            .pattern(new RegExp('^[a-zA-ZА-Яа-яё0-9]{6,256}$'))
-            .messages({
-                'any.required': 'Пароль не указан!',
-                'string.empty': 'Поле пароля пустое!',
-                'string.base': 'Пароль должен быть указан в виде строки!',
-                'string.pattern.base':
-                    'Пароль может содержать в себе английские и русские буквы, цифры и быть длинной от 6 до 256 символов!',
-            }),
-        surname: Joi.string().min(3).max(100).messages({
-            'any.required': 'Фамилия не указана!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле фамилии пустое!',
-            'string.base': 'Фамилия должна быть указана в виде строки!',
-        }),
-        firstname: Joi.string().min(3).max(100).messages({
-            'any.required': 'Имя не указано!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле имени пустое!',
-            'string.base': 'Имя должно быть указано в виде строки!',
-        }),
-        lastname: Joi.string().min(3).max(100).messages({
-            'any.required': 'Отчество не указано!',
-            'string.min': 'Минимум {#limit} символа!',
-            'string.max': 'Максимум {#limit} символов!',
-            'string.empty': 'Поле отчества пустое!',
-            'string.base': 'Отчество должно быть указано в виде строки!',
-        }),
-    })
-        .min(1) // Не даёт отправить {}
-        .required() // Не даёт отправить undefined
-        .messages({
-            'object.min':
-                'Для обновления должно быть указано хотя бы одно поле!',
-        });
-    validate(request.body, next, schema);
-};
-
 //#endregion
 
 //#region Методы контроллера
 
 const forgotPassword = async (request, response, next) => {
-    const postData = request.body;
-
-    let user;
-    try {
-        user = await db.User.findByEmail(postData.email);
-    } catch (error) {
-        return next(error);
-    }
+    const user = await db.User.findByEmail(request.body.email);
 
     if (user.confirmed === false) {
         return response
             .status(400)
             .send(
                 new Response(
-                    'Вы не подтвердили свой почтовый адрес, сбросить пароль невозможно.'
+                    'Вы не подтвердили свой почтовый адрес, сбросить пароль невозможно, дождитесь удаления аккаунта и создайте новый.'
                 )
             );
     }
 
     const token = generateToken(
-        { email: user.email, updatedAt: user.updatedAt, userId: user.id },
-        user.passwordHash,
-        `${config.tokens.passwordResetTimeout}ms`
+        { userId: user.id, email: user.email, updatedAt: user.updatedAt },
+        config.tokens.passwordReset.secret,
+        config.tokens.passwordReset.life
     );
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset/${user.id}/${token}`;
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset?userid=${user.id}&token=${token}`;
 
     mail.send(user.email, letters.forgotPassword(url));
 
@@ -303,22 +100,29 @@ const forgotPassword = async (request, response, next) => {
 };
 
 const resetPassword = async (request, response, next) => {
-    const getData = request.params;
+    const getData = request.query;
 
-    const user = await db.User.findByPk(getData.userId);
+    const user = await db.User.findByUserId(getData.userId);
 
-    if (user === null) {
-        return response.status(404).send();
+    const payload = getPayloadFromToken(
+        getData.token,
+        config.tokens.resetPassword.secret
+    );
+
+    if (payload.userId !== user.id) {
+        return response
+            .status(400)
+            .send(new Response('Это токен другого пользователя.'));
     }
 
-    const payload = await getPayloadFromToken(getData.token, user.passwordHash);
-
-    if (
-        payload.userId !== user.id ||
-        // Если профиль пользователя был изменен, то значит пароль уже сброшен или пользователь восстановил доступ
-        new Date(payload.updatedAt).toString() !== user.updatedAt.toString()
-    ) {
-        return response.status(404).send();
+    if (new Date(payload.updatedAt).toString() !== user.updatedAt.toString()) {
+        return response
+            .status(400)
+            .send(
+                new Response(
+                    'Пароль уже был сброшен или пользователь восстановил доступ.'
+                )
+            );
     }
 
     const salt = await generateSalt();
@@ -344,12 +148,10 @@ const registration = async (request, response, next) => {
     }
 
     const salt = await generateSalt();
-    const hash = await generateHash(postData.password, salt);
-
     user = await db.User.create({
         email: postData.email,
         passwordSalt: salt,
-        passwordHash: hash,
+        passwordHash: await generateHash(postData.password, salt),
         surname: postData.surname,
         firstname: postData.firstname,
         lastname: postData.lastname,
@@ -357,10 +159,11 @@ const registration = async (request, response, next) => {
 
     const token = generateToken(
         { userId: user.id },
-        user.passwordSalt,
-        `${config.tokens.emailConfirmedTimeout}ms`
+        config.tokens.emailConfirm.secret,
+        config.tokens.emailConfirm.life
     );
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm/${user.id}/${token}`;
+
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm?userid=${user.id}&token=${token}`;
 
     mail.send(user.email, letters.registrationConfirm(url));
 
@@ -368,42 +171,48 @@ const registration = async (request, response, next) => {
         .status(200)
         .send(
             new Response(
-                'Регистрация завершена! Ссылка для активации аккаунта отправлена на почту.'
+                'Регистрация завершена! Ссылка для активации аккаунта отправлена на почту, если не активировать аккаунт, то он будет удален.'
             )
         );
 };
 
 const registrationConfirm = async (request, response, next) => {
-    const getData = request.params;
+    const getData = request.query;
 
-    const user = await db.User.findByPk(getData.userId);
+    const user = await db.User.findByUserId(getData.userId);
 
-    if (user === null || user.confirmed) {
-        return response.status(404).send();
+    if (user.confirmed) {
+        return response
+            .status(400)
+            .send(new Response('Почта уже была подтверждена.'));
     }
 
-    const payload = getPayloadFromToken(getData.token, user.passwordSalt);
+    const payload = getPayloadFromToken(
+        getData.token,
+        config.tokens.registrationConfirm.secret
+    );
 
     if (payload.userId !== user.id) {
-        return response.status(404).send();
+        return response
+            .status(400)
+            .send(new Response('Это токен другого пользователя.'));
     }
 
     await user.update({ confirmed: true });
 
     return response
         .status(200)
-        .send('Почта подтверждена, теперь вы можете войти в аккаунт.');
+        .send(
+            new Response(
+                'Почта подтверждена, теперь вы можете войти в аккаунт.'
+            )
+        );
 };
 
 const authenticate = async (request, response, next) => {
     const postData = request.body;
 
-    let user;
-    try {
-        user = await db.User.findByEmail(postData.email);
-    } catch (error) {
-        return next(error);
-    }
+    const user = await db.User.findByEmail(postData.email);
 
     if (user.confirmed === false) {
         return response
@@ -429,8 +238,6 @@ const authenticate = async (request, response, next) => {
 
     await refreshToken.save();
 
-    recordRefreshTokenInCookie(response, refreshToken.token);
-
     return response.status(200).send(
         new Response(
             'Выполнен вход в систему.',
@@ -454,23 +261,50 @@ const authenticate = async (request, response, next) => {
     );
 };
 
+const info = async (request, response, next) => {
+    return response
+        .status(200)
+        .send(
+            new Response(
+                'Данные о пользователе получены.',
+                'Публичные данные о пользователе указаны в data.',
+                request.user.getWithoutSecrets()
+            )
+        );
+};
+
+const update = async (request, response, next) => {
+    const updateFields = request.body;
+
+    if (updateFields.password !== null) {
+        updateFields.passwordSalt = await generateSalt();
+        updateFields.passwordHash = await generateHash(
+            updateFields.password,
+            updateFields.passwordSalt
+        );
+        delete updateFields.password;
+    }
+
+    const user = request.user;
+    await user.update(updateFields);
+
+    return response
+        .status(200)
+        .send(
+            new Response(
+                'Данные о пользователе обновлены.',
+                'Публичные данные о пользователе указаны в data.',
+                user.getWithoutSecrets()
+            )
+        );
+};
+
 const refreshToken = async (request, response, next) => {
-    const token = request.body.token || request.cookies.refreshToken;
+    const token = request.body.token;
 
-    if (token == null) {
-        return response
-            .status(400)
-            .send(new Response('У вас нет токена обновления.'));
-    }
+    const oldRefreshToken = await db.RefreshToken.findByToken(token);
 
-    let oldRefreshToken;
-    try {
-        oldRefreshToken = await db.RefreshToken.findByToken(token);
-    } catch (error) {
-        return next(error);
-    }
-    const user =
-        request.user || (await db.User.findByPk(oldRefreshToken.userId));
+    const user = await db.User.findByUserId(oldRefreshToken.userId);
 
     const ipAddress = getRemoteClientIpAddress(request);
     const newRefreshToken = generateRefreshToken(user.id, ipAddress);
@@ -480,8 +314,6 @@ const refreshToken = async (request, response, next) => {
     await oldRefreshToken.save();
 
     const accessToken = generateAccessToken(user.id);
-
-    recordRefreshTokenInCookie(response, newRefreshToken.token);
 
     return response.status(200).send(
         new Response(
@@ -506,21 +338,10 @@ const refreshToken = async (request, response, next) => {
     );
 };
 
-const revokeToken = async (request, response, next) => {
-    const token = request.body.token || request.cookies.refreshToken;
+const revokeRefreshToken = async (request, response, next) => {
+    const token = request.body.token;
 
-    if (token == null) {
-        return response
-            .status(400)
-            .send(new Response('У вас нет токена обновления.'));
-    }
-
-    let refreshToken;
-    try {
-        refreshToken = await db.RefreshToken.findByToken(token);
-    } catch (error) {
-        return next(error);
-    }
+    const refreshToken = await db.RefreshToken.findByToken(token);
 
     if (request.user.id !== refreshToken.userId) {
         return response.status(400).send(new Response('Это не ваш токен.'));
@@ -528,161 +349,176 @@ const revokeToken = async (request, response, next) => {
 
     const ipAddress = getRemoteClientIpAddress(request);
 
-    try {
-        await refreshToken.revoke(ipAddress);
-    } catch (error) {
-        return next(error);
-    }
-
-    removeRefreshTokenFromCookie(response);
+    await refreshToken.revoke(ipAddress);
 
     return response.status(200).send(new Response('Токен отозван.'));
 };
 
-const info = async (request, response, next) => {
-    const user = await db.User.findByPk(request.user.id);
-    return response
-        .status(200)
-        .send(
-            new Response(
-                'Данные о пользователе получены.',
-                'Публичные данные о пользователе указаны в data.',
-                user.getWithoutSecrets()
-            )
-        );
-};
-
-const update = async (request, response, next) => {
-    const user = request.user;
-    const updateFields = request.body;
-
-    if (updateFields.password !== null) {
-        const salt = await generateSalt();
-        const hash = await generateHash(updateFields.password, salt);
-        updateFields.passwordHash = hash;
-        updateFields.passwordSalt = salt;
-        delete updateFields.password;
-    }
-
-    await user.update(updateFields);
-
-    return response
-        .status(200)
-        .send(
-            new Response(
-                'Данные о пользователе обновлены.',
-                'Публичные данные о пользователе указаны в data.',
-                user.getWithoutSecrets()
-            )
-        );
-};
-
-const logoutEverywhere = async (request, response, next) => {
+const revokeRefreshTokens = async (request, response, next) => {
     const ipAddress = getRemoteClientIpAddress(request);
 
     for await (const refreshToken of request.user.refreshTokens) {
         await refreshToken.revoke(ipAddress).catch(() => null);
     }
 
-    removeRefreshTokenFromCookie(response);
-
     response
         .status(200)
         .send(
             new Response(
-                'Вы вышли из системы.',
-                'Все токены обновления отозваны, но токены доступа всё ещё работают, просто удалите их из вашего приложения.'
+                'Все токены обновления отозваны.',
+                'Все токены обновления отозваны, но токены доступа всё ещё работают.'
             )
         );
 };
 
 const deleteAccount = async (request, response, next) => {
-    let user = request.user;
+    const user = request.user;
 
-    let refreshToken;
-    try {
-        refreshToken = await db.RefreshToken.findOneByUserId(user.id);
-    } catch (error) {
-        return next(error);
-    }
+    // Фиксируем последний IP, который вызывал удаление аккаунта
     const ipAddress = getRemoteClientIpAddress(request);
-    try {
-        await refreshToken.revoke(ipAddress);
-    } catch (error) {
-        return next(error);
-    }
-
-    removeRefreshTokenFromCookie(response);
+    await refreshToken.revoke(ipAddress);
 
     const token = generateToken(
         { userId: user.id },
-        user.passwordHash,
-        `${config.tokens.accountRescueTimeout}ms`
+        config.tokens.accountRescue.secret,
+        config.tokens.accountRescue.life
     );
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel/${user.id}/${token}`;
+
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel?userid=${user.id}&token=${token}`;
     mail.send(user.email, letters.deleteAccount(url));
 
     return response
         .status(200)
-        .send(new Response(`Аккаунт в очереди на удаление, доступ закрыт.`));
+        .send(
+            new Response(
+                `Аккаунт поставлен в очередь на удаление, доступ закрыт.`
+            )
+        );
 };
 
 const deleteAccountCancel = async (request, response, next) => {
-    const getData = request.params;
+    const getData = request.query;
 
-    const user = await db.User.findByPk(getData.userId);
+    const user = await db.User.findOne({
+        where: {
+            userId: getData.userId,
+        },
+        paranoid: false,
+    });
 
-    if (user === null || user.deletedAt !== null) {
-        return response.status(404).send();
-    }
-
-    const payload = getPayloadFromToken(getData.token, user.passwordHash);
+    const payload = getPayloadFromToken(
+        getData.token,
+        config.tokens.accountRescue.secret
+    );
 
     if (payload.userId !== user.id) {
-        return response.status(404).send();
+        return response
+            .status(400)
+            .send(new Response('Это токен другого пользователя.'));
     }
 
     await user.update({ deletedAt: null });
 
-    mail.send(user.email, `<h1>Аккаунт восстановлен!</h1>`);
-
     return response
         .status(200)
-        .send('Удаление аккаунта отменено, теперь вы можете вернуться.');
+        .send(new Response('Удаление аккаунта отменено.'));
 };
 
 //#endregion
 
 //#region Маршруты
 
-router.post('/password/forgot', forgotPasswordSchema, forgotPassword);
-router.get(
-    '/password/reset/:userId/:token',
-    userIdAndTokenSchema,
-    resetPassword
+router.post(
+    '/password/forgot',
+    (request, response, next) =>
+        forgotPasswordUserSchema(request.body, response, next),
+    async (request, response, next) => {
+        await forgotPassword(request, response, next).catch(next);
+    }
 );
 
-router.post('/registration', registrationSchema, registration);
 router.get(
-    '/registration/confirm/:userId/:token',
-    userIdAndTokenSchema,
-    registrationConfirm
+    '/password/reset',
+    (request, response, next) =>
+        userIdAndTokenSchema(request.query, response, next),
+    async (request, response, next) => {
+        await resetPassword(request, response, next).catch(next);
+    }
 );
 
-router.post('/authenticate', authenticateSchema, authenticate);
-router.delete('/logout/everywhere', authorize(), logoutEverywhere);
+router.post(
+    '/registration',
+    (request, response, next) =>
+        registrationUserSchema(request.body, response, next),
+    async (request, response, next) => {
+        await registration(request, response, next).catch(next);
+    }
+);
 
-router.put('/refresh-token', tokenSchema, refreshToken);
-router.delete('/revoke-token', authorize(), tokenSchema, revokeToken);
+router.get(
+    '/registration/confirm',
+    (request, response, next) =>
+        userIdAndTokenSchema(request.query, response, next),
+    async (request, response, next) => {
+        await registrationConfirm(request, response, next).catch(next);
+    }
+);
 
-router.get('/info', authorize(), info);
-router.put('/update', authorize(), updateSchema, update);
+router.post(
+    '/authenticate',
+    (request, response, next) =>
+        authenticateUserSchema(request.body, response, next),
+    async (request, response, next) => {
+        await authenticate(request, response, next).catch(next);
+    }
+);
+
+router.put(
+    '/refresh-token',
+    (request, response, next) => tokenSchema(request.query, response, next),
+    async (request, response, next) => {
+        await refreshToken(request, response, next).catch(next);
+    }
+);
+
+router.delete(
+    '/revoke-token',
+    authorize(),
+    (request, response, next) => tokenSchema(request.query, response, next),
+    async (request, response, next) => {
+        await revokeRefreshToken(request, response, next).catch(next);
+    }
+);
+
+router.delete(
+    '/revoke-tokens',
+    authorize(),
+    async (request, response, next) => {
+        await revokeRefreshTokens(request, response, next).catch(next);
+    }
+);
+
+router.get('/info', authorize(), async (request, response, next) => {
+    await info(request, response, next).catch(next);
+});
+
+router.put(
+    '/update',
+    authorize(),
+    (request, response, next) => updateUserSchema(request.body, response, next),
+    async (request, response, next) => {
+        await update(request, response, next).catch(next);
+    }
+);
 
 router.delete('/delete', authorize(), deleteAccount);
+
 router.get(
-    '/delete/cancel/:userId/:token',
-    userIdAndTokenSchema,
-    deleteAccountCancel
+    '/delete/cancel',
+    (request, response, next) => tokenSchema(request.query, response, next),
+    async (request, response, next) => {
+        await deleteAccountCancel(request, response, next).catch(next);
+    }
 );
 
 module.exports = router;

@@ -46,8 +46,9 @@ module.exports = {
             ),
         },
         sequelize: {
-            force: process.env.SEQUELIZE_FORCE,
-            alter: process.env.SEQUELIZE_ALTER,
+            force: process.env.SEQUELIZE_FORCE.toLowerCase() === 'true',
+            alter: process.env.SEQUELIZE_ALTER.toLowerCase() === 'true',
+            logging: process.env.SEQUELIZE_LOGGING.toLowerCase() === 'true',
         },
     },
     mail: {
@@ -60,9 +61,44 @@ module.exports = {
     },
     middleware: {
         validate: {
-            abortEarly: process.env.MIDDLEWARE_VALIDATE_ABORT_EARLY,
-            allowUnknown: process.env.MIDDLEWARE_VALIDATE_ALLOW_UNKNOWN,
-            stripUnknown: process.env.MIDDLEWARE_VALIDATE_STRIP_UNKNOWN,
+            abortEarly:
+                process.env.MIDDLEWARE_VALIDATE_ABORT_EARLY.toLowerCase() ===
+                'true',
+            allowUnknown:
+                process.env.MIDDLEWARE_VALIDATE_ALLOW_UNKNOWN.toLowerCase() ===
+                'true',
+            stripUnknown:
+                process.env.MIDDLEWARE_VALIDATE_STRIP_UNKNOWN.toLowerCase() ===
+                'true',
+            messages: {
+                ru: {
+                    'any.required': 'Поле {#label} не указано',
+                    'any.invalid': 'Поле {#label} неправильное',
+                    'string.min':
+                        'Поле {#label} должно содержать минимум {#limit} симв.',
+                    'string.max':
+                        'Поле {#label} может содержать максимум {#limit} симв.',
+                    'string.empty': 'Поле {#label} пустое',
+                    'string.base':
+                        'Поле {#label} должно быть указано в виде строки',
+                    'string.pattern.base': 'Поле {#label} неправильное',
+                    'number.empty': 'Поле {#label} пустое!',
+                    'number.base':
+                        'Поле {#label} должно быть указано в виде числа',
+                    'number.integer': 'Поле {#label} должно быть целочисленным',
+                    'object.min': 'Должно быть указано хотя бы одно поле!',
+                    'email.invalid':
+                        'Указан не существующая почта в поле {#label}',
+                    'phoneNumber.invalid':
+                        'Указан не существующий номер телефона в поле {#label}',
+                    'array.unique':
+                        'В перечисленных значениях {#label} есть дубликаты',
+                },
+            },
+            errors: {
+                labels: false,
+                language: 'ru',
+            },
         },
     },
     hash: {
@@ -78,13 +114,16 @@ module.exports = {
             life: parseInt(process.env.TOKEN_REFRESH_LIFE, 10),
         },
         passwordReset: {
+            secret: process.env.TOKEN_PASSWORD_RESET_SECRET,
             life: parseInt(process.env.TOKEN_PASSWORD_RESET_TIMEOUT_MS, 10),
         },
         emailConfirm: {
+            secret: process.env.TOKEN_EMAIL_CONFIRM_SECRET,
             life: parseInt(process.env.TOKEN_EMAIL_CONFIRM_TIMEOUT_MS, 10),
         },
         accountRescue: {
-            life: parseInt(process.env.TOKEN_RESCUE_TIMEOUT_MS, 10),
+            secret: process.env.TOKEN_ACCOUNT_RESCUE_SECRET,
+            life: parseInt(process.env.TOKEN_ACCOUNT_RESCUE_TIMEOUT_MS, 10),
         },
     },
     queues: {

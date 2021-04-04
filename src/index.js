@@ -1,5 +1,5 @@
-const webServer = require('./services/web-server.js');
-const { database } = require('./config');
+const webServer = require('./services/web-server');
+const config = require('./config');
 const db = require('./models');
 const log = require('./logger');
 
@@ -13,7 +13,6 @@ const shutdown = async () => {
         log.info('Отключение от базы данных...');
         await db.sequelize.close();
     } catch (error) {
-        log.error(error);
         process.exit(1);
     }
 
@@ -25,19 +24,15 @@ const shutdown = async () => {
 const startup = async () => {
     log.info('Запуск сервера...');
 
-    try {
-        log.info('Инициализация главного модуля...');
-        await webServer.initialize();
+    log.info('Инициализация главного модуля...');
+    await webServer.initialize();
 
-        log.info(
-            `Соединение с базой данных ${database.credentials.database} по адресу: http://${database.credentials.host}:${database.credentials.port}`
-        );
-        await db.sequelize.sync(database.sequelize);
-    } catch (error) {
-        log.error(error);
+    log.info(
+        `Соединение с базой данных ${config.database.credentials.database} по адресу: http://${config.database.credentials.host}:${config.database.credentials.port}`
+    );
+    await db.sequelize.sync(config.database.sequelize);
 
-        shutdown();
-    }
+    log.info('Сервер запущен!');
 };
 
 startup();
@@ -56,8 +51,8 @@ process.on('SIGINT', () => {
     shutdown();
 });
 
-process.on('uncaughtException', (error) => {
-    log.error('Непредвиденная ошибка!\n' + error);
+process.on('uncaughtException', (err) => {
+    log.fatal(err);
 
     shutdown();
 });

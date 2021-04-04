@@ -1,54 +1,19 @@
-const Joi = require('joi');
 const router = require('express').Router();
 const db = require('../models');
 const authorize = require('../middleware/authorize.middleware');
-const validate = require('../middleware/validate.middleware');
 const Response = require('../response');
 const config = require('../config');
-
-//#region Схемы валидации
-
-const queueIdQuerySchema = (request, response, next) => {
-    const schema = Joi.object({
-        queueId: Joi.number().integer().required().messages({
-            'any.required': 'ID очереди не указан!',
-            'number.empty': 'Поле ID очереди пустое!',
-            'number.base': 'ID очереди должен быть в числовом формате!',
-            'number.integer': 'ID очереди должен быть целочисленным!',
-        }),
-    });
-    validate(request.query, next, schema);
-};
-
-const moveBodySchema = (request, response, next) => {
-    const schema = Joi.object({
-        memberId: Joi.number().integer().required().messages({
-            'any.required': 'ID пользователя не указан!',
-            'number.empty': 'Поле ID пользователя пустое!',
-            'number.base': 'ID пользователя должен быть в числовом формате!',
-            'number.integer': 'ID пользователя должен быть целочисленным!',
-        }),
-        position: Joi.number().integer().required().messages({
-            'any.required': 'Новая позиция не указана!',
-            'number.empty': 'Поле новая позиция пустое!',
-            'number.base': 'Новая позиция должна быть в числовом формате!',
-            'number.integer': 'Новая позиция должна быть целочисленной!',
-        }),
-    });
-    validate(request.body, next, schema);
-};
-
-//#endregion
+const { queueIdSchema, movePositionSchema } = require('../utils/schems.joi');
+const { sendEventByQueueId, events } = require('../services/web-socket');
 
 //#region Методы контроллера
 
 const entry = async (request, response, next) => {
     const user = request.user;
-    const queueId = request.query.queueId;
-    let queue = await db.Queue.findByPk(queueId);
-    if (queue === null) {
-        return response.status(404).send(new Response('Очередь не найдена.'));
-    } else if (queue.isOpen() === false) {
+
+    const queue = await db.Queue.findByQueueId(request.query.queueId);
+
+    if (queue.isOpen() === false) {
         return response
             .status(400)
             .send(
@@ -58,28 +23,26 @@ const entry = async (request, response, next) => {
             );
     }
 
-    const positions = await db.Position.findAll({
-        where: { userId: user.id },
-    });
-    if (positions.length > config.queues.member.limit) {
+    if (user.positions.length > config.queues.limits.member) {
         return response
             .status(400)
             .send(
                 new Response(
-                    `Вы не можете стоять в более чем ${config.queues.member.limit} очередей одновременно.`
+                    `Вы не можете стоять в более чем ${config.queues.limits.member} очередей одновременно.`
                 )
             );
     }
 
-    const members = await db.Position.findAll({ where: { queueId } });
-    if (members.some((member) => member.userId === user.id)) {
-        return response.status(400).send(new Response('Вы уже в очереди.'));
+    if (user.positions.some((position) => position.queueId === queue.id)) {
+        return response
+            .status(400)
+            .send(new Response('Вы уже стоите в этой очереди.'));
     }
 
     const position = await db.Position.create({
         queueId: queue.id,
         userId: user.id,
-        position: members.length + 1,
+        place: queue.positions.length + 1,
     });
 
     return response
@@ -87,35 +50,16 @@ const entry = async (request, response, next) => {
         .send(
             new Response(
                 'Вы встали в очередь!',
-                'В data указана информация о позиции в очереди.',
-                position
+                'В data указана информация о позициях в очереди.',
+                [...queue.positions, position]
             )
         );
 };
 
-const leave = async (request, response, next) => {
-    const user = request.user;
+const list = async (request, response, next) => {
     const queueId = request.query.queueId;
 
-    const position = await db.Position.findOne({
-        where: { queueId, userId: user.id },
-    });
-
-    if (position === null) {
-        return response
-            .status(404)
-            .send(new Response('Вас нет в этой очереди.'));
-    }
-
-    await position.destroy();
-
-    return response.status(200).send(new Response('Вы вышли из очереди!'));
-};
-
-const members = async (request, response, next) => {
-    const queueId = request.query.queueId;
-
-    const members = await db.Position.findAll({ where: { queueId } });
+    const members = await db.Position.findAllByQueueId(queueId);
 
     if (members.length === 0) {
         return response
@@ -135,65 +79,51 @@ const members = async (request, response, next) => {
 };
 
 const move = async (request, response, next) => {
-    const queueId = request.query.queueId;
-    const user = request.user;
-    const queue = await db.Queue.findByPk(queueId);
+    const queue = await db.Queue.findByQueueId(request.query.queueId);
+
+    queue.checkOwnerId(request.user.id);
+
     const putData = request.body;
 
-    if (queue === null) {
-        return response.status(404).send(new Response('Очередь не найдена.'));
-    } else if (user.id !== queue.ownerId) {
-        return response
-            .status(400)
-            .send(new Response('Вы не являетесь владельцем этой очереди.'));
-    }
-
-    const members = await db.Position.findAll({ where: { queueId } });
+    let members = queue.positions;
 
     if (members.length === 0) {
         return response
             .status(404)
             .send(new Response('Очередь пуста или её не существует.'));
-    } else if (putData.position > members.length) {
+    } else if (putData.place > members.length) {
         return response
             .status(400)
-            .send(new Response('Выход за пределы очереди.'));
+            .send(new Response('Выход за предел очереди.'));
     }
 
-    members.sort((a, b) => a.position - b.position);
-
-    const currentPositionIndex = members.findIndex(
-        (member) => member.userId === putData.memberId
+    const oldPositionIndex = members.findIndex(
+        (position) => position.userId === putData.userId
     );
 
-    if (currentPositionIndex === -1) {
+    if (oldPositionIndex === -1) {
+        return response
+            .status(404)
+            .send(new Response('Такого пользователя в очереди нет.'));
+    } else if (members[oldPositionIndex].place === putData.place) {
         return response
             .status(400)
-            .send(new Response('Пользователя с таким ID в очереди нет.'));
-    } else if (currentPositionIndex + 1 === putData.position) {
-        return response
-            .status(400)
-            .send(
-                new Response('Пользователь с таким ID уже стоит на этом месте.')
-            );
+            .send(new Response('Пользователь уже стоит на этом месте.'));
     }
 
-    const newPositionIndex = putData.position - 1;
-    if (newPositionIndex > currentPositionIndex) {
-        for (let i = currentPositionIndex + 1; i <= newPositionIndex; i += 1) {
-            members[i].position += 1;
-        }
-    } else {
-        for (let i = currentPositionIndex - 1; i >= newPositionIndex; i -= 1) {
-            members[i].position -= 1;
-        }
+    const moveMember = members.splice(oldPositionIndex, 1).shift();
+    members.sort((a, b) => a.place - b.place);
+    const head = members.splice(0, putData.place);
+    members = [...head, moveMember, ...members];
+    for (let i = 0; i < members.length; i += 1) {
+        members[i].place = i + 1;
+        await members[i].save();
     }
 
-    members[currentPositionIndex].position = putData.position;
-
-    for await (const member of members) {
-        await member.save();
-    }
+    sendEventByQueueId(queue.id, events.QUEUE_MEMBER_MOVE, {
+        position: moveMember,
+        members,
+    });
 
     return response
         .status(200)
@@ -206,14 +136,63 @@ const move = async (request, response, next) => {
         );
 };
 
+const leave = async (request, response, next) => {
+    const position = request.user.positions.find(
+        (position) => request.query.queueId == position.queueId
+    );
+
+    if (position === undefined) {
+        return response
+            .status(404)
+            .send(new Response('Вас нет в этой очереди.'));
+    }
+
+    await position.destroy();
+
+    return response.status(200).send(new Response('Вы покинули очередь.'));
+};
+
 //#endregion
 
 //#region Маршруты
 
-router.post('/entry', authorize(), queueIdQuerySchema, entry);
-router.delete('/leave', authorize(), queueIdQuerySchema, leave);
-router.get('/members', authorize(), queueIdQuerySchema, members);
-router.put('/move', authorize(), queueIdQuerySchema, moveBodySchema, move);
+router.post(
+    '/entry',
+    authorize(),
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    async (request, response, next) => {
+        await entry(request, response, next).catch(next);
+    }
+);
+
+router.delete(
+    '/leave',
+    authorize(),
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    async (request, response, next) => {
+        await leave(request, response, next).catch(next);
+    }
+);
+
+router.get(
+    '/list',
+    authorize(),
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    async (request, response, next) => {
+        await list(request, response, next).catch(next);
+    }
+);
+
+router.put(
+    '/move',
+    authorize(),
+    (request, response, next) => queueIdSchema(request.query, response, next),
+    (request, response, next) =>
+        movePositionSchema(request.body, response, next),
+    async (request, response, next) => {
+        await move(request, response, next).catch(next);
+    }
+);
 
 module.exports = router;
 

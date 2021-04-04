@@ -50,8 +50,16 @@ module.exports = (sequelize, Sequelize) => {
     //#region Методы объекта
 
     Model.prototype.getWithoutSecrets = function () {
-        const { id, email, firstname, surname, lastname } = this;
-        return { id, email, firstname, surname, lastname };
+        const {
+            id,
+            email,
+            firstname,
+            surname,
+            lastname,
+            queues,
+            positions,
+        } = this;
+        return { id, email, firstname, surname, lastname, queues, positions };
     };
 
     //#endregion
@@ -61,10 +69,24 @@ module.exports = (sequelize, Sequelize) => {
     Model.findByEmail = async (email) => {
         const result = await Model.findOne({
             where: { email },
+            include: [{ all: true, nested: true }],
         });
 
         if (result === null) {
-            throw new Response('Пользователь с такой почтой не найден.');
+            throw new Response('Пользователя с такой почтой не существует.');
+        }
+
+        return result;
+    };
+
+    Model.findByUserId = async (id) => {
+        const result = await Model.findOne({
+            where: { id },
+            include: [{ all: true, nested: true }],
+        });
+
+        if (result === null) {
+            throw new Response('Такого пользователя не существует.');
         }
 
         return result;
@@ -79,7 +101,7 @@ module.exports = (sequelize, Sequelize) => {
             EVERY ${config.database.events.accountNotRescueCheck / 1000} SECOND
         DO 
             DELETE FROM ueq.users WHERE deletedAt < DATE_SUB(NOW(), INTERVAL ${
-                config.tokens.accountRescueTimeout / 1000
+                config.tokens.accountRescue.life / 1000
             } SECOND)
     `;
 
@@ -88,7 +110,7 @@ module.exports = (sequelize, Sequelize) => {
             EVERY ${config.database.events.emailNotConfirmCheck / 1000} SECOND
         DO 
             DELETE FROM ueq.users WHERE confirmed = false AND createdAt < DATE_SUB(NOW(), INTERVAL ${
-                config.tokens.emailConfirmedTimeout / 1000
+                config.tokens.emailConfirm.life / 1000
             } SECOND)
         `;
 

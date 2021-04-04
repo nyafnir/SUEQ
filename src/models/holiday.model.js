@@ -29,5 +29,25 @@ module.exports = (sequelize, Sequelize) => {
         }
     );
 
+    //#region Методы класса
+
+    Model.findByHolidayId = async (id) => {
+        const result = await Model.findByPk(id);
+
+        if (result === null) {
+            throw new Response('Такого особого дня не существует.');
+        }
+
+        return result;
+    };
+
+    Model.findAllByQueueId = async (id) => {
+        return await Model.findAll({
+            where: { queueId: id },
+        });
+    };
+
+    //#endregion
+
     return Model;
 };
