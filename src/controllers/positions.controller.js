@@ -4,6 +4,7 @@ const authorize = require('../middleware/authorize.middleware');
 const Response = require('../response');
 const config = require('../config');
 const { queueIdSchema, movePositionSchema } = require('../utils/schems.joi');
+const { sendEventByQueueId, events } = require('../services/web-socket');
 
 //#region Методы контроллера
 
@@ -53,22 +54,6 @@ const entry = async (request, response, next) => {
                 [...queue.positions, position]
             )
         );
-};
-
-const leave = async (request, response, next) => {
-    const position = request.user.positions.find(
-        (position) => request.query.queueId === position.queueId
-    );
-
-    if (position === null) {
-        return response
-            .status(404)
-            .send(new Response('Вас нет в этой очереди.'));
-    }
-
-    await position.destroy();
-
-    return response.status(200).send(new Response('Вы покинули очередь.'));
 };
 
 const list = async (request, response, next) => {
@@ -147,6 +132,8 @@ const move = async (request, response, next) => {
         await member.save();
     }
 
+    sendEventByQueueId(queue.id, events.QUEUE_MEMBER_MOVE, members);
+
     return response
         .status(200)
         .send(
@@ -156,6 +143,22 @@ const move = async (request, response, next) => {
                 members
             )
         );
+};
+
+const leave = async (request, response, next) => {
+    const position = request.user.positions.find(
+        (position) => request.query.queueId === position.queueId
+    );
+
+    if (position === null) {
+        return response
+            .status(404)
+            .send(new Response('Вас нет в этой очереди.'));
+    }
+
+    await position.destroy();
+
+    return response.status(200).send(new Response('Вы покинули очередь.'));
 };
 
 //#endregion

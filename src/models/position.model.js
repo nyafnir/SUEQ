@@ -55,15 +55,7 @@ module.exports = (sequelize, Sequelize) => {
         );
     });
 
-    Model.addHook('afterUpdate', (position, options) => {
-        sendEventByQueueId(
-            position.queueId,
-            events.QUEUE_MEMBER_MOVE,
-            position
-        );
-    });
-
-    Model.addHook('beforeDestroy', (position, options) => {
+    Model.addHook('afterDestroy', (position, options) => {
         sendEventByQueueId(
             position.queueId,
             events.QUEUE_MEMBER_LEAVE,
