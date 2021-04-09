@@ -1,12 +1,16 @@
 {
   "name": "sueq",
   "version": "2.0.0",
-  "description": "Server Universal Electronic Queue (Node.js & Express REST API)",
+  "description": "Server Universal Electronic Queue (Node.js REST API приложение)",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "start": "node ."
+    "start": "node .",
+    "install-windows-service": "node install-windows-service.js",
+    "start-windows-service": "net start sueq",
+    "stop-windows-service": "net stop sueq",
+    "uninstall-windows-service": "node uninstall-windows-service.js"
   },
   "keywords": [
     "nodejs",
@@ -31,6 +35,7 @@
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
+    "node-windows": "^1.0.0-beta.5",
     "nodemailer": "^6.5.0",
     "pino": "^6.11.2",
     "pino-pretty": "^4.7.1",
