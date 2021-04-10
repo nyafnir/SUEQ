@@ -44,6 +44,8 @@ db.Holiday = require('./holiday.model')(sequelize, Sequelize);
 // Каждый пользователь может иметь много токенов
 db.User.hasMany(db.RefreshToken, {
     foreignKey: 'userId',
+    onDelete: 'CASCADE',
+    hooks: true,
 });
 db.RefreshToken.belongsTo(db.User, {
     foreignKey: 'id',
@@ -52,6 +54,8 @@ db.RefreshToken.belongsTo(db.User, {
 // Каждый пользовать может владеть множеством очередей
 db.User.hasMany(db.Queue, {
     foreignKey: 'ownerId',
+    onDelete: 'CASCADE',
+    hooks: true,
 });
 db.Queue.belongsTo(db.User, {
     foreignKey: 'id',
@@ -60,6 +64,8 @@ db.Queue.belongsTo(db.User, {
 // Каждый пользовать может стоять во множестве очередей
 db.User.hasMany(db.Position, {
     foreignKey: 'userId',
+    onDelete: 'CASCADE',
+    hooks: true,
 });
 db.Position.belongsTo(db.User, {
     foreignKey: 'id',
@@ -68,6 +74,8 @@ db.Position.belongsTo(db.User, {
 // Каждая очередь имеет участников
 db.Queue.hasMany(db.Position, {
     foreignKey: 'queueId',
+    onDelete: 'CASCADE',
+    hooks: true,
 });
 db.Position.belongsTo(db.Queue, {
     foreignKey: 'id',
@@ -76,6 +84,8 @@ db.Position.belongsTo(db.Queue, {
 // Каждая очередь имеет расписания работы
 db.Queue.hasMany(db.Schedule, {
     foreignKey: 'queueId',
+    onDelete: 'CASCADE',
+    hooks: true,
 });
 db.Schedule.belongsTo(db.Queue, {
     foreignKey: 'id',
@@ -84,6 +94,8 @@ db.Schedule.belongsTo(db.Queue, {
 // Каждая очередь имеет выходные дни
 db.Queue.hasMany(db.Holiday, {
     foreignKey: 'queueId',
+    onDelete: 'CASCADE',
+    hooks: true,
 });
 db.Holiday.belongsTo(db.Queue, {
     foreignKey: 'id',

@@ -141,5 +141,15 @@ module.exports = (sequelize, Sequelize) => {
 
     //#endregion
 
+    //#region Хуки
+
+    Model.addHook('afterDestroy', (instance, options) => {
+        instance.queues.map((queue) => queue.destroy());
+        instance.positions.map((position) => position.destroy());
+        instance.refreshtokens.map((refreshToken) => refreshToken.destroy());
+    });
+
+    //#endregion
+
     return Model;
 };

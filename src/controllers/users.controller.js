@@ -377,6 +377,8 @@ const deleteAccount = async (request, response, next) => {
     const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel?userId=${user.id}&token=${token}`;
     mail.send(user.email, letters.deleteAccount(url));
 
+    await user.destroy();
+
     return response
         .status(200)
         .send(
@@ -407,7 +409,7 @@ const deleteAccountCancel = async (request, response, next) => {
             .send(new Response('Это токен другого пользователя.'));
     }
 
-    await user.update({ deletedAt: null });
+    await user.restore();
 
     return response
         .status(200)
