@@ -137,7 +137,7 @@ exports.registrationConfirm = (url) =>
 
         <span class="message">
             У вас ${secondsFormattedHMS(
-                config.tokens.emailConfirmedTimeout / 1000
+                config.tokens.emailConfirm.life / 1000
             )}, иначе аккаунт будет удален!
         </span>
 
@@ -156,7 +156,7 @@ exports.forgotPassword = (url) =>
 
         <span class="message">
             У вас ${secondsFormattedHMS(
-                config.tokens.passwordResetTimeout / 1000
+                config.tokens.passwordReset.life / 1000
             )}, иначе ссылка перестанет работать!
         </span>
 
@@ -192,7 +192,7 @@ exports.deleteAccount = (url) =>
 
         <span class="message">
         У вас ${secondsFormattedHMS(
-            config.tokens.accountRescueTimeout / 1000
+            config.tokens.accountRescue.life / 1000
         )}, иначе аккаунт уже будет безвозвратно удален!
         </span>
 
