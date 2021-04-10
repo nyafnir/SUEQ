@@ -73,7 +73,7 @@ module.exports = (sequelize, Sequelize) => {
 
     //#endregion
 
-    //#region Вебхуки
+    //#region Хуки
 
     Model.addHook('afterUpdate', (queue, options) => {
         sendEventByQueueId(queue.id, events.QUEUE_UPDATE, queue);
