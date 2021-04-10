@@ -1,4 +1,4 @@
-const Response = require('../response');
+const Response = require('../utils/response');
 const config = require('../config');
 
 module.exports = (sequelize, Sequelize) => {

@@ -1,4 +1,4 @@
-const Response = require('../response');
+const Response = require('../utils/response');
 
 module.exports = (sequelize, Sequelize) => {
     const Model = sequelize.define(
