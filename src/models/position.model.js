@@ -45,7 +45,7 @@ module.exports = (sequelize, Sequelize) => {
 
     //#endregion
 
-    //#region Вебхуки
+    //#region Хуки
 
     Model.addHook('afterCreate', (position, options) => {
         sendEventByQueueId(
