@@ -90,7 +90,7 @@ const forgotPassword = async (request, response, next) => {
         config.tokens.passwordReset.secret,
         config.tokens.passwordReset.life
     );
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset?userid=${user.id}&token=${token}`;
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/password/reset?userId=${user.id}&token=${token}`;
 
     mail.send(user.email, letters.forgotPassword(url));
 
@@ -163,7 +163,7 @@ const registration = async (request, response, next) => {
         config.tokens.emailConfirm.life
     );
 
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm?userid=${user.id}&token=${token}`;
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/registration/confirm?userId=${user.id}&token=${token}`;
 
     mail.send(user.email, letters.registrationConfirm(url));
 
@@ -374,7 +374,7 @@ const deleteAccount = async (request, response, next) => {
         config.tokens.accountRescue.life
     );
 
-    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel?userid=${user.id}&token=${token}`;
+    const url = `http://${config.server.address}:${config.server.port}/api/v2/users/delete/cancel?userId=${user.id}&token=${token}`;
     mail.send(user.email, letters.deleteAccount(url));
 
     return response
@@ -391,7 +391,7 @@ const deleteAccountCancel = async (request, response, next) => {
 
     const user = await db.User.findOne({
         where: {
-            userId: getData.userId,
+            id: getData.userId,
         },
         paranoid: false,
     });
