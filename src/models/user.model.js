@@ -49,7 +49,7 @@ module.exports = (sequelize, Sequelize) => {
 
     //#region Методы объекта
 
-    Model.prototype.getWithoutSecrets = function () {
+    Model.prototype.getScopePublic = function () {
         const {
             id,
             email,

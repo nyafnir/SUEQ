@@ -243,7 +243,7 @@ const authenticate = async (request, response, next) => {
             'Выполнен вход в систему.',
             'В data публичный объект user и объект с токенами.',
             {
-                user: user.getWithoutSecrets(),
+                user: user.getScopePublic(),
                 tokens: {
                     access: {
                         token: accessToken,
@@ -268,7 +268,7 @@ const info = async (request, response, next) => {
             new Response(
                 'Данные о пользователе получены.',
                 'Публичные данные о пользователе указаны в data.',
-                request.user.getWithoutSecrets()
+                request.user.getScopePublic()
             )
         );
 };
@@ -294,7 +294,7 @@ const update = async (request, response, next) => {
             new Response(
                 'Данные о пользователе обновлены.',
                 'Публичные данные о пользователе указаны в data.',
-                user.getWithoutSecrets()
+                user.getScopePublic()
             )
         );
 };
@@ -320,7 +320,7 @@ const refreshToken = async (request, response, next) => {
             'Вход в систему обновлен.',
             'В data объект user и объект с новыми токенами.',
             {
-                user: user.getWithoutSecrets(),
+                user: user.getScopePublic(),
                 tokens: {
                     access: {
                         token: accessToken,
