@@ -106,33 +106,27 @@ db.Holiday.belongsTo(db.Queue, {
 //#region Методы между моделями
 
 db.Queue.prototype.isOpen = async function () {
-    const now = new Date();
+    const nowDate = new Date();
+    nowDate.setHours(0, 0, 0, 0);
+    const holiday = this.holidays.find(
+        (h) => h.date.getTime() === nowDate.getTime()
+    );
 
-    const holiday = await db.Holiday.findOne({
-        where: { date: { [Sequelize.Op.eq]: now } },
-    });
+    if (holiday === undefined || holiday.isHoliday === false) {
+        const nowDatetime = new Date();
 
-    if (holiday === null || holiday.isHoliday === false) {
-        const schedule = await db.Schedule.findOne({
-            where: {
-                queueId: this.id,
-                workFrom: {
-                    [Sequelize.Op.lte]: now, // <=
-                },
-                workTo: {
-                    [Sequelize.Op.gte]: now, // >=
-                },
-                startTime: {
-                    [Sequelize.Op.lte]: now, // <=
-                },
-                endTime: {
-                    [Sequelize.Op.gte]: now, // >=
-                },
-                [Sequelize.Op.and]: [
-                    Sequelize.literal(`\`weekday\` & ${1 << now.getDay()}`),
-                ],
-            },
+        const currentTime = `${('0' + nowDatetime.getHours()).slice(-2)}:${(
+            '0' + nowDatetime.getMinutes()
+        ).slice(-2)}:${('0' + nowDatetime.getSeconds()).slice(-2)}`;
+
+        const schedule = this.schedules.find((s) => {
+            s.workFrom.getTime() <= nowDate.getTime() &&
+                s.workTo.getTime() >= nowDate.getTime() &&
+                s.startTime <= currentTime &&
+                s.endTime >= currentTime &&
+                (s.weekday & (1 << nowDatetime.getDay())) > 0;
         });
+
         if (schedule !== null) {
             return true;
         }
@@ -150,7 +144,7 @@ db.User.addHook('afterUpdate', async (user, options) => {
         sendEventByQueueId(
             position.queueId,
             events.USER_UPDATE,
-            user.getWithoutSecrets()
+            user.getScopePublic()
         );
     }
 });
@@ -211,5 +205,21 @@ db.Holiday.addHook('afterDestroy', async (holiday, options) => {
 });
 
 //#endregion
+
+async function checkTimeClosed() {
+    const queues = await db.Queue.findAll({
+        include: [{ all: true, nested: true }],
+    });
+
+    for (const queue of queues) {
+        if (queue.isOpen() === false) {
+            sendEventByQueueId(queue.id, events.QUEUE_CLOSED, queue);
+        }
+    }
+
+    setTimeout(() => checkTimeClosed(), 60 * 1000);
+}
+
+checkTimeClosed();
 
 module.exports = db;
