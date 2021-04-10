@@ -1,4 +1,4 @@
-const Response = require('../response');
+const Response = require('../utils/response');
 
 const errorHandler = (error, request, response, next) => {
     switch (true) {

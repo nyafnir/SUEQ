@@ -5,7 +5,7 @@ const db = require('../models');
 const mail = require('../services/mail');
 const letters = require('../utils/letters.mail');
 const authorize = require('../middleware/authorize.middleware');
-const Response = require('../response');
+const Response = require('../utils/response');
 const config = require('../config');
 const {
     registrationUserSchema,

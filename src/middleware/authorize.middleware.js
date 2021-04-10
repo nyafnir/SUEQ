@@ -1,5 +1,5 @@
 const exjwt = require('express-jwt');
-const Response = require('../response');
+const Response = require('../utils/response');
 const { tokens } = require('../config');
 const db = require('../models');
 

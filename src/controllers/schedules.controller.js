@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const db = require('../models');
 const authorize = require('../middleware/authorize.middleware');
-const Response = require('../response');
+const Response = require('../utils/response');
 const config = require('../config');
 const {
     scheduleIdSchema,
