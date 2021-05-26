@@ -70,7 +70,7 @@ const tokenSchema = (target, response, next) => {
 
 const userIdAndTokenSchema = (target, response, next) => {
     const schema = Joi.object({
-        userid: user.id.required(),
+        userId: user.id.required(),
         token: user.token.required(),
     });
     validate(target, next, schema);
